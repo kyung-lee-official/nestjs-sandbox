@@ -11,7 +11,7 @@ import {
 } from "@nestjs/common";
 import { OverviewService } from "./overview.service";
 import { UpdateOverviewDto } from "./dto/update-overview.dto";
-import { TestInterceptor } from "./interceptors/TestInterceptor";
+import { TestInterceptor } from "./interceptors/test.interceptor";
 import { ApiOperation } from "@nestjs/swagger";
 
 @Controller("overview")
