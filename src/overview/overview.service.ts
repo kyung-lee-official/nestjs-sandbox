@@ -3,8 +3,9 @@ import { UpdateOverviewDto } from "./dto/update-overview.dto";
 
 @Injectable()
 export class OverviewService {
-	testInterceptor(req: any) {
-		console.log(req.beforeHandlerData);
+	testInterceptor(req: Request) {
+		console.log(req.headers);
+		console.log((req as any).beforeHandlerData);
 		return {};
 	}
 

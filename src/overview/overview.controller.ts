@@ -25,7 +25,7 @@ export class OverviewController {
 	})
 	@UseInterceptors(TestInterceptor)
 	@Post("interceptors")
-	testInterceptor(@Req() req: any) {
+	testInterceptor(@Req() req: Request) {
 		return this.overviewService.testInterceptor(req);
 	}
 
