@@ -5,6 +5,7 @@ import { UpdateOverviewDto } from "./dto/update-overview.dto";
 export class OverviewService {
 	testInterceptor(req: Request) {
 		console.log(req.headers);
+		console.log((req as any).testMiddleware);
 		console.log((req as any).beforeHandlerData);
 		return { inHandlerData: "in handler data" };
 	}
