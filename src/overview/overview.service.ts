@@ -6,7 +6,7 @@ export class OverviewService {
 	testInterceptor(req: Request) {
 		console.log(req.headers);
 		console.log((req as any).beforeHandlerData);
-		return {};
+		return { inHandlerData: "in handler data" };
 	}
 
 	findAll() {
