@@ -39,3 +39,13 @@ lerna-debug.log*
 
 # Storage
 storage
+
+# file-downloads
+downloads/*
+!/file-downloads/download-example.png
+
+# file-uploads
+file-uploads/*
+
+# .gitkeep
+!/**/.gitkeep
