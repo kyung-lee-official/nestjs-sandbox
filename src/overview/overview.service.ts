@@ -3,19 +3,21 @@ import { UpdateOverviewDto } from "./dto/update-overview.dto";
 
 @Injectable()
 export class OverviewService {
+	testMiddleware(req: Request) {
+		return { testMiddleware: (req as any).testMiddleware };
+	}
+
+	testGuard(req: Request) {
+		return {
+			testGuard: `Guard Passed!`,
+			addedByGuard: (req as any).addedByGuard,
+		};
+	}
+
 	testInterceptor(req: Request) {
 		console.log(req.headers);
-		console.log((req as any).testMiddleware);
 		console.log((req as any).beforeHandlerData);
 		return { inHandlerData: "in handler data" };
-	}
-
-	findAll() {
-		return `This action returns all overview`;
-	}
-
-	findOne(id: number) {
-		return `This action returns a #${id} overview`;
 	}
 
 	update(id: number, updateOverviewDto: UpdateOverviewDto) {
