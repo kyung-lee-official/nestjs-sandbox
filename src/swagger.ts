@@ -2,6 +2,7 @@ import { INestApplication } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { OverviewModule } from "./overview/overview.module";
 import { TechniquesModule } from "./techniques/techniques.module";
+import { RecipesModule } from "./recipes/recipes.module";
 
 export function setupSwagger(app: INestApplication) {
 	const overviewOption = new DocumentBuilder()
@@ -29,4 +30,15 @@ export function setupSwagger(app: INestApplication) {
 		}
 	);
 	SwaggerModule.setup("api/techniques", app, techniquesDocument);
+
+	const recipesOption = new DocumentBuilder()
+		.setTitle("recipes")
+		.setDescription("# Recipes")
+		.setVersion("1.0.0")
+		.addBearerAuth()
+		.build();
+	const recipesDocument = SwaggerModule.createDocument(app, recipesOption, {
+		include: [RecipesModule],
+	});
+	SwaggerModule.setup("api/recipes", app, recipesDocument);
 }
