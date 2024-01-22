@@ -7,6 +7,18 @@ export class OverviewService {
 		return { testMiddleware: (req as any).testMiddleware };
 	}
 
+	testPipe(param: any, query: any, body: any) {
+		return {
+			param,
+			query,
+			body,
+		};
+	}
+
+	testValidationPipe(body: any) {
+		return body;
+	}
+
 	testGuard(req: Request) {
 		return {
 			testGuard: `Guard Passed!`,
@@ -15,8 +27,11 @@ export class OverviewService {
 	}
 
 	testInterceptor(req: Request) {
-		console.log(req.headers);
-		console.log((req as any).beforeHandlerData);
+		console.log("OverviewService.testInterceptor ", req.headers);
+		console.log(
+			"OverviewService.testInterceptor ",
+			(req as any).beforeHandlerData
+		);
 		return { inHandlerData: "in handler data" };
 	}
 

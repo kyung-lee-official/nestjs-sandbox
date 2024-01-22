@@ -9,12 +9,19 @@ import {
 	UseInterceptors,
 	Req,
 	UseGuards,
+	Query,
+	UsePipes,
 } from "@nestjs/common";
 import { OverviewService } from "./overview.service";
 import { UpdateOverviewDto } from "./dto/update-overview.dto";
 import { TestInterceptor } from "./interceptors/test.interceptor";
-import { ApiOperation } from "@nestjs/swagger";
+import { ApiBody, ApiOperation, ApiParam, ApiQuery } from "@nestjs/swagger";
 import { TestGuard } from "./guards/test.guard";
+import { ParamPipe } from "./pipes/param.pipe";
+import { QueryPipe } from "./pipes/query.pipe";
+import { MethodPipe } from "./pipes/method.pipe";
+import { TestPipeDto, testPipeSchema } from "./dto/test-pipe.dto";
+import { ZodValidationPipe } from "./pipes/zod-validation.pipe";
 
 @Controller("overview")
 export class OverviewController {
@@ -27,6 +34,84 @@ export class OverviewController {
 	@Get("middleware")
 	testMiddleware(@Req() req: Request) {
 		return this.overviewService.testMiddleware(req);
+	}
+
+	@ApiOperation({
+		summary: "test pipe",
+		description: `# Test Pipe
+Check the console log and the returned data.
+
+## Order
+
+The \@UsePipes() decorator applies a controller-scoped/method-scoped pipe to the controller/method.
+
+This case is a method-scoped pipe. A method-scoped pipe executes for body, query, and param in order.
+
+**MethodPipe** (Body -> Query -> Param) -> **QueryPipe** -> **ParamPipe**
+
+Note that previous pipes must return a value so the subsquent pipes can receive it.`,
+	})
+	@ApiParam({
+		name: "id",
+	})
+	@ApiQuery({
+		name: "page",
+	})
+	@ApiBody({
+		schema: {
+			type: "object",
+			properties: {
+				name: {
+					type: "string",
+					example: "John",
+				},
+				age: {
+					type: "number",
+					example: 20,
+				},
+				email: {
+					type: "string",
+					example: "abc@example.com",
+				},
+			},
+		},
+	})
+	@Post("pipes/:id")
+	@UsePipes(new MethodPipe())
+	testPipe(
+		@Param("id", ParamPipe) param: any,
+		@Query("page", QueryPipe) query: any,
+		@Body() body: TestPipeDto
+	) {
+		return this.overviewService.testPipe(param, query, body);
+	}
+
+	@ApiOperation({
+		summary: "test validation pipe",
+	})
+	@ApiBody({
+		schema: {
+			type: "object",
+			properties: {
+				name: {
+					type: "string",
+					example: "John",
+				},
+				age: {
+					type: "number",
+					example: 20,
+				},
+				email: {
+					type: "string",
+					example: "abc@example.com",
+				},
+			},
+		},
+	})
+	@Post("validation-pipe")
+	@UsePipes(new ZodValidationPipe(testPipeSchema))
+	testValidationPipe(@Body() body: TestPipeDto) {
+		return this.overviewService.testValidationPipe(body);
 	}
 
 	@ApiOperation({
