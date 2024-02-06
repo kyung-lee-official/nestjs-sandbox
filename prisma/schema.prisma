@@ -17,8 +17,18 @@ model User {
     name           String?
     titles         Json?
     posts          Post[]
+    ownedGroups    Group[]  @relation("Owner")
+    groups         Group[]
     createdAt      DateTime @default(now())
     updatedAt      DateTime @updatedAt
+}
+
+model Group {
+    id      Int    @id @default(autoincrement())
+    name    String @unique
+    owner   User   @relation("Owner", fields: [ownerId], references: [id])
+    ownerId Int
+    users   User[]
 }
 
 model Post {

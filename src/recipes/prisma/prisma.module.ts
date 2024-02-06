@@ -5,6 +5,7 @@ import { UsersService } from "./users.service";
 import { PostsService } from "./posts.service";
 import { CategoriesService } from "./categories.service";
 import { EventsService } from "./events.service";
+import { GroupsService } from "./groups.service";
 
 @Module({
 	controllers: [PrismaController],
@@ -14,6 +15,7 @@ import { EventsService } from "./events.service";
 		PostsService,
 		CategoriesService,
 		EventsService,
+		GroupsService,
 	],
 })
 export class PrismaModule {}

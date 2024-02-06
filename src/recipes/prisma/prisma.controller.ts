@@ -8,6 +8,7 @@ import {
 	Post as PostModel,
 	Event as EventModel,
 	Category as CategoryModel,
+	Group,
 } from "@prisma/client";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { CreatePostDto } from "./dto/create-post.dto";
@@ -17,6 +18,7 @@ import { FindPostDto } from "./dto/find-posts.dto";
 import { JsonFieldFilterDto } from "./dto/json-field-filter";
 import { CreateEventDto } from "./dto/create-event.dto";
 import { EventsService } from "./events.service";
+import { GroupsService } from "./groups.service";
 
 @Controller("prisma")
 export class PrismaController {
@@ -24,7 +26,8 @@ export class PrismaController {
 		private readonly usersService: UsersService,
 		private readonly postsService: PostsService,
 		private readonly categoriesService: CategoriesService,
-		private readonly eventsService: EventsService
+		private readonly eventsService: EventsService,
+		private readonly groupsService: GroupsService
 	) {}
 
 	@ApiOperation({ summary: "Create a new user" })
@@ -265,5 +268,45 @@ export class PrismaController {
 	@Get("events")
 	async getAllEvents(): Promise<EventModel[]> {
 		return this.eventsService.getAllEvents();
+	}
+
+	@ApiOperation({ summary: "Create a group and its owner" })
+	@ApiBody({
+		schema: {
+			type: "object",
+			properties: {
+				name: {
+					type: "string",
+					description: "The name of the group",
+				},
+				email: {
+					type: "string",
+					description: "The email of the owner",
+				},
+				ownerName: {
+					type: "string",
+					description: "The name of the owner",
+				},
+			},
+		},
+		examples: {
+			"Get all groups": {
+				value: {
+					name: "Default Group",
+					email: "tom@prisma.com",
+					ownerName: "Tom",
+				},
+			},
+		},
+	})
+	@Post("group-with-owner")
+	async createGroupWithOwner(@Body() body: any): Promise<Group> {
+		return this.groupsService.createGroupWithOwner(body);
+	}
+
+	@ApiOperation({ summary: "Get all groups" })
+	@Get("groups")
+	async getAllGroups(): Promise<Group[]> {
+		return this.groupsService.getAllGroups();
 	}
 }
