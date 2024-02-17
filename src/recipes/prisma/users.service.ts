@@ -3,6 +3,7 @@ import { PrismaService } from "./prisma.service";
 import { User } from "@prisma/client";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { JsonFieldFilterDto } from "./dto/json-field-filter";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @Injectable()
 export class UsersService {
@@ -27,6 +28,15 @@ export class UsersService {
 						categories: true,
 					},
 				},
+			},
+		});
+	}
+
+	async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+		return await this.prisma.user.update({
+			where: { id },
+			data: {
+				...updateUserDto,
 			},
 		});
 	}

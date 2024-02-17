@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch } from "@nestjs/common";
+import {
+	Controller,
+	Get,
+	Post,
+	Body,
+	Patch,
+	Param,
+	ParseIntPipe,
+} from "@nestjs/common";
 import { ApiBody, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { UsersService } from "./users.service";
 import { CategoriesService } from "./categories.service";
@@ -19,6 +27,7 @@ import { JsonFieldFilterDto } from "./dto/json-field-filter";
 import { CreateEventDto } from "./dto/create-event.dto";
 import { EventsService } from "./events.service";
 import { GroupsService } from "./groups.service";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @Controller("prisma")
 export class PrismaController {
@@ -109,6 +118,27 @@ export class PrismaController {
 	@Get("users")
 	async getAllUsers(): Promise<UserModel[]> {
 		return this.usersService.getAllUsers();
+	}
+
+	@ApiOperation({ summary: "Update a user" })
+	@Patch("user/:id")
+	@ApiBody({
+		type: UpdateUserDto,
+		examples: {
+			Alice: {
+				value: {
+					name: "Tommy",
+					email: undefined,
+				},
+				description: "This example shows how to update partial fields",
+			},
+		},
+	})
+	async updateUser(
+		@Param("id", ParseIntPipe) id: number,
+		@Body() updateUserDto: UpdateUserDto
+	): Promise<UserModel> {
+		return this.usersService.updateUser(id, updateUserDto);
 	}
 
 	@ApiOperation({ summary: "Find users by JSON field" })
