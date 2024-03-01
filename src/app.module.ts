@@ -6,6 +6,7 @@ import { TechniquesModule } from "./techniques/techniques.module";
 import { TencentCosObjectsModule } from "./tencent-cos-objects/tencent-cos-objects.module";
 import { TestMiddleware } from "./overview/middleware/test.middleware";
 import { PrismaModule } from "./recipes/prisma/prisma.module";
+import { WebsocketsModule } from './websockets/websockets.module';
 
 @Module({
 	imports: [
@@ -13,6 +14,7 @@ import { PrismaModule } from "./recipes/prisma/prisma.module";
 		TechniquesModule,
 		TencentCosObjectsModule,
 		PrismaModule,
+		WebsocketsModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
