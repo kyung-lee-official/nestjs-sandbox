@@ -11,7 +11,7 @@ import {
 import { WebsocketsService } from "./websockets.service";
 import { CreateWebsocketDto } from "./dto/create-websocket.dto";
 import { UpdateWebsocketDto } from "./dto/update-websocket.dto";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 
 @WebSocketGateway({
 	cors: {
@@ -40,7 +40,7 @@ export class WebsocketsGateway
 	}
 
 	@SubscribeMessage("message")
-	message(@MessageBody() body: any, @ConnectedSocket() clientSocket: any) {
+	message(@MessageBody() body: any, @ConnectedSocket() clientSocket: Socket) {
 		return this.websocketsService.message(body, clientSocket);
 	}
 
