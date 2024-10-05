@@ -2,7 +2,6 @@ import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { UpdateTencentCosObjectDto } from "./dto/update-tencent-cos-object.dto";
 import * as COS from "cos-nodejs-sdk-v5";
 import { CredentialData, getCredential } from "qcloud-cos-sts";
-import { nanoid } from "nanoid";
 import { open } from "node:fs/promises";
 import { statSync } from "node:fs";
 
@@ -94,10 +93,11 @@ export class TencentCosObjectsService {
 				"uploads/SampleVideo_1280x720_10mb.mp4"
 			).size;
 
+			const key = await import("nanoid");
 			const res = await this.cos.putObject({
 				Bucket: process.env.BUCKET as string,
 				Region: process.env.REGION as string,
-				Key: nanoid() + ".mp4",
+				Key: key + ".mp4",
 				Body: stream as COS.UploadBody,
 				ContentLength: length,
 				onProgress: function (progressData: any) {
