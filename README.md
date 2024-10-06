@@ -232,7 +232,7 @@ An instance of resource `Performance` can be defined as follows:
 }
 ```
 
-Still we have one last challenge, at the lowest level of the hierarchy, suppose we have a role `engineering`, in which we have multiple engineers, and each engineer should have access to their own `Performance` resource, while they should not have access to other engineers' `Performance` resource. We cannot add a role to each engineer just for this purpose as it dramatically increase the number of roles and the complexity of the system.
+Still we have one last challenge, at the lowest level of the hierarchy, suppose we have a role `engineering`, in which we have multiple engineers, and each engineer should have access to their own `Performance` resource, while they should not have access to other engineers' `Performance` resource. We cannot add a role to each engineer just for this purpose as it dramatically increases the number of roles and the complexity of the system.
 
 In nature, we're talking about if a resource should be private or public for owner's peers within a role. This can be achieved by adding an attribute `peer: boolean` to resources. Then we can say, for resource `Performance`, it should be `peer: true` (again, we're not talking about the resource type, but the instance of the resource, however, when defining a new resource type, you could hardcode this attribute to apply it to every instance of the resource type if needed).
 

@@ -3,8 +3,22 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { OverviewModule } from "./overview/overview.module";
 import { TechniquesModule } from "./techniques/techniques.module";
 import { PrismaModule } from "./recipes/prisma/prisma.module";
+import { AuthenticationModule } from "./auth/authentication/authentication.module";
+import { MembersModule } from "./auth/members/members.module";
+import { RolesModule } from "./auth/roles/roles.module";
 
 export function setupSwagger(app: INestApplication) {
+	const authOption = new DocumentBuilder()
+		.setTitle("auth")
+		.setDescription("# Auth")
+		.setVersion("1.0.0")
+		.addBearerAuth()
+		.build();
+	const authDocument = SwaggerModule.createDocument(app, authOption, {
+		include: [AuthenticationModule, MembersModule, RolesModule],
+	});
+	SwaggerModule.setup("api/auth", app, authDocument);
+
 	const overviewOption = new DocumentBuilder()
 		.setTitle("overview")
 		.setDescription("# Overview")

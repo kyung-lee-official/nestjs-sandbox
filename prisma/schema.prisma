@@ -10,6 +10,7 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+// recipes/prisma
 model User {
     id             Int      @id @default(autoincrement())
     email          String   @unique
@@ -52,4 +53,18 @@ model Event {
     id      Int      @id @default(autoincrement())
     name    String
     startAt DateTime
+}
+
+// auth
+model Member {
+    id    String @id
+    roles Role[]
+}
+
+model Role {
+    id          String   @id @unique
+    superRoleId String?
+    superRole   Role?    @relation("RoleRelation", fields: [superRoleId], references: [id])
+    subRoles    Role[]   @relation("RoleRelation")
+    members     Member[]
 }
