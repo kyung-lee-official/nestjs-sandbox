@@ -53,3 +53,25 @@ model Event {
     name    String
     startAt DateTime
 }
+
+// Cerbos Authoization
+model Member {
+    id          String        @id
+    role        Role[]
+    Performance Performance[]
+}
+
+model Role {
+    id          String   @id
+    superRoleId String?
+    superRole   Role?    @relation("Hierarchy", fields: [superRoleId], references: [id])
+    subRoles    Role[]   @relation("Hierarchy")
+    member      Member[]
+}
+
+model Performance {
+    id      Int    @id @default(autoincrement())
+    score   Int
+    owner   Member @relation(fields: [ownerId], references: [id])
+    ownerId String
+}
