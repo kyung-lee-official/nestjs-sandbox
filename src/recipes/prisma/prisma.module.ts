@@ -17,5 +17,6 @@ import { GroupsService } from "./groups.service";
 		EventsService,
 		GroupsService,
 	],
+	exports: [PrismaService],
 })
 export class PrismaModule {}

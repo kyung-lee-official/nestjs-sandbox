@@ -10,6 +10,7 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+// recipes/prisma
 model User {
     id             Int      @id @default(autoincrement())
     email          String   @unique
