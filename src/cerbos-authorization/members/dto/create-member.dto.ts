@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const createMemberSchema = z
 	.object({
-		id: z.string(),
+		id: z.string().toLowerCase(),
 	})
 	.required();
 

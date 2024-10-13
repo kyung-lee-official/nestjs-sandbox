@@ -1,34 +1,57 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { MembersService } from './members.service';
-import { CreateMemberDto } from './dto/create-member.dto';
-import { UpdateMemberDto } from './dto/update-member.dto';
+import {
+	Controller,
+	Get,
+	Post,
+	Body,
+	Patch,
+	Param,
+	Delete,
+	UsePipes,
+} from "@nestjs/common";
+import { MembersService } from "./members.service";
+import { CreateMemberDto, createMemberSchema } from "./dto/create-member.dto";
+import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+	createMemberBodyOptions,
+	createMemberOperationOptions,
+} from "./swagger/create-member.swagger";
+import { UpdateMemberDto } from "./dto/update-member.dto";
+import { CreateMemberPipe } from "./pipes/create-member.pipe";
 
-@Controller('members')
+@Controller("members")
 export class MembersController {
-  constructor(private readonly membersService: MembersService) {}
+	constructor(private readonly membersService: MembersService) {}
 
-  @Post()
-  create(@Body() createMemberDto: CreateMemberDto) {
-    return this.membersService.create(createMemberDto);
-  }
+	@ApiTags("Members")
+	@ApiOperation(createMemberOperationOptions)
+	@ApiBody(createMemberBodyOptions)
+	@UsePipes(new CreateMemberPipe(createMemberSchema))
+	@Post()
+	async create(@Body() createMemberDto: CreateMemberDto) {
+		return await this.membersService.create(createMemberDto);
+	}
 
-  @Get()
-  findAll() {
-    return this.membersService.findAll();
-  }
+	@ApiTags("Members")
+	@Get()
+	findAll() {
+		return this.membersService.findAll();
+	}
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.membersService.findOne(+id);
-  }
+	@ApiTags("Members")
+	@Get(":id")
+	findOne(@Param("id") id: string) {
+		return this.membersService.findOne(+id);
+	}
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMemberDto: UpdateMemberDto) {
-    return this.membersService.update(+id, updateMemberDto);
-  }
+	@ApiTags("Members")
+	@Patch(":id")
+	update(@Param("id") id: string, @Body() updateMemberDto: UpdateMemberDto) {
+		return this.membersService.update(+id, updateMemberDto);
+	}
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.membersService.remove(+id);
-  }
+	@ApiTags("Members")
+	@Delete(":id")
+	async remove(@Param("id") id: string) {
+		return await this.membersService.remove(id);
+	}
 }
