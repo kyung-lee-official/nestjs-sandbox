@@ -5,10 +5,10 @@ export class FindPostDto {
 	@ApiProperty()
 	@IsString({ each: true })
 	@IsOptional()
-	slugs: string[];
+	slugs?: string[];
 
 	@ApiProperty()
 	@IsString({ each: true })
 	@IsOptional()
-	categoryNames: string[];
+	categoryNames?: string[];
 }

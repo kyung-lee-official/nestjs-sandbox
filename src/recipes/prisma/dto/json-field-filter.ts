@@ -5,5 +5,5 @@ export class JsonFieldFilterDto {
 	@ApiProperty()
 	@IsEmail()
 	@IsNotEmpty()
-	recoveryEmail: string;
+	recoveryEmail!: string;
 }

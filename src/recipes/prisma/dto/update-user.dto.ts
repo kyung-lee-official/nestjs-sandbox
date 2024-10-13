@@ -5,15 +5,15 @@ export class UpdateUserDto {
 	@ApiProperty()
 	@IsString()
 	@IsOptional()
-	name: string;
+	name?: string;
 
 	@ApiProperty()
 	@IsEmail()
 	@IsOptional()
-	email: string;
+	email?: string;
 
 	@ApiProperty()
 	@IsEmail({}, { each: true })
 	@IsOptional()
-	recoveryEmails: string[];
+	recoveryEmails?: string[];
 }

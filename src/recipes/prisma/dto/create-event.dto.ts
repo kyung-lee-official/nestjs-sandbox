@@ -5,10 +5,10 @@ export class CreateEventDto {
 	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
-	name: string;
+	name!: string;
 
 	@ApiProperty()
 	@IsDateString() /* Alias for @IsISO8601() */
 	@IsNotEmpty()
-	startAt: Date;
+	startAt!: Date;
 }

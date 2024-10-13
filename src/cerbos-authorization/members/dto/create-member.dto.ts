@@ -1,6 +1,9 @@
-export class CreateMemberDto {
-	readonly id: string;
-	readonly roles: string[];
-}
+import { z } from "zod";
 
-export class CreateMember {}
+export const createMemberSchema = z
+	.object({
+		id: z.string(),
+	})
+	.required();
+
+export type CreateMemberDto = z.infer<typeof createMemberSchema>;

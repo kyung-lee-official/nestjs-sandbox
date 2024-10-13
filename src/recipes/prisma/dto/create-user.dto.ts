@@ -6,30 +6,30 @@ export class CreateUserDto {
 	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
-	name: string;
+	name!: string;
 
 	@ApiProperty()
 	@IsEmail()
 	@IsNotEmpty()
-	email: string;
+	email!: string;
 
 	@ApiProperty()
 	@IsEmail({}, { each: true })
 	@IsNotEmpty()
-	recoveryEmails: string[];
+	recoveryEmails!: string[];
 
 	@ApiProperty()
 	@ValidateNested({ each: true })
 	@Type(() => Title)
-	titles: string;
+	titles: string | undefined;
 }
 
 class Title {
 	@ApiProperty()
 	@IsString()
-	title: string;
+	title!: string;
 
 	@ApiProperty()
 	@IsString()
-	field: string;
+	field!: string;
 }

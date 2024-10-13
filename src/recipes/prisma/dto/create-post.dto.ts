@@ -5,15 +5,15 @@ export class CreatePostDto {
 	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
-	title: string;
+	title!: string;
 
 	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
-	slug: string;
+	slug!: string;
 
 	@ApiProperty()
 	@IsEmail()
 	@IsNotEmpty()
-	userEmail: string;
+	userEmail!: string;
 }

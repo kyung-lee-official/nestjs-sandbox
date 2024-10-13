@@ -9,15 +9,15 @@ import {
 export class ParamPipe
 	implements
 		PipeTransform<
-			string,
+			string | number,
 			{
 				value: number | string;
 				type: "body" | "query" | "param" | "custom";
-				data: string;
+				data?: string;
 			}
 		>
 {
-	transform(value: any, metadata: ArgumentMetadata) {
+	transform(value: string | number, metadata: ArgumentMetadata) {
 		console.log("ParamPipe");
 		switch (value) {
 			case "1":

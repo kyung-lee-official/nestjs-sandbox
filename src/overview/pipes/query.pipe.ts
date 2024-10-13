@@ -13,7 +13,7 @@ export class QueryPipe
 			{
 				value: number;
 				type: "body" | "query" | "param" | "custom";
-				data: string;
+				data?: string;
 			}
 		>
 {

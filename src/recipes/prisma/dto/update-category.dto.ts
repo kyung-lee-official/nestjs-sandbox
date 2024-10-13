@@ -5,10 +5,10 @@ export class UpdateCategoryDto {
 	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
-	name: string;
+	name!: string;
 
 	@ApiProperty()
 	@IsString({ each: true })
 	@IsNotEmpty()
-	postSlugs: string[];
+	postSlugs!: string[];
 }

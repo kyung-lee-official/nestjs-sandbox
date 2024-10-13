@@ -24,6 +24,11 @@ export class TencentCosObjectsService {
 			region: process.env.REGION,
 			allowPrefix: "*",
 		};
+		if (!config.bucket) {
+			throw new InternalServerErrorException(
+				"Bucket configuration is missing"
+			);
+		}
 		const shortBucketName = config.bucket.split("-")[0];
 		const appId = config.bucket.split("-")[1];
 		const policy = {
@@ -55,6 +60,11 @@ export class TencentCosObjectsService {
 			],
 		};
 		try {
+			if (!config.secretId || !config.secretKey) {
+				throw new InternalServerErrorException(
+					"SecretId or SecretKey is missing"
+				);
+			}
 			const credentialData = await getCredential({
 				secretId: config.secretId,
 				secretKey: config.secretKey,
