@@ -4,6 +4,7 @@ import { OverviewModule } from "./overview/overview.module";
 import { TechniquesModule } from "./techniques/techniques.module";
 import { PrismaModule } from "./recipes/prisma/prisma.module";
 import { MembersModule } from "./cerbos-authorization/members/members.module";
+import { AuthneticationModule } from "./cerbos-authorization/authnetication/authnetication.module";
 
 export function setupSwagger(app: INestApplication) {
 	const authOption = new DocumentBuilder()
@@ -13,7 +14,7 @@ export function setupSwagger(app: INestApplication) {
 		.addBearerAuth()
 		.build();
 	const authDocument = SwaggerModule.createDocument(app, authOption, {
-		include: [MembersModule],
+		include: [AuthneticationModule, MembersModule],
 	});
 	SwaggerModule.setup("api/cerbos-authorization", app, authDocument);
 

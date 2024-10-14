@@ -8,6 +8,7 @@ import { TestMiddleware } from "./overview/middleware/test.middleware";
 import { PrismaModule } from "./recipes/prisma/prisma.module";
 import { WebsocketsModule } from "./websockets/websockets.module";
 import { MembersModule } from "./cerbos-authorization/members/members.module";
+import { AuthneticationModule } from "./cerbos-authorization/authnetication/authnetication.module";
 
 @Module({
 	imports: [
@@ -17,6 +18,7 @@ import { MembersModule } from "./cerbos-authorization/members/members.module";
 		PrismaModule,
 		WebsocketsModule,
 		MembersModule,
+		AuthneticationModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

@@ -7,17 +7,21 @@ import {
 	Param,
 	Delete,
 	UsePipes,
+	UseGuards,
 } from "@nestjs/common";
 import { MembersService } from "./members.service";
 import { CreateMemberDto, createMemberSchema } from "./dto/create-member.dto";
-import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
 import {
 	createMemberBodyOptions,
 	createMemberOperationOptions,
 } from "./swagger/create-member.swagger";
 import { UpdateMemberDto } from "./dto/update-member.dto";
 import { CreateMemberPipe } from "./pipes/create-member.pipe";
+import { CerbosGuard } from "../guards/cerbos.guard";
+import { JwtGuard } from "../authnetication/guards/jwt.guard";
 
+@UseGuards(JwtGuard)
 @Controller("members")
 export class MembersController {
 	constructor(private readonly membersService: MembersService) {}
@@ -32,9 +36,10 @@ export class MembersController {
 	}
 
 	@ApiTags("Members")
+	@ApiBearerAuth()
 	@Get()
-	findAll() {
-		return this.membersService.findAll();
+	async findAll() {
+		return await this.membersService.findAll();
 	}
 
 	@ApiTags("Members")
@@ -50,6 +55,7 @@ export class MembersController {
 	}
 
 	@ApiTags("Members")
+	@UseGuards(CerbosGuard)
 	@Delete(":id")
 	async remove(@Param("id") id: string) {
 		return await this.membersService.remove(id);

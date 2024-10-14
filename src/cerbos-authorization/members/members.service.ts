@@ -16,8 +16,8 @@ export class MembersService {
 		});
 	}
 
-	findAll() {
-		return `This action returns all members`;
+	async findAll() {
+		return await this.prismaService.member.findMany();
 	}
 
 	findOne(id: number) {
