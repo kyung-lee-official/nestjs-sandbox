@@ -58,7 +58,7 @@ model Event {
 // Cerbos Authoization
 model Member {
     id          String        @id
-    role        Role[]
+    roles       Role[]
     Performance Performance[]
 }
 
@@ -67,7 +67,7 @@ model Role {
     superRoleId String?
     superRole   Role?    @relation("Hierarchy", fields: [superRoleId], references: [id])
     subRoles    Role[]   @relation("Hierarchy")
-    member      Member[]
+    members     Member[]
 }
 
 model Performance {

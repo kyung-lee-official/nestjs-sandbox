@@ -13,8 +13,6 @@ export class JwtGuard implements CanActivate {
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const req = context.switchToHttp().getRequest();
-		console.log(req.headers);
-		
 		if (req.headers.authorization) {
 			try {
 				const payload = await this.jwtService.verify(
@@ -28,6 +26,5 @@ export class JwtGuard implements CanActivate {
 		} else {
 			throw new BadRequestException("Missing token");
 		}
-		return true;
 	}
 }

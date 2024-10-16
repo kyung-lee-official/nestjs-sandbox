@@ -4,9 +4,11 @@ import {
 	BadRequestException,
 } from "@nestjs/common";
 import { ZodError, ZodSchema } from "zod";
-import { SignInDto } from "../dto/signin.dto";
+import { UpdateRoleDto } from "../dto/update-role.dto";
 
-export class SignInPipe implements PipeTransform<SignInDto, SignInDto> {
+export class UpdateRolePipe
+	implements PipeTransform<UpdateRoleDto, UpdateRoleDto>
+{
 	constructor(private schema: ZodSchema) {}
 
 	transform(value: unknown, metadata: ArgumentMetadata) {

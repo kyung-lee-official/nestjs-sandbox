@@ -18,15 +18,15 @@ import {
 } from "./swagger/create-member.swagger";
 import { UpdateMemberDto } from "./dto/update-member.dto";
 import { CreateMemberPipe } from "./pipes/create-member.pipe";
-import { CerbosGuard } from "../guards/cerbos.guard";
+import { FindAllCerbosGuard } from "./guards/find-all.guard";
 import { JwtGuard } from "../authnetication/guards/jwt.guard";
+import { findMembersOperationOptions } from "./swagger/find-members.swagger";
 
-@UseGuards(JwtGuard)
+@ApiTags("Members")
 @Controller("members")
 export class MembersController {
 	constructor(private readonly membersService: MembersService) {}
 
-	@ApiTags("Members")
 	@ApiOperation(createMemberOperationOptions)
 	@ApiBody(createMemberBodyOptions)
 	@UsePipes(new CreateMemberPipe(createMemberSchema))
@@ -35,27 +35,25 @@ export class MembersController {
 		return await this.membersService.create(createMemberDto);
 	}
 
-	@ApiTags("Members")
 	@ApiBearerAuth()
+	@ApiOperation(findMembersOperationOptions)
+	// @UseGuards(JwtGuard, FindAllCerbosGuard)
 	@Get()
 	async findAll() {
 		return await this.membersService.findAll();
 	}
 
-	@ApiTags("Members")
 	@Get(":id")
 	findOne(@Param("id") id: string) {
 		return this.membersService.findOne(+id);
 	}
 
-	@ApiTags("Members")
 	@Patch(":id")
 	update(@Param("id") id: string, @Body() updateMemberDto: UpdateMemberDto) {
 		return this.membersService.update(+id, updateMemberDto);
 	}
 
-	@ApiTags("Members")
-	@UseGuards(CerbosGuard)
+	// @UseGuards(CerbosGuard)
 	@Delete(":id")
 	async remove(@Param("id") id: string) {
 		return await this.membersService.remove(id);

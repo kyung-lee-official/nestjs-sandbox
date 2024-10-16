@@ -17,7 +17,11 @@ export class MembersService {
 	}
 
 	async findAll() {
-		return await this.prismaService.member.findMany();
+		return await this.prismaService.member.findMany({
+			include: {
+				roles: true,
+			},
+		});
 	}
 
 	findOne(id: number) {
