@@ -35,7 +35,7 @@ export class MembersController {
 		return await this.membersService.create(createMemberDto);
 	}
 
-	@ApiBearerAuth()
+	// @ApiBearerAuth()
 	@ApiOperation(findMembersOperationOptions)
 	// @UseGuards(JwtGuard, FindAllCerbosGuard)
 	@Get()
