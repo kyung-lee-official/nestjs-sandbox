@@ -58,6 +58,8 @@ export class DeleteCerbosGuard implements CanActivate {
 			actions: [action],
 		};
 		const decision = await cerbos.checkResource(cerbosObject);
+		console.log(decision);
+		console.log(decision.outputs[0].value);
 		const result = !!decision.isAllowed(action);
 
 		return result;
