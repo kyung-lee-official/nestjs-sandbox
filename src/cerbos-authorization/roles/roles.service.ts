@@ -50,10 +50,12 @@ export class RolesService {
 	}
 
 	async remove(id: string) {
-		return await this.prismaService.role.delete({
+		const res = await this.prismaService.role.delete({
 			where: {
 				id,
 			},
 		});
+		console.log(res);
+		return res;
 	}
 }
