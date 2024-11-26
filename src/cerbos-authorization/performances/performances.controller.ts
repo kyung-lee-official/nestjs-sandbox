@@ -23,6 +23,7 @@ import {
 import { CreatePerformancePipe } from "./pipes/create-performance.pipe";
 import { JwtGuard } from "../authnetication/guards/jwt.guard";
 import { DeleteCerbosGuard } from "./guards/delete.guard";
+import { GetCerbosGuard } from "./guards/get.guard";
 
 @ApiTags("Performances")
 @Controller("performances")
