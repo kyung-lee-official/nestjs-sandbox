@@ -38,6 +38,7 @@ export class PerformancesController {
 	}
 
 	@ApiOperation({ summary: "Get all performances" })
+	@UseGuards(GetCerbosGuard)
 	@Get()
 	async findAll() {
 		return await this.performancesService.findAll();
