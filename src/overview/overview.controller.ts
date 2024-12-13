@@ -139,7 +139,9 @@ Check the console log and the returned data.`,
 	@Patch(":id")
 	update(
 		@Param("id") id: string,
-		@Body() updateOverviewDto: UpdateOverviewDto
+		/* if you want to validate the body of a PATCH request, this is where you would do it */
+		@Body(new ZodValidationPipe(testPipeSchema))
+		updateOverviewDto: TestPipeDto
 	) {
 		return this.overviewService.update(+id, updateOverviewDto);
 	}
