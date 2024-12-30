@@ -10,38 +10,52 @@ import {
 	UseInterceptors,
 	UploadedFile,
 	Res,
+	UploadedFiles,
 } from "@nestjs/common";
 import { TechniquesService } from "./techniques.service";
 import { CreateTechniqueDto } from "./dto/create-technique.dto";
 import { UpdateTechniqueDto } from "./dto/update-technique.dto";
-import { FileInterceptor } from "@nestjs/platform-express";
+import {
+	AnyFilesInterceptor,
+	FileInterceptor,
+	FilesInterceptor,
+} from "@nestjs/platform-express";
 import { ApiBody, ApiConsumes, ApiOperation } from "@nestjs/swagger";
+import {
+	uploadFileApiBodyOptions,
+	uploadFileApiOperationOptions,
+} from "./swagger/upload-file.swagger";
+import { uploadFilesApiOperationOptions } from "./swagger/upload-files.swagger";
 
 @Controller("techniques")
 export class TechniquesController {
 	constructor(private readonly techniquesService: TechniquesService) {}
 
-	@ApiOperation({
-		summary: "Upload a file",
-		description: `# Upload a file to the server
-File saved to ./file-uploads/`,
-	})
+	@ApiOperation(uploadFileApiOperationOptions)
 	@ApiConsumes("multipart/form-data")
-	@ApiBody({
-		schema: {
-			type: "object",
-			properties: {
-				file: {
-					type: "string",
-					format: "binary",
-				},
-			},
-		},
-	})
+	@ApiBody(uploadFileApiBodyOptions)
 	@Put("file-upload")
 	@UseInterceptors(FileInterceptor("file"))
-	async upload(@UploadedFile() file: Express.Multer.File): Promise<any> {
-		return this.techniquesService.upload(file);
+	async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<any> {
+		return this.techniquesService.uploadFile(file);
+	}
+
+	@ApiOperation(uploadFilesApiOperationOptions)
+	@ApiConsumes("multipart/form-data")
+	// @ApiBody(uploadFilesApiBodyOptions)
+	@Put("files-upload-array")
+	@UseInterceptors(FilesInterceptor("files"))
+	async uploadFilesArrary(@UploadedFiles() files: Express.Multer.File[]) {
+		return await this.techniquesService.uploadFilesArrary(files);
+	}
+
+	@ApiOperation(uploadFilesApiOperationOptions)
+	@ApiConsumes("multipart/form-data")
+	// @ApiBody(uploadFilesApiBodyOptions)
+	@Put("files-upload-any")
+	@UseInterceptors(AnyFilesInterceptor())
+	async uploadFilesAny(@UploadedFiles() files: Express.Multer.File[]) {
+		return await this.techniquesService.uploadFilesAny(files);
 	}
 
 	@ApiOperation({
@@ -52,6 +66,24 @@ File downloaded from ./file-downloads/`,
 	@Get("file-download")
 	async download(@Res() res: any): Promise<any> {
 		return this.techniquesService.download(res);
+	}
+
+	@Get("preview-filelist")
+	async previewFileList(): Promise<any> {
+		return await this.techniquesService.previewFileList();
+	}
+
+	@Get("preview-image/:filename")
+	async previewImage(
+		@Param("filename") filename: string,
+		@Res() res: any
+	): Promise<any> {
+		return await this.techniquesService.previewImage(filename, res);
+	}
+
+	@Delete("delete-file/:filename")
+	async deleteFile(@Param("filename") filename: string) {
+		return await this.techniquesService.deleteFile(filename);
 	}
 
 	@Post()
@@ -75,10 +107,5 @@ File downloaded from ./file-downloads/`,
 		@Body() updateTechniqueDto: UpdateTechniqueDto
 	) {
 		return this.techniquesService.update(+id, updateTechniqueDto);
-	}
-
-	@Delete(":id")
-	remove(@Param("id") id: string) {
-		return this.techniquesService.remove(+id);
 	}
 }
