@@ -8,7 +8,7 @@ import { PrismaService } from "src/recipes/prisma/prisma.service";
 import { GRPC as Cerbos } from "@cerbos/grpc";
 import { inspect } from "node:util";
 import { getCerbosPrincipal } from "src/utils/data";
-import { CheckResourcesRequest } from "@cerbos/core";
+import { CheckResourcesRequest, ResourceCheck } from "@cerbos/core";
 
 const cerbos = new Cerbos(process.env.CERBOS as string, { tls: false });
 
@@ -43,13 +43,15 @@ export class GetCerbosGuard implements CanActivate {
 				id: true,
 			},
 		});
-		const resources = performanceIds.map((performanceId) => ({
-			resource: {
-				kind: "internal:roles",
-				id: `${performanceId.id}`,
-			},
-			actions: actions,
-		}));
+		const resources: ResourceCheck[] = performanceIds.map(
+			(performanceId) => ({
+				resource: {
+					kind: "internal:roles",
+					id: `${performanceId.id}`,
+				},
+				actions: actions,
+			})
+		);
 
 		const checkResourcesRequest: CheckResourcesRequest = {
 			principal: principal,

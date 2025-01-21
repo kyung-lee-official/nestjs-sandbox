@@ -9,7 +9,7 @@ import { PrismaService } from "src/recipes/prisma/prisma.service";
 import { GRPC as Cerbos } from "@cerbos/grpc";
 import { inspect } from "node:util";
 import { getCerbosPrincipal } from "src/utils/data";
-import { CheckResourceRequest } from "@cerbos/core";
+import { CheckResourceRequest, Resource } from "@cerbos/core";
 
 const cerbos = new Cerbos(process.env.CERBOS as string, { tls: false });
 
@@ -51,7 +51,7 @@ export class DeleteCerbosGuard implements CanActivate {
 		if (!performance) {
 			throw new BadRequestException("Invalid resource");
 		}
-		const resource = {
+		const resource: Resource = {
 			kind: "performance",
 			id: req.params.id,
 			attr: {
