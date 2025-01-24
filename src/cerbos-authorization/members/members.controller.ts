@@ -7,19 +7,16 @@ import {
 	Param,
 	Delete,
 	UsePipes,
-	UseGuards,
 } from "@nestjs/common";
 import { MembersService } from "./members.service";
 import { CreateMemberDto, createMemberSchema } from "./dto/create-member.dto";
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
 import {
 	createMemberBodyOptions,
 	createMemberOperationOptions,
 } from "./swagger/create-member.swagger";
 import { UpdateMemberDto } from "./dto/update-member.dto";
 import { CreateMemberPipe } from "./pipes/create-member.pipe";
-import { FindAllCerbosGuard } from "./guards/find-all.guard";
-import { JwtGuard } from "../authnetication/guards/jwt.guard";
 import { findMembersOperationOptions } from "./swagger/find-members.swagger";
 
 @ApiTags("Members")

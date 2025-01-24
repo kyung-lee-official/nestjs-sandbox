@@ -7,6 +7,7 @@ import { MembersModule } from "./cerbos-authorization/members/members.module";
 import { AuthneticationModule } from "./cerbos-authorization/authnetication/authnetication.module";
 import { RolesModule } from "./cerbos-authorization/roles/roles.module";
 import { PerformancesModule } from "./cerbos-authorization/performances/performances.module";
+import { AccessmentsModule } from "./cerbos-authorization/accessments/accessments.module";
 
 export function setupSwagger(app: INestApplication) {
 	const authOption = new DocumentBuilder()
@@ -21,6 +22,7 @@ export function setupSwagger(app: INestApplication) {
 			MembersModule,
 			RolesModule,
 			PerformancesModule,
+			AccessmentsModule,
 		],
 	});
 	SwaggerModule.setup("api/cerbos-authorization", app, authDocument);

@@ -11,6 +11,7 @@ import { MembersModule } from "./cerbos-authorization/members/members.module";
 import { AuthneticationModule } from "./cerbos-authorization/authnetication/authnetication.module";
 import { RolesModule } from "./cerbos-authorization/roles/roles.module";
 import { PerformancesModule } from "./cerbos-authorization/performances/performances.module";
+import { AccessmentsModule } from './cerbos-authorization/accessments/accessments.module';
 
 @Module({
 	imports: [
@@ -23,6 +24,7 @@ import { PerformancesModule } from "./cerbos-authorization/performances/performa
 		AuthneticationModule,
 		RolesModule,
 		PerformancesModule,
+		AccessmentsModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
