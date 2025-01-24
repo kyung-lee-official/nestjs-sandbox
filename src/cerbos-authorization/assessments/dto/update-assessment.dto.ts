@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-export const updateAccessmentByIdSchema = z
+export const updateAssessmentByIdSchema = z
 	.object({
 		memberId: z.string().toLowerCase(),
 		id: z.string().toLowerCase(),
 	})
 	.required();
 
-export type UpdateAccessmentByIdDto = z.infer<typeof updateAccessmentByIdSchema>;
+export type UpdateAssessmentByIdDto = z.infer<typeof updateAssessmentByIdSchema>;

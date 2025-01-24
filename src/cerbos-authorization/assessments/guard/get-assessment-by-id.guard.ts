@@ -12,21 +12,21 @@ import {
 	getPrincipal,
 	getResOwnerRoles,
 } from "../mock-data/roles";
-import { mockAccessments } from "../mock-data/accessments";
+import { mockAssessments } from "../mock-data/assessments";
 
 const cerbos = new Cerbos(process.env.CERBOS as string, { tls: false });
 
 @Injectable()
-export class GetAccessmentByIdGuard implements CanActivate {
+export class GetAssessmentByIdGuard implements CanActivate {
 	constructor() {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const req = context.switchToHttp().getRequest();
 
-		const { principalName, accessmentId } = req.body;
-		const accessment = mockAccessments.find((a) => a.id === accessmentId);
-		if (!accessment) {
-			throw new UnauthorizedException("Invalid accessment id");
+		const { principalName, assessmentId } = req.body;
+		const assessment = mockAssessments.find((a) => a.id === assessmentId);
+		if (!assessment) {
+			throw new UnauthorizedException("Invalid assessment id");
 		}
 
 		if (!principalName) {
@@ -41,7 +41,7 @@ export class GetAccessmentByIdGuard implements CanActivate {
 		const actions = ["get"];
 
 		/* resource */
-		const resourceOwnerRoles = getResOwnerRoles(accessment);
+		const resourceOwnerRoles = getResOwnerRoles(assessment);
 		const isPrincipalSuperRole = checkIsPrincipalSuperRole(
 			principalName,
 			resourceOwnerRoles
@@ -49,10 +49,10 @@ export class GetAccessmentByIdGuard implements CanActivate {
 		const resources: ResourceCheck[] = [
 			{
 				resource: {
-					kind: "accessments",
-					id: accessment.id,
+					kind: "assessments",
+					id: assessment.id,
 					attr: {
-						owner: accessment.owner,
+						owner: assessment.owner,
 						isPrincipalSuperRole: isPrincipalSuperRole,
 					},
 				},
