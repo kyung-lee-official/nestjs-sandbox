@@ -11,7 +11,8 @@ import { MembersModule } from "./cerbos-authorization/members/members.module";
 import { AuthneticationModule } from "./cerbos-authorization/authnetication/authnetication.module";
 import { RolesModule } from "./cerbos-authorization/roles/roles.module";
 import { PerformancesModule } from "./cerbos-authorization/performances/performances.module";
-import { AssessmentsModule } from './cerbos-authorization/assessments/assessments.module';
+import { AssessmentsModule } from "./cerbos-authorization/assessments/assessments.module";
+import { ProgramLifecycleModule } from "./applications/program-lifecycle/program-lifecycle.module";
 
 @Module({
 	imports: [
@@ -25,6 +26,7 @@ import { AssessmentsModule } from './cerbos-authorization/assessments/assessment
 		RolesModule,
 		PerformancesModule,
 		AssessmentsModule,
+		ProgramLifecycleModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

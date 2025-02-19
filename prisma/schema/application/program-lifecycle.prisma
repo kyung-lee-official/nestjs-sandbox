@@ -1,0 +1,4 @@
+model Lifecycle {
+    id    Int @id @default(autoincrement())
+    value Int
+}

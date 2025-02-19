@@ -8,6 +8,7 @@ import { AuthneticationModule } from "./cerbos-authorization/authnetication/auth
 import { RolesModule } from "./cerbos-authorization/roles/roles.module";
 import { PerformancesModule } from "./cerbos-authorization/performances/performances.module";
 import { AssessmentsModule } from "./cerbos-authorization/assessments/assessments.module";
+import { ProgramLifecycleModule } from "./applications/program-lifecycle/program-lifecycle.module";
 
 export function setupSwagger(app: INestApplication) {
 	const authOption = new DocumentBuilder()
@@ -52,6 +53,21 @@ export function setupSwagger(app: INestApplication) {
 		}
 	);
 	SwaggerModule.setup("api/techniques", app, techniquesDocument);
+
+	const applicationOption = new DocumentBuilder()
+		.setTitle("Application")
+		.setDescription("# Application")
+		.setVersion("1.0.0")
+		.addBearerAuth()
+		.build();
+	const applicationDocument = SwaggerModule.createDocument(
+		app,
+		applicationOption,
+		{
+			include: [ProgramLifecycleModule],
+		}
+	);
+	SwaggerModule.setup("api/application", app, applicationDocument);
 
 	const prismaOption = new DocumentBuilder()
 		.setTitle("prisma")
