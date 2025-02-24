@@ -10,6 +10,9 @@ export class OverviewService {
 	testExceptionFilters() {
 		throw new BadRequestException("test exception filters");
 	}
+	testReturnVoid() {
+		return;
+	}
 
 	testPipe(param: any, query: any, body: any) {
 		return {

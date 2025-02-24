@@ -41,6 +41,11 @@ export class OverviewController {
 		return await this.overviewService.testExceptionFilters();
 	}
 
+	@Get("return-void")
+	async testReturnVoid() {
+		return await this.overviewService.testReturnVoid();
+	}
+
 	@ApiOperation({
 		summary: "test pipe",
 		description: `# Test Pipe
