@@ -36,6 +36,11 @@ export class OverviewController {
 		return this.overviewService.testMiddleware(req);
 	}
 
+	@Get("exception-filters")
+	async testExceptionFilters() {
+		return await this.overviewService.testExceptionFilters();
+	}
+
 	@ApiOperation({
 		summary: "test pipe",
 		description: `# Test Pipe

@@ -1,10 +1,14 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { UpdateOverviewDto } from "./dto/update-overview.dto";
 
 @Injectable()
 export class OverviewService {
 	testMiddleware(req: Request) {
 		return { testMiddleware: (req as any).testMiddleware };
+	}
+
+	testExceptionFilters() {
+		throw new BadRequestException("test exception filters");
 	}
 
 	testPipe(param: any, query: any, body: any) {
