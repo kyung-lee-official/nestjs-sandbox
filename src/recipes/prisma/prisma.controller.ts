@@ -6,6 +6,7 @@ import {
 	Patch,
 	Param,
 	ParseIntPipe,
+	Delete,
 } from "@nestjs/common";
 import { ApiBody, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { UsersService } from "./users.service";
@@ -27,6 +28,7 @@ import { JsonFieldFilterDto } from "./dto/json-field-filter";
 import { CreateEventDto } from "./dto/create-event.dto";
 import { EventsService } from "./events.service";
 import { GroupsService } from "./groups.service";
+import { BigIntService } from "./bigint.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
 
 @Controller("prisma")
@@ -36,7 +38,8 @@ export class PrismaController {
 		private readonly postsService: PostsService,
 		private readonly categoriesService: CategoriesService,
 		private readonly eventsService: EventsService,
-		private readonly groupsService: GroupsService
+		private readonly groupsService: GroupsService,
+		private readonly bigintService: BigIntService
 	) {}
 
 	@ApiOperation({ summary: "Create a new user" })
@@ -338,5 +341,27 @@ export class PrismaController {
 	@Get("groups")
 	async getAllGroups(): Promise<Group[]> {
 		return this.groupsService.getAllGroups();
+	}
+
+	@ApiOperation({ summary: "Test BigInt" })
+	@Post("create-bigint/:bigint")
+	async createBigInt(
+		@Param("bigint", ParseIntPipe) bigint: bigint
+	): Promise<{ id: number; value: string }> {
+		return await this.bigintService.createBigInt(bigint);
+	}
+
+	@ApiOperation({ summary: "Get BigInts" })
+	@Get("get-bigints")
+	async getBigInt(): Promise<{ id: number; value: string }[]> {
+		return await this.bigintService.getBigInt();
+	}
+
+	@ApiOperation({ summary: "Delete BigInt" })
+	@Delete("delete-bigint/:id")
+	async deleteBigInt(
+		@Param("id", ParseIntPipe) id: number
+	): Promise<{ id: number; value: string }> {
+		return await this.bigintService.deteteBigInt(id);
 	}
 }

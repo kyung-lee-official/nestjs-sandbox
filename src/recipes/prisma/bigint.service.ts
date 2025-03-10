@@ -1,0 +1,51 @@
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "./prisma.service";
+import { Post } from "@prisma/client";
+import { CreatePostDto } from "./dto/create-post.dto";
+import { FindPostDto } from "./dto/find-posts.dto";
+
+@Injectable()
+export class BigIntService {
+	constructor(private prisma: PrismaService) {}
+
+	async createBigInt(bigint: bigint): Promise<{ id: number; value: string }> {
+		const bi = await this.prisma.testBigInt.create({
+			data: {
+				value: BigInt(bigint),
+			},
+		});
+		console.log(bi); /*  { id: 1, value: xxxxxxxxxxxxxn } */
+		/**
+		 * bigint cannot be serialized therefore if you return it directly,
+		 * you got type error:
+		 * TypeError: Do not know how to serialize a BigInt
+		 * https://www.prisma.io/docs/orm/prisma-client/special-fields-and-types#working-with-bigint
+		 */
+		const stringifiedBigInt = {
+			id: bi.id,
+			value: bi.value.toString(),
+		};
+		return stringifiedBigInt;
+	}
+
+	async getBigInt(): Promise<{ id: number; value: string }[]> {
+		const bis = await this.prisma.testBigInt.findMany();
+		return bis.map((bi) => ({
+			id: bi.id,
+			value: bi.value.toString(),
+		}));
+	}
+
+	async deteteBigInt(id: number): Promise<{ id: number; value: string }> {
+		const res = await this.prisma.testBigInt.delete({
+			where: {
+				id,
+			},
+		});
+		const stringifiedBigInt = {
+			id: res.id,
+			value: res.value.toString(),
+		};
+		return stringifiedBigInt;
+	}
+}

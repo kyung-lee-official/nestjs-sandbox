@@ -77,3 +77,8 @@ model Performance {
     owner   Member @relation(fields: [ownerId], references: [id])
     ownerId String
 }
+
+model TestBigInt {
+    id    Int    @id @default(autoincrement())
+    value BigInt
+}
