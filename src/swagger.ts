@@ -67,7 +67,7 @@ export function setupSwagger(app: INestApplication) {
 			include: [ProgramLifecycleModule],
 		}
 	);
-	SwaggerModule.setup("api/application", app, applicationDocument);
+	SwaggerModule.setup("api/applications", app, applicationDocument);
 
 	const prismaOption = new DocumentBuilder()
 		.setTitle("prisma")
