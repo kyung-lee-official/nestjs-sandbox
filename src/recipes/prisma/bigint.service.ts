@@ -22,7 +22,7 @@ export class BigIntService {
 		 * https://www.prisma.io/docs/orm/prisma-client/special-fields-and-types#working-with-bigint
 		 */
 		const stringifiedBigInt = {
-			id: bi.id,
+			...bi,
 			value: bi.value.toString(),
 		};
 		return stringifiedBigInt;
@@ -31,7 +31,7 @@ export class BigIntService {
 	async getBigInt(): Promise<{ id: number; value: string }[]> {
 		const bis = await this.prisma.testBigInt.findMany();
 		return bis.map((bi) => ({
-			id: bi.id,
+			...bi,
 			value: bi.value.toString(),
 		}));
 	}
@@ -43,7 +43,7 @@ export class BigIntService {
 			},
 		});
 		const stringifiedBigInt = {
-			id: res.id,
+			...res,
 			value: res.value.toString(),
 		};
 		return stringifiedBigInt;
