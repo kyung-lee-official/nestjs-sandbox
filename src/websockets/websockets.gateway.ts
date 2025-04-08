@@ -13,6 +13,7 @@ import { CreateWebsocketDto } from "./dto/create-websocket.dto";
 import { UpdateWebsocketDto } from "./dto/update-websocket.dto";
 import { Server, Socket } from "socket.io";
 
+/* without specifying the port, it will use the default app port set in main.ts */
 @WebSocketGateway({
 	cors: {
 		origin: "*",
