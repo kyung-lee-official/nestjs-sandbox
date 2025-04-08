@@ -28,7 +28,7 @@ export class WebsocketsGateway
 	io!: Server;
 
 	afterInit() {
-		console.log("Initialized");
+		console.log("Websockets initialized");
 	}
 
 	handleConnection(client: any, ...args: any[]) {
