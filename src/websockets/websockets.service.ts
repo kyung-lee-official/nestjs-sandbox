@@ -1,13 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { CreateWebsocketDto } from "./dto/create-websocket.dto";
-import { UpdateWebsocketDto } from "./dto/update-websocket.dto";
 import { Socket } from "socket.io";
 
 @Injectable()
 export class WebsocketsService {
 	message(body: any, clientSocket: Socket) {
 		const { message } = body;
-		console.log(`📩: ${JSON.stringify(message)}`);
+		/* log the message coming from the client */
+		console.log(`Client ${clientSocket.id}: ${JSON.stringify(message)}`);
 		/* 8s is long enough for testing multiple clients */
 		const processingTime = 8;
 		for (let i = 0; i < processingTime; i++) {
