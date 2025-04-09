@@ -13,6 +13,8 @@ import { RolesModule } from "./cerbos-authorization/roles/roles.module";
 import { PerformancesModule } from "./cerbos-authorization/performances/performances.module";
 import { AssessmentsModule } from "./cerbos-authorization/assessments/assessments.module";
 import { ProgramLifecycleModule } from "./applications/program-lifecycle/program-lifecycle.module";
+import { UploadLargeJsonModule } from "./upload-large-json/upload-large-json.module";
+import { BullModule } from "@nestjs/bullmq";
 
 @Module({
 	imports: [
@@ -27,6 +29,13 @@ import { ProgramLifecycleModule } from "./applications/program-lifecycle/program
 		PerformancesModule,
 		AssessmentsModule,
 		ProgramLifecycleModule,
+		UploadLargeJsonModule,
+		BullModule.forRoot({
+			connection: {
+				host: process.env.REDIS_HOST,
+				port: Number(process.env.REDIS_PORT),
+			},
+		}),
 	],
 	controllers: [AppController],
 	providers: [AppService],
