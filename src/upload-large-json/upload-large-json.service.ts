@@ -5,6 +5,7 @@ import {
 } from "@nestjs/common";
 import { MockDatabaseService } from "./mock-database.service";
 import { UploadLargeJsonQueueService } from "./upload-large-json-queue.service";
+import * as zlib from "zlib";
 
 @Injectable()
 export class UploadLargeJsonService {
@@ -19,8 +20,8 @@ export class UploadLargeJsonService {
 		}
 		try {
 			/* convert binary data to JSON */
-			const dataContent = data.buffer.toString("utf-8");
-			const parsedData = JSON.parse(dataContent);
+			const decompressedData = zlib.gunzipSync(data.buffer);
+			const parsedData = JSON.parse(decompressedData.toString("utf-8"));
 			const chunkifiedData = this.chunkifyArray(parsedData, 10);
 			for (const [i, chunk] of chunkifiedData.entries()) {
 				await this.uploadLargeJsonQueueService.addJob({
