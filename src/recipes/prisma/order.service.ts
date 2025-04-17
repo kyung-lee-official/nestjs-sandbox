@@ -11,7 +11,7 @@ export class OrderService {
 				product: {
 					connectOrCreate: {
 						where: {
-							id: 1,
+							name: "Product 1",
 						},
 						create: {
 							name: "Product 1",

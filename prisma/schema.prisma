@@ -3,6 +3,7 @@
 
 generator client {
     provider = "prisma-client-js"
+    previewFeatures = ["strictUndefinedChecks"]
     output   = "../node_modules/.prisma/client"
 }
 
@@ -106,6 +107,6 @@ model TestConnectOrCreateOrder {
 
 model TestConnectOrCreateProduct {
     id                       Int                        @id @default(autoincrement())
-    name                     String
+    name                     String                     @unique
     testConnectOrCreateOrder TestConnectOrCreateOrder[]
 }
