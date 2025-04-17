@@ -136,7 +136,7 @@ model RetailSalesData {
     salesVolume          Float
     platformAddress      RetailSalesDataPlatformAddress? @relation(fields: [platformAddressId], references: [id])
     platformAddressId    Int?
-    // platformOrderId      String
+    platformOrderId      String
     // storehouse           RetailSalesDataStorehouse       @relation(fields: [storehouseId], references: [id])
     // storehouseId         Int
     // category             RetailSalesDataCategory?        @relation(fields: [categoryId], references: [id])

@@ -63,7 +63,7 @@ export class OrderService {
 						},
 					},
 				},
-				// platformOrderId: 1,
+				platformOrderId: "#order 1",
 				// storehouse: {
 				// 	connectOrCreate: {
 				// 		where: { storehouse: "d.storehouse" },
