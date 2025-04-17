@@ -2,9 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["prismaSchemaFolder"]
-	output          = "../node_modules/.prisma/client"
+    provider = "prisma-client-js"
+    output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -12,7 +11,9 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-// recipes/prisma
+/**
+ * recipes/prisma
+ */
 model User {
     id             Int      @id @default(autoincrement())
     email          String   @unique
@@ -57,7 +58,9 @@ model Event {
     startAt DateTime
 }
 
-// Cerbos Authoization
+/**
+ * Cerbos Authoization
+ */
 model Member {
     id          String        @id
     roles       Role[]
@@ -84,6 +87,17 @@ model TestBigInt {
     value BigInt
 }
 
+/**
+ * lifecycle
+ */
+model Lifecycle {
+    id    Int @id @default(autoincrement())
+    value Int
+}
+
+/**
+ * test connect or create
+ */
 model TestConnectOrCreateOrder {
     id        Int                        @id @default(autoincrement())
     product   TestConnectOrCreateProduct @relation(fields: [productId], references: [id])
