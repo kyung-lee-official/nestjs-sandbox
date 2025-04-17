@@ -4,6 +4,7 @@
 generator client {
     provider        = "prisma-client-js"
     previewFeatures = ["prismaSchemaFolder"]
+	output          = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -81,4 +82,16 @@ model Performance {
 model TestBigInt {
     id    Int    @id @default(autoincrement())
     value BigInt
+}
+
+model TestConnectOrCreateOrder {
+    id        Int                        @id @default(autoincrement())
+    product   TestConnectOrCreateProduct @relation(fields: [productId], references: [id])
+    productId Int
+}
+
+model TestConnectOrCreateProduct {
+    id                       Int                        @id @default(autoincrement())
+    name                     String
+    testConnectOrCreateOrder TestConnectOrCreateOrder[]
 }
