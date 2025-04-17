@@ -137,8 +137,8 @@ model RetailSalesData {
     platformAddress      RetailSalesDataPlatformAddress? @relation(fields: [platformAddressId], references: [id])
     platformAddressId    Int?
     platformOrderId      String
-    // storehouse           RetailSalesDataStorehouse       @relation(fields: [storehouseId], references: [id])
-    // storehouseId         Int
+    storehouse           RetailSalesDataStorehouse       @relation(fields: [storehouseId], references: [id])
+    storehouseId         Int
     // category             RetailSalesDataCategory?        @relation(fields: [categoryId], references: [id])
     // categoryId           Int?
     // taxInclusivePriceCny Float?
@@ -194,11 +194,11 @@ model RetailSalesDataPlatformAddress {
     retailSalesData RetailSalesData[]
 }
 
-// model RetailSalesDataStorehouse {
-//     id              Int               @id @default(autoincrement())
-//     storehouse      String            @unique
-//     retailSalesData RetailSalesData[]
-// }
+model RetailSalesDataStorehouse {
+    id              Int               @id @default(autoincrement())
+    storehouse      String            @unique
+    retailSalesData RetailSalesData[]
+}
 
 // model RetailSalesDataCategory {
 //     id              Int               @id @default(autoincrement())

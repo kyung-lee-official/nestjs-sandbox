@@ -64,12 +64,12 @@ export class OrderService {
 					},
 				},
 				platformOrderId: "#order 1",
-				// storehouse: {
-				// 	connectOrCreate: {
-				// 		where: { storehouse: "d.storehouse" },
-				// 		create: { storehouse: "d.storehouse" },
-				// 	},
-				// },
+				storehouse: {
+					connectOrCreate: {
+						where: { storehouse: "d.storehouse" },
+						create: { storehouse: "d.storehouse" },
+					},
+				},
 				// category: {
 				// 	connectOrCreate: {
 				// 		where: { category: "d.category" },
