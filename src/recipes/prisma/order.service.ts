@@ -51,18 +51,19 @@ export class OrderService {
 						create: { sku: "d.sku" },
 					},
 				},
-				// nameZhCn: "d.nameZhCn",
-				// salesVolume: 100,
-				// platformAddress: {
-				// 	connectOrCreate: {
-				// 		where: {
-				// 			platformAddress: "d.platformAddress",
-				// 		},
-				// 		create: {
-				// 			platformAddress: "d.platformAddress",
-				// 		},
-				// 	},
-				// },
+				nameZhCn: "d.nameZhCn",
+				salesVolume: 100,
+				platformAddress: {
+					connectOrCreate: {
+						where: {
+							platformAddress: "d.platformAddress",
+						},
+						create: {
+							platformAddress: "d.platformAddress",
+						},
+					},
+				},
+				// platformOrderId: 1,
 				// storehouse: {
 				// 	connectOrCreate: {
 				// 		where: { storehouse: "d.storehouse" },

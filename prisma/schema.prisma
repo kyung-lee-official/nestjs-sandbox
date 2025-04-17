@@ -132,10 +132,10 @@ model RetailSalesData {
     departmentId         Int
     sku                  RetailSalesDataSku              @relation(fields: [skuId], references: [id])
     skuId                Int
-    // nameZhCn             String
-    // salesVolume          Float
-    // platformAddress      RetailSalesDataPlatformAddress? @relation(fields: [platformAddressId], references: [id])
-    // platformAddressId    Int?
+    nameZhCn             String
+    salesVolume          Float
+    platformAddress      RetailSalesDataPlatformAddress? @relation(fields: [platformAddressId], references: [id])
+    platformAddressId    Int?
     // platformOrderId      String
     // storehouse           RetailSalesDataStorehouse       @relation(fields: [storehouseId], references: [id])
     // storehouseId         Int
@@ -188,11 +188,11 @@ model RetailSalesDataSku {
     retailSalesData RetailSalesData[]
 }
 
-// model RetailSalesDataPlatformAddress {
-//     id              Int               @id @default(autoincrement())
-//     platformAddress String            @unique
-//     retailSalesData RetailSalesData[]
-// }
+model RetailSalesDataPlatformAddress {
+    id              Int               @id @default(autoincrement())
+    platformAddress String            @unique
+    retailSalesData RetailSalesData[]
+}
 
 // model RetailSalesDataStorehouse {
 //     id              Int               @id @default(autoincrement())
