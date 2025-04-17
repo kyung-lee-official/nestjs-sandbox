@@ -113,21 +113,15 @@ model TestConnectOrCreateProduct {
     testConnectOrCreateOrder TestConnectOrCreateOrder[]
 }
 
-// model RetailSalesDataBatch {
-//     id              Int               @id @default(autoincrement())
-//     retailSalesData RetailSalesData[]
-//     createdAt       DateTime          @default(now())
-// }
-
 model RetailSalesData {
-    id            BigInt                     @id @default(autoincrement())
-    // retailSalesDataBatch RetailSalesDataBatch       @relation(fields: [batchId], references: [id])
+    id                   BigInt                          @id @default(autoincrement())
+    // retailSalesDataBatch RetailSalesDataBatch            @relation(fields: [batchId], references: [id])
     // batchId              Int
-    date          DateTime
-    receiptType   RetailSalesDataReceiptType @relation(fields: [receiptTypeId], references: [id])
-    receiptTypeId Int
-    client        RetailSalesDataClient      @relation(fields: [clientId], references: [id])
-    clientId      Int
+    date                 DateTime
+    receiptType          RetailSalesDataReceiptType      @relation(fields: [receiptTypeId], references: [id])
+    receiptTypeId        Int
+    client               RetailSalesDataClient           @relation(fields: [clientId], references: [id])
+    clientId             Int
     department           RetailSalesDataDepartment       @relation(fields: [departmentId], references: [id])
     departmentId         Int
     sku                  RetailSalesDataSku              @relation(fields: [skuId], references: [id])
@@ -141,10 +135,11 @@ model RetailSalesData {
     storehouseId         Int
     category             RetailSalesDataCategory?        @relation(fields: [categoryId], references: [id])
     categoryId           Int?
-    // taxInclusivePriceCny Float?
-    // priceCny             Float?
-    // unitPriceCny         Float?
-    // @@index([clientId])
+    taxInclusivePriceCny Float?
+    priceCny             Float?
+    unitPriceCny         Float?
+
+    @@index([clientId])
     @@index([departmentId])
     @@index([skuId, nameZhCn])
     @@index([salesVolume])
@@ -152,10 +147,9 @@ model RetailSalesData {
     @@index([platformOrderId])
     @@index([storehouseId])
     @@index([categoryId])
-    // @@index([taxInclusivePriceCny])
-    // @@index([priceCny])
-    // @@index([unitPriceCny])
-
+    @@index([taxInclusivePriceCny])
+    @@index([priceCny])
+    @@index([unitPriceCny])
     /**
      * indexes
      */
@@ -163,6 +157,12 @@ model RetailSalesData {
     @@index([date])
     @@index([receiptTypeId])
 }
+
+// model RetailSalesDataBatch {
+//     id              Int               @id @default(autoincrement())
+//     retailSalesData RetailSalesData[]
+//     createdAt       DateTime          @default(now())
+// }
 
 model RetailSalesDataReceiptType {
     id              Int               @id @default(autoincrement())
