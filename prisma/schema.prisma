@@ -2,9 +2,9 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
     previewFeatures = ["strictUndefinedChecks"]
-    output   = "../node_modules/.prisma/client"
+    output          = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -103,6 +103,8 @@ model TestConnectOrCreateOrder {
     id        Int                        @id @default(autoincrement())
     product   TestConnectOrCreateProduct @relation(fields: [productId], references: [id])
     productId Int
+
+    @@index([productId])
 }
 
 model TestConnectOrCreateProduct {
@@ -110,3 +112,96 @@ model TestConnectOrCreateProduct {
     name                     String                     @unique
     testConnectOrCreateOrder TestConnectOrCreateOrder[]
 }
+
+// model RetailSalesDataBatch {
+//     id              Int               @id @default(autoincrement())
+//     retailSalesData RetailSalesData[]
+//     createdAt       DateTime          @default(now())
+// }
+
+model RetailSalesData {
+    id            BigInt                     @id @default(autoincrement())
+    // retailSalesDataBatch RetailSalesDataBatch       @relation(fields: [batchId], references: [id])
+    // batchId              Int
+    date          DateTime
+    receiptType   RetailSalesDataReceiptType @relation(fields: [receiptTypeId], references: [id])
+    receiptTypeId Int
+    client        RetailSalesDataClient      @relation(fields: [clientId], references: [id])
+    clientId      Int
+    department           RetailSalesDataDepartment       @relation(fields: [departmentId], references: [id])
+    departmentId         Int
+    sku                  RetailSalesDataSku              @relation(fields: [skuId], references: [id])
+    skuId                Int
+    // nameZhCn             String
+    // salesVolume          Float
+    // platformAddress      RetailSalesDataPlatformAddress? @relation(fields: [platformAddressId], references: [id])
+    // platformAddressId    Int?
+    // platformOrderId      String
+    // storehouse           RetailSalesDataStorehouse       @relation(fields: [storehouseId], references: [id])
+    // storehouseId         Int
+    // category             RetailSalesDataCategory?        @relation(fields: [categoryId], references: [id])
+    // categoryId           Int?
+    // taxInclusivePriceCny Float?
+    // priceCny             Float?
+    // unitPriceCny         Float?
+    // @@index([clientId])
+    // @@index([departmentId])
+    // @@index([skuId, nameZhCn])
+    // @@index([salesVolume])
+    // @@index([platformAddressId])
+    // @@index([platformOrderId])
+    // @@index([storehouseId])
+    // @@index([categoryId])
+    // @@index([taxInclusivePriceCny])
+    // @@index([priceCny])
+    // @@index([unitPriceCny])
+
+    /**
+     * indexes
+     */
+    // @@index([batchId])
+    @@index([date])
+    @@index([receiptTypeId])
+}
+
+model RetailSalesDataReceiptType {
+    id              Int               @id @default(autoincrement())
+    type            String            @unique
+    retailSalesData RetailSalesData[]
+}
+
+model RetailSalesDataClient {
+    id              Int               @id @default(autoincrement())
+    client          String            @unique
+    retailSalesData RetailSalesData[]
+}
+
+model RetailSalesDataDepartment {
+    id              Int               @id @default(autoincrement())
+    department      String            @unique
+    retailSalesData RetailSalesData[]
+}
+
+model RetailSalesDataSku {
+    id              Int               @id @default(autoincrement())
+    sku             String            @unique
+    retailSalesData RetailSalesData[]
+}
+
+// model RetailSalesDataPlatformAddress {
+//     id              Int               @id @default(autoincrement())
+//     platformAddress String            @unique
+//     retailSalesData RetailSalesData[]
+// }
+
+// model RetailSalesDataStorehouse {
+//     id              Int               @id @default(autoincrement())
+//     storehouse      String            @unique
+//     retailSalesData RetailSalesData[]
+// }
+
+// model RetailSalesDataCategory {
+//     id              Int               @id @default(autoincrement())
+//     category        String            @unique
+//     retailSalesData RetailSalesData[]
+// }
