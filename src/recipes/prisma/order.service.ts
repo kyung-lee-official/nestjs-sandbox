@@ -26,7 +26,7 @@ export class OrderService {
 	async createRetailSalesData() {
 		const order = await this.prisma.retailSalesData.create({
 			data: {
-				batchId: 1,
+				// batchId: 1,
 				date: dayjs().toISOString(),
 				receiptType: {
 					connectOrCreate: {
