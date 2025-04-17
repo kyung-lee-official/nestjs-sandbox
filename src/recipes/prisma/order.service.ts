@@ -26,12 +26,26 @@ export class OrderService {
 	async createRetailSalesData() {
 		const order = await this.prisma.retailSalesData.create({
 			data: {
+				/**
+				 * ❌ this won't work,
+				 * and Prisma (6.6.0) will report something incorrectly,
+				 * it says 'Types of property 'receiptType' are incompatible.'
+				 * but actually, you can fix this using `connect` or `connectOrCreate`,
+				 * because the `receiptType` is a relation field, not a scalar field.
+				 */
 				// batchId: 1,
+
+				/* ✅ this works */
+				retailSalesDataBatch: {
+					connect: {
+						id: 1,
+					},
+				},
 				date: dayjs().toISOString(),
 				receiptType: {
 					connectOrCreate: {
-						where: { type: "receiptType" },
-						create: { type: "receiptType" },
+						where: { type: "d.receiptType" },
+						create: { type: "d.receiptType" },
 					},
 				},
 				client: {
