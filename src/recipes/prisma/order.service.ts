@@ -70,12 +70,12 @@ export class OrderService {
 						create: { storehouse: "d.storehouse" },
 					},
 				},
-				// category: {
-				// 	connectOrCreate: {
-				// 		where: { category: "d.category" },
-				// 		create: { category: "d.category" },
-				// 	},
-				// },
+				category: {
+					connectOrCreate: {
+						where: { category: "d.category" },
+						create: { category: "d.category" },
+					},
+				},
 				// taxInclusivePriceCny: 1.1,
 				// priceCny: 1,
 				// unitPriceCny: 7,
