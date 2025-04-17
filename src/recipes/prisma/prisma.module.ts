@@ -7,6 +7,7 @@ import { CategoriesService } from "./categories.service";
 import { EventsService } from "./events.service";
 import { GroupsService } from "./groups.service";
 import { BigIntService } from "./bigint.service";
+import { OrderService } from "./order.service";
 
 @Module({
 	controllers: [PrismaController],
@@ -18,6 +19,7 @@ import { BigIntService } from "./bigint.service";
 		EventsService,
 		GroupsService,
 		BigIntService,
+		OrderService,
 	],
 	exports: [PrismaService],
 })

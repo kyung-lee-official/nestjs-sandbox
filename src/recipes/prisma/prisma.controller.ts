@@ -30,6 +30,7 @@ import { EventsService } from "./events.service";
 import { GroupsService } from "./groups.service";
 import { BigIntService } from "./bigint.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { OrderService } from "./order.service";
 
 @Controller("prisma")
 export class PrismaController {
@@ -39,7 +40,8 @@ export class PrismaController {
 		private readonly categoriesService: CategoriesService,
 		private readonly eventsService: EventsService,
 		private readonly groupsService: GroupsService,
-		private readonly bigintService: BigIntService
+		private readonly bigintService: BigIntService,
+		private readonly orderService: OrderService
 	) {}
 
 	@ApiOperation({ summary: "Create a new user" })
@@ -343,6 +345,9 @@ export class PrismaController {
 		return this.groupsService.getAllGroups();
 	}
 
+	/**
+	 * BigInt
+	 */
 	@ApiOperation({ summary: "Test BigInt" })
 	@Post("create-bigint/:bigint")
 	async createBigInt(
@@ -363,5 +368,13 @@ export class PrismaController {
 		@Param("id", ParseIntPipe) id: number
 	): Promise<{ id: number; value: string }> {
 		return await this.bigintService.deteteBigInt(id);
+	}
+
+	/**
+	 * test connect or create
+	 */
+	@Post("create-order")
+	async createOrder(): Promise<any> {
+		return await this.orderService.createOrder();
 	}
 }
