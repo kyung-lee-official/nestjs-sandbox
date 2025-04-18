@@ -15,6 +15,7 @@ import { AssessmentsModule } from "./cerbos-authorization/assessments/assessment
 import { ProgramLifecycleModule } from "./applications/program-lifecycle/program-lifecycle.module";
 import { UploadLargeJsonModule } from "./upload-large-json/upload-large-json.module";
 import { BullModule } from "@nestjs/bullmq";
+import { MockDataModule } from "./applications/mock-data/mock-data.module";
 
 @Module({
 	imports: [
@@ -29,6 +30,7 @@ import { BullModule } from "@nestjs/bullmq";
 		PerformancesModule,
 		AssessmentsModule,
 		ProgramLifecycleModule,
+		MockDataModule,
 		UploadLargeJsonModule,
 		BullModule.forRoot({
 			connection: {
