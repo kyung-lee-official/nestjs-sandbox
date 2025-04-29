@@ -8,7 +8,7 @@ import {
 	OnGatewayInit,
 	WebSocketServer,
 } from "@nestjs/websockets";
-import { WebsocketsService, MsgBody } from "./websockets.service";
+import { ChatService, MsgBody } from "./websockets.service";
 import { Server, Socket } from "socket.io";
 import { Injectable } from "@nestjs/common";
 
@@ -26,15 +26,16 @@ import { Injectable } from "@nestjs/common";
 		methods: ["GET", "POST"],
 	},
 })
-export class WebsocketsGateway
+export class ChatGateway
 	implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-	constructor(private readonly websocketsService: WebsocketsService) {}
 	@WebSocketServer()
 	io!: Server;
 
+	constructor(private readonly websocketsService: ChatService) {}
+
 	afterInit() {
-		console.log("Websockets initialized");
+		console.log("Chat Websockets initialized");
 	}
 
 	handleConnection(clientSocket: Socket, ...args: any[]) {

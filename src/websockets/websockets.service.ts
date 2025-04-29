@@ -6,7 +6,7 @@ export type MsgBody = {
 };
 
 @Injectable()
-export class WebsocketsService {
+export class ChatService {
 	singletonTaskProgressValue: number = 0;
 	chatHistory: string[] = [];
 
