@@ -16,7 +16,7 @@ import { ProgramLifecycleModule } from "./applications/program-lifecycle/program
 import { UploadLargeJsonModule } from "./upload-large-json/upload-large-json.module";
 import { BullModule } from "@nestjs/bullmq";
 import { MockDataModule } from "./applications/mock-data/mock-data.module";
-import { ResendModule } from './applications/resend/resend.module';
+import { ResendModule } from "./applications/resend/resend.module";
 
 @Module({
 	imports: [
