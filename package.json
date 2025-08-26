@@ -39,6 +39,7 @@
     "class-validator": "^0.14.1",
     "cos-nodejs-sdk-v5": "^2.14.6",
     "dayjs": "^1.11.13",
+    "exceljs": "^4.4.0",
     "nanoid": "5",
     "pako": "^2.1.0",
     "prisma": "^6.6.0",

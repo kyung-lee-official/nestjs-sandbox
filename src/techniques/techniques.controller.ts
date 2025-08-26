@@ -11,6 +11,7 @@ import {
 	UploadedFile,
 	Res,
 	UploadedFiles,
+	BadRequestException,
 } from "@nestjs/common";
 import { TechniquesService } from "./techniques.service";
 import { CreateTechniqueDto } from "./dto/create-technique.dto";
@@ -84,6 +85,30 @@ File downloaded from ./file-downloads/`,
 	@Delete("delete-file/:filename")
 	async deleteFile(@Param("filename") filename: string) {
 		return await this.techniquesService.deleteFile(filename);
+	}
+
+	@Post("upload-compressed-single-blob")
+	@UseInterceptors(FileInterceptor("compressed_archive"))
+	async uploadCompressedFiles(@UploadedFile() file: Express.Multer.File) {
+		if (!file) {
+			throw new BadRequestException("No file uploaded");
+		}
+		if (file.mimetype !== "application/gzip") {
+			throw new BadRequestException("File must be gzipped");
+		}
+		try {
+			const result =
+				await this.techniquesService.uploadCompressedFiles(file);
+			return {
+				success: true,
+				message: "Files processed successfully",
+				data: result,
+			};
+		} catch (error) {
+			throw new BadRequestException(
+				`Failed to process archive: ${(error as Error).message}`
+			);
+		}
 	}
 
 	@Post()

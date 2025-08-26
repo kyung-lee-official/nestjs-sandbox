@@ -1,7 +1,15 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { CreateTechniqueDto } from "./dto/create-technique.dto";
 import { UpdateTechniqueDto } from "./dto/update-technique.dto";
 import { readdir, unlink, writeFile } from "fs/promises";
+import * as pako from "pako";
+import * as ExcelJS from "exceljs";
+
+type ArchiveFile = {
+	purpose: string;
+	name: string;
+	data: number[];
+};
 
 @Injectable()
 export class TechniquesService {
@@ -55,6 +63,38 @@ export class TechniquesService {
 	async deleteFile(filename: string) {
 		await unlink(`./file-uploads/${filename}`);
 		return { success: true };
+	}
+
+	async uploadCompressedFiles(file: Express.Multer.File) {
+		try {
+			/* d1ecompress the gzipped data */
+			const decompressed = pako.ungzip(file.buffer, { to: "string" });
+			/* parse the JSON archive */
+			const archiveFiles: ArchiveFile[] = JSON.parse(decompressed);
+
+			for (const file of archiveFiles) {
+				const fileBuffer = Buffer.from(file.data);
+				const workbook = new ExcelJS.Workbook();
+				await workbook.xlsx.load(fileBuffer as any);
+				const sheetNames = workbook.worksheets.map(
+					(sheet) => sheet.name
+				);
+				console.log(sheetNames);
+			}
+
+			return {
+				status: "ok",
+			};
+		} catch (error) {
+			if (error instanceof SyntaxError) {
+				throw new BadRequestException(
+					"Invalid JSON in compressed archive"
+				);
+			}
+			throw new BadRequestException(
+				`Decompression failed: ${(error as Error).message}`
+			);
+		}
 	}
 
 	create(createTechniqueDto: CreateTechniqueDto) {
