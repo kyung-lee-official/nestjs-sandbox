@@ -111,6 +111,32 @@ File downloaded from ./file-downloads/`,
 		}
 	}
 
+	@Post("upload-compressed-single-blob-single-input")
+	@UseInterceptors(FileInterceptor("compressed_archive"))
+	async uploadCompressedFilesInASingleInput(
+		@UploadedFile() file: Express.Multer.File
+	) {
+		if (!file) {
+			throw new BadRequestException("No file uploaded");
+		}
+		if (file.mimetype !== "application/gzip") {
+			throw new BadRequestException("File must be gzipped");
+		}
+		try {
+			const result =
+				await this.techniquesService.uploadCompressedFiles(file);
+			return {
+				success: true,
+				message: "Files processed successfully",
+				data: result,
+			};
+		} catch (error) {
+			throw new BadRequestException(
+				`Failed to process archive: ${(error as Error).message}`
+			);
+		}
+	}
+
 	@Post("upload-modified-excel")
 	@UseInterceptors(FileInterceptor("file"))
 	async uploadModifiedExcel(@UploadedFile() file: Express.Multer.File) {
