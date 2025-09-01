@@ -79,7 +79,7 @@ export class TechniquesService {
 				const sheetNames = workbook.worksheets.map(
 					(sheet) => sheet.name
 				);
-				console.log(sheetNames);
+				console.log(file.name, sheetNames);
 			}
 
 			return {
