@@ -67,7 +67,7 @@ export class TechniquesService {
 
 	async uploadCompressedFiles(file: Express.Multer.File) {
 		try {
-			/* d1ecompress the gzipped data */
+			/* decompress the gzipped data */
 			const decompressed = pako.ungzip(file.buffer, { to: "string" });
 			/* parse the JSON archive */
 			const archiveFiles: ArchiveFile[] = JSON.parse(decompressed);
