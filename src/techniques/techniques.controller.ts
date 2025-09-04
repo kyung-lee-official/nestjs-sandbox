@@ -27,6 +27,8 @@ import {
 	uploadFileApiOperationOptions,
 } from "./swagger/upload-file.swagger";
 import { uploadFilesApiOperationOptions } from "./swagger/upload-files.swagger";
+import { z } from "zod";
+import { ZodValidationPipe } from "src/overview/pipes/zod-validation.pipe";
 
 @Controller("techniques")
 export class TechniquesController {
@@ -114,8 +116,16 @@ File downloaded from ./file-downloads/`,
 	@Post("upload-compressed-single-blob-single-input")
 	@UseInterceptors(FileInterceptor("compressed_archive"))
 	async uploadCompressedFilesInASingleInput(
-		@UploadedFile() file: Express.Multer.File
+		@UploadedFile() file: Express.Multer.File,
+		@Body("description") description: string
 	) {
+		console.log("description:", description);
+		/* do validation manually in controller */
+		const descriptionSchema =
+			z.string(); /* schema should be defined in dto in real application */
+		const validated = new ZodValidationPipe(descriptionSchema);
+		console.log("validated:", validated);
+
 		if (!file) {
 			throw new BadRequestException("No file uploaded");
 		}
