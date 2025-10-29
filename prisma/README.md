@@ -204,11 +204,11 @@ model MyModel {
 
 **Important notes:**
 
-    -	This change is safe if your float values fit within the precision and scale of the new decimal type.
+-   This change is safe if your float values fit within the precision and scale of the new decimal type.
 
-    -	If you have a large amount of data or critical precision requirements, consider backing up your data before running the migration.
+-   If you have a large amount of data or critical precision requirements, consider backing up your data before running the migration.
 
-    -	Be aware that Prisma Client will now return a `Decimal.js` object for this field, which is different from a native number and may require code changes **[Option to disable Decimal.js Generation?](https://github.com/prisma/prisma/issues/6049)**.
+-   Be aware that Prisma Client will now return a `Decimal.js` object for this field, which is different from a native number and may require code changes **[Option to disable Decimal.js Generation?](https://github.com/prisma/prisma/issues/6049)**.
 
 **Summary:**
 
