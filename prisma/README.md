@@ -1,3 +1,72 @@
+# Migration Guidelines (Prisma Docs AI)
+
+## Adding a New Column to a Table with Existing Data
+
+### Adding an Optional (Nullable) Column
+
+-   Recommended Approach:
+
+    Add the new column as optional (e.g., `fieldName Type?` in your Prisma schema).
+
+-   Why
+
+    This allows the migration to succeed because existing rows will have `null` for the new column, and no data will be lost or require immediate backfilling.
+
+-   Next Steps:
+
+    You can later update your application to start using this field, and populate it as needed. If you eventually want to make it required, see step 3 below.
+
+-   Reference: [How to deal with data migration?](https://github.com/prisma/prisma/discussions/6031) [Prisma ORM MongoDB database connector](https://www.prisma.io/docs/orm/overview/databases/mongodb#how-to-migrate-existing-data-to-match-your-prisma-schema)
+
+### Adding a Required (Non-Nullable) Column
+
+-   **Directly adding a required column without a default value will fail** if there are existing records, because the database cannot populate the new column for those rows.
+
+-   Best Practice:
+
+    -   Step 1: Add the new column as optional.
+
+    -   Step 2: Run a script or manual SQL to populate the new column for all existing records.
+
+    -   Step 3: Change the column to required in your Prisma schema and run another migration.
+
+-   **Alternative**:
+
+    If you can provide a sensible default value, you can add the column as required with a default, so all existing rows get that value.
+
+-   Reference:
+    [How to migrate with a new required column without default value when there are existing rows?](https://github.com/prisma/prisma/discussions/20607)
+    [Improve handling of unexecutable migrations in Prisma Migrate](https://github.com/prisma/prisma/issues/5163)
+    [Need to add `updatedAt` field to several tables that already contain data](https://github.com/prisma/prisma/discussions/16464)
+
+## General Workflow Example
+
+1. **Add the column as optional:**
+
+    ```prisma
+    model MyModel {
+    id   Int    @id @default(autoincrement())
+    name String
+    newField String? // new optional column
+    }
+    ```
+
+1. Run migration:
+
+    `npx prisma migrate dev --name add-new-field`
+
+1. Backfill data:
+
+    Use a script or SQL to populate `newField` for all existing records.
+
+1. Make the column required:
+
+    Update schema to `newField String` and run another migration.
+
+    This approach ensures your migrations are safe, avoid downtime, and maintain data integrity. If you try to add a required column without a default and with existing data, Prisma will block the migration and suggest this multi-step process as best practice.
+
+    If you need to perform more complex data migrations (e.g., transforming or combining fields), you can use the [**expand and contract pattern**](https://www.prisma.io/docs/guides/data-migration) to safely migrate your data in multiple steps.
+
 # The differences between Decimal and Float (Prisma Docs AI)
 
 The main differences between Decimal and Float in Prisma (and in databases generally) are about precision, storage, and use cases:
