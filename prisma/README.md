@@ -168,6 +168,52 @@ This approach is useful for decoupling your application code from your database 
 
 This only changes the name in your Prisma Client API, not in the database itself. If you want the database column name to change, you must perform a migration as described in the previous answer.
 
+### Numeric Type Conversions
+
+#### Float to Decimal
+
+1. Update your Prisma schema
+
+Change the field type from `Float` to `Decimal` and add the appropriate native type attribute (e.g., `@db.Decimal(10, 2)` for PostgreSQL or MySQL).
+
+```
+model Product {
+  id    Int     @id @default(autoincrement())
+  price Decimal @db.Decimal(10, 2) // Changed from Float to Decimal
+}
+```
+
+1. Create and apply a migration:
+
+Change the field type from `Float` to `Decimal` and add the appropriate native type attribute (e.g., `@db.Decimal(10, 2)` for PostgreSQL or MySQL).
+
+```prisma
+model MyModel {
+  id    Int     @id @default(autoincrement())
+  value Decimal @db.Decimal(10, 2)
+}
+```
+
+1. Create and apply a migration:
+
+    Run `npx prisma migrate dev --name float-to-decimal`. Prisma Migrate will generate a migration that alters the column type in the database.
+
+1. Check for data compatibility:
+
+    After the migration, Prisma Client will return `Decimal.js` objects for this field instead of native JavaScript numbers. You will need to update your code to handle `Decimal` values appropriately (e.g., using `.toNumber()` or `.toString()` as needed) [**error after running `prisma introspect` - Decimal vs Float**](https://github.com/prisma/prisma/discussions/6421).
+
+**Important notes:**
+
+    -	This change is safe if your float values fit within the precision and scale of the new decimal type.
+
+    -	If you have a large amount of data or critical precision requirements, consider backing up your data before running the migration.
+
+    -	Be aware that Prisma Client will now return a `Decimal.js` object for this field, which is different from a native number and may require code changes **[Option to disable Decimal.js Generation?](https://github.com/prisma/prisma/issues/6049)**.
+
+**Summary:**
+
+Update your schema, run a migration, and update your code to handle `Decimal` values. This is the standard and recommended approach for changing a column from `Float` to `Decimal` with existing data in Prisma.
+
 ## FAQ
 
 ### The differences between Decimal and Float (Prisma Docs AI)
