@@ -101,6 +101,49 @@ If you want to remove an existing column and also remove the corresponding data 
 
 This is the standard and recommended approach for removing a column and its data with Prisma Migrate. If you encounter errors related to constraints, you may need to manually edit the migration SQL as described above.
 
+### Renaming a Column in Prisma (Prisma Docs AI)
+
+To rename a column in a table that already contains data—while keeping the data unchanged—the best practice with Prisma is to **manually edit the generated migration SQL** to use a `RENAME COLUMN` statement instead of the default drop-and-add behavior. Here’s how you should proceed:
+
+1. **Rename the field in your Prisma schema** to the new name.
+
+1. **Create a draft migration** (do not apply it yet) using:
+
+```
+npx prisma migrate dev --name rename-column --create-only
+```
+
+1.  **Edit the generated migration SQL file** (found in `prisma/migrations/<timestamp>_rename-column/migration.sql`).
+
+    -   Replace the default SQL (which drops the old column and adds a new one) with a RENAME COLUMN statement.
+    -   For example, change:
+        ```
+        ALTER TABLE "MyTable" DROP COLUMN "oldName";
+        ALTER TABLE "MyTable" ADD COLUMN "newName" TEXT;
+        ```
+        to:
+        ```
+        ALTER TABLE "MyTable" RENAME COLUMN "oldName" TO "newName";
+        ```
+
+1.  Apply the migration:
+
+    ```
+    npx prisma migrate dev
+    ```
+
+This approach ensures that the column is renamed and all existing data is preserved. This is necessary because Prisma Migrate, by default, cannot infer that a field rename in the schema is meant to be a column rename in the database, and will otherwise generate a migration that drops the old column (and its data) and creates a new one.
+
+You can find this workflow and more details in the official Prisma documentation and community discussions:
+
+-   Customizing migrations: Rename a field
+-   How to rename a table (same approach applies to columns)
+-   Prisma Migrate: handle field renames interactively (feature request)
+
+Summary:
+
+Always manually edit the migration SQL to use `RENAME COLUMN` when you want to rename a column and keep its data. Do not rely on the default generated migration, as it will cause data loss.
+
 ## FAQ
 
 ### The differences between Decimal and Float (Prisma Docs AI)
