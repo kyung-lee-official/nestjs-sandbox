@@ -144,6 +144,30 @@ Summary:
 
 Always manually edit the migration SQL to use `RENAME COLUMN` when you want to rename a column and keep its data. Do not rely on the default generated migration, as it will cause data loss.
 
+#### Aliasing Existing Columns
+
+If you want to rename a field in your Prisma schema but keep the existing column name in the database (for example, to maintain compatibility with existing data), you can use the `@map` attribute in your Prisma model. Here’s how:
+
+```prisma
+model User {
+	id        Int     @id @default(autoincrement())
+	email     String  @unique
+	givenName String  @map("firstName") // Maps to existing "firstName" column
+}
+```
+
+With this setup,
+
+-   In your Prisma Client code, you will use `givenName` to access the data.
+-   In the database, the column will still be named `firstName`.
+-   The data is preserved and no migration is needed to rename the column in the database.
+
+This approach is useful for decoupling your application code from your database schema, and is the recommended way to "rename" fields in the Prisma Client API without changing the underlying database structure [Using @map and @@map to rename fields and models in the Prisma Client API](https://www.prisma.io/docs/orm/prisma-client/setup-and-configuration/custom-model-and-field-names#using-map-and-map-to-rename-fields-and-models-in-the-prisma-client-api) [@map documentation](https://www.prisma.io/docs/orm/reference/prisma-schema-reference#map).
+
+**Note:**
+
+This only changes the name in your Prisma Client API, not in the database itself. If you want the database column name to change, you must perform a migration as described in the previous answer.
+
 ## FAQ
 
 ### The differences between Decimal and Float (Prisma Docs AI)
