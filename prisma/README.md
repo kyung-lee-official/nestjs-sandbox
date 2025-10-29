@@ -1,8 +1,10 @@
-# Migration Guidelines (Prisma Docs AI)
+# Prisma Precautions
 
-## Adding a New Column to a Table with Existing Data
+## Migration Guidelines (Prisma Docs AI)
 
-### Adding an Optional (Nullable) Column
+### Adding a New Column to a Table with Existing Data
+
+#### Adding an Optional (Nullable) Column
 
 -   Recommended Approach:
 
@@ -18,7 +20,7 @@
 
 -   Reference: [How to deal with data migration?](https://github.com/prisma/prisma/discussions/6031) [Prisma ORM MongoDB database connector](https://www.prisma.io/docs/orm/overview/databases/mongodb#how-to-migrate-existing-data-to-match-your-prisma-schema)
 
-### Adding a Required (Non-Nullable) Column
+#### Adding a Required (Non-Nullable) Column
 
 -   **Directly adding a required column without a default value will fail** if there are existing records, because the database cannot populate the new column for those rows.
 
@@ -39,7 +41,7 @@
     [Improve handling of unexecutable migrations in Prisma Migrate](https://github.com/prisma/prisma/issues/5163)
     [Need to add `updatedAt` field to several tables that already contain data](https://github.com/prisma/prisma/discussions/16464)
 
-## General Workflow Example
+#### General Workflow Example
 
 1. **Add the column as optional:**
 
@@ -67,7 +69,41 @@
 
     If you need to perform more complex data migrations (e.g., transforming or combining fields), you can use the [**expand and contract pattern**](https://www.prisma.io/docs/guides/data-migration) to safely migrate your data in multiple steps.
 
-# The differences between Decimal and Float (Prisma Docs AI)
+### Remove an existing column, and also remove corresponding data saved in that column (Prisma Docs AI)
+
+If you want to remove an existing column and also remove the corresponding data saved in that column, the process is straightforward with Prisma Migrate:
+
+1. Remove the column from your Prisma schema.
+
+    Simply delete the field from your model in `schema.prisma`.
+
+1. Generate and apply a migration.
+
+    - Run `npx prisma migrate dev --name remove-column` (or the appropriate migration command for your environment).
+    - The generated migration will include a SQL statement to drop the column from the table. When this migration is applied, the column and all its data will be deleted from the database.
+      Important considerations:
+
+#### This operation is destructive:
+
+-   all data in the removed column will be lost.
+-   If your application or Prisma Client code still references the removed column, you must update your code to avoid errors after the migration.
+-   If the column has constraints (like a foreign key or index), Prisma Migrate will attempt to drop those as part of the migration. However, in some cases (especially with constraints or indexes), you may need to manually adjust the migration SQL if the generated migration fails due to dependencies. For example, you might need to drop a constraint before dropping the column, as seen in some user reports for SQL Server and PostgreSQL
+
+    [SQL Server: db push crash when column with default value is removed](https://github.com/prisma/prisma/issues/18003), [Generated migration throws ERROR: cannot drop index because constraint requires it](https://github.com/prisma/prisma/issues/15065).
+
+#### Summary:
+
+-   Remove the field from your schema.
+
+-   Run and apply the migration.
+
+-   The column and its data will be deleted from the database.
+
+This is the standard and recommended approach for removing a column and its data with Prisma Migrate. If you encounter errors related to constraints, you may need to manually edit the migration SQL as described above.
+
+## FAQ
+
+### The differences between Decimal and Float (Prisma Docs AI)
 
 The main differences between Decimal and Float in Prisma (and in databases generally) are about precision, storage, and use cases:
 
