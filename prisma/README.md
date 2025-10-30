@@ -1,5 +1,22 @@
 # Prisma Precautions
 
+## generated/prisma vs @prisma/client
+
+By default, prisma generates the client in the node_modules/@prisma/client directory. However, if you add a customized output path in your schema like this:
+
+```prisma
+generator client {
+  provider = "prisma-client-js"
+  output   = "generated/prisma"
+}
+```
+
+You should import the PrismaClient from the generated path in your application code:
+
+```typescript
+import { PrismaClient } from "generated/prisma";
+```
+
 ## Migration Guidelines (Prisma Docs AI)
 
 ### Adding a New Column to a Table with Existing Data
