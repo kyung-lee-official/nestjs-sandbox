@@ -49,3 +49,6 @@ file-uploads/*
 
 # .gitkeep
 !/**/.gitkeep
+
+# prisma
+/generated/prisma

@@ -12,13 +12,6 @@ import { ApiBody, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { UsersService } from "./users.service";
 import { CategoriesService } from "./categories.service";
 import { PostsService } from "./posts.service";
-import {
-	User as UserModel,
-	Post as PostModel,
-	Event as EventModel,
-	Category as CategoryModel,
-	Group,
-} from "@prisma/client";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { CreateCategoryDto } from "./dto/create-category.dto";
@@ -31,6 +24,17 @@ import { GroupsService } from "./groups.service";
 import { BigIntService } from "./bigint.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { OrderService } from "./order.service";
+import {
+	User,
+	Post as PostModel,
+	Event,
+	Category,
+	Group,
+} from "generated/prisma";
+import { PrismaService } from "./prisma.service";
+import { createDecimalApiBody } from "./swagger/create-decimal.swagger";
+import { CreateDecimalDto } from "./dto/create-decimal.dto";
+import { Decimal } from "generated/prisma/runtime/library";
 
 @Controller("prisma")
 export class PrismaController {
@@ -41,7 +45,8 @@ export class PrismaController {
 		private readonly eventsService: EventsService,
 		private readonly groupsService: GroupsService,
 		private readonly bigintService: BigIntService,
-		private readonly orderService: OrderService
+		private readonly orderService: OrderService,
+		private readonly prismaService: PrismaService
 	) {}
 
 	@ApiOperation({ summary: "Create a new user" })
@@ -115,13 +120,13 @@ export class PrismaController {
 		},
 	})
 	@Post("user")
-	async createUser(@Body() createUserDto: CreateUserDto): Promise<UserModel> {
+	async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
 		return this.usersService.createUser(createUserDto);
 	}
 
 	@ApiOperation({ summary: "Get all users" })
 	@Get("users")
-	async getAllUsers(): Promise<UserModel[]> {
+	async getAllUsers(): Promise<User[]> {
 		return this.usersService.getAllUsers();
 	}
 
@@ -142,7 +147,7 @@ export class PrismaController {
 	async updateUser(
 		@Param("id", ParseIntPipe) id: number,
 		@Body() updateUserDto: UpdateUserDto
-	): Promise<UserModel> {
+	): Promise<User> {
 		return this.usersService.updateUser(id, updateUserDto);
 	}
 
@@ -247,13 +252,13 @@ export class PrismaController {
 	@Post("category")
 	async createCategory(
 		@Body() createCategoryDto: CreateCategoryDto
-	): Promise<CategoryModel> {
+	): Promise<Category> {
 		return this.categoriesService.createCategory(createCategoryDto);
 	}
 
 	@ApiOperation({ summary: "Get all categories" })
 	@Get("categories")
-	async getAllCategories(): Promise<CategoryModel[]> {
+	async getAllCategories(): Promise<Category[]> {
 		return this.categoriesService.getAllCategories();
 	}
 
@@ -272,7 +277,7 @@ export class PrismaController {
 	@Patch("category")
 	async updateCategory(
 		@Body() updateCategoryDto: UpdateCategoryDto
-	): Promise<CategoryModel> {
+	): Promise<Category> {
 		return this.categoriesService.updateCategory(updateCategoryDto);
 	}
 
@@ -293,15 +298,13 @@ export class PrismaController {
 		},
 	})
 	@Post("event")
-	async createEvent(
-		@Body() createEventDto: CreateEventDto
-	): Promise<EventModel> {
-		return this.eventsService.createEvent(createEventDto);
+	async createEvent(@Body() createEventDto: CreateEventDto): Promise<Event> {
+		return await this.eventsService.createEvent(createEventDto);
 	}
 
 	@ApiOperation({ summary: "Get all events" })
 	@Get("events")
-	async getAllEvents(): Promise<EventModel[]> {
+	async getAllEvents(): Promise<Event[]> {
 		return this.eventsService.getAllEvents();
 	}
 
@@ -368,6 +371,23 @@ export class PrismaController {
 		@Param("id", ParseIntPipe) id: number
 	): Promise<{ id: number; value: string }> {
 		return await this.bigintService.deteteBigInt(id);
+	}
+
+	/**
+	 * test Decimal
+	 */
+	@ApiOperation({ summary: "Test Decimal" })
+	@ApiBody(createDecimalApiBody)
+	@Post("create-decimal")
+	async createDecimal(@Body() createDecimalDto: CreateDecimalDto) {
+		const { decimal, rate, monetary } = createDecimalDto;
+		return await this.prismaService.testDecimal.create({
+			data: {
+				decimal: new Decimal(decimal),
+				rate: new Decimal(rate),
+				monetary: new Decimal(monetary),
+			},
+		});
 	}
 
 	/**

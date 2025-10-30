@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "./prisma.service";
-import { Event } from "@prisma/client";
 import { CreateEventDto } from "./dto/create-event.dto";
+import { Event } from "generated/prisma";
 import { JsonFieldFilterDto } from "./dto/json-field-filter";
 
 @Injectable()

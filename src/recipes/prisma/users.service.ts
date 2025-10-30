@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "./prisma.service";
-import { User } from "@prisma/client";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { JsonFieldFilterDto } from "./dto/json-field-filter";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { User } from "generated/prisma";
 
 @Injectable()
 export class UsersService {

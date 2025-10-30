@@ -4,7 +4,7 @@
 generator client {
     provider        = "prisma-client-js"
     previewFeatures = ["strictUndefinedChecks"]
-    output          = "../node_modules/.prisma/client"
+    output          = "../generated/prisma"
 }
 
 datasource db {
@@ -204,4 +204,14 @@ model RetailSalesDataCategory {
     id              Int               @id @default(autoincrement())
     category        String            @unique
     retailSalesData RetailSalesData[]
+}
+
+/**
+ * Test Decimal
+ */
+model TestDecimal {
+    id       Int     @id @default(autoincrement())
+    decimal  Decimal
+    rate     Decimal @db.Decimal(10, 6)
+    monetary Decimal @db.Decimal(10, 2)
 }
