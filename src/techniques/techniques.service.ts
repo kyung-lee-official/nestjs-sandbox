@@ -3,6 +3,7 @@ import { CreateTechniqueDto } from "./dto/create-technique.dto";
 import { UpdateTechniqueDto } from "./dto/update-technique.dto";
 import { readdir, unlink, writeFile } from "fs/promises";
 import * as pako from "pako";
+import { Response } from "express";
 import * as ExcelJS from "exceljs";
 
 type ArchiveFile = {
@@ -38,7 +39,7 @@ export class TechniquesService {
 		return { success: true };
 	}
 
-	async download(res: any) {
+	async download(res: Response) {
 		const file = `./file-downloads/download-example.png`;
 		res.download(file);
 	}

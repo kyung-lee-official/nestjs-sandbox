@@ -13,6 +13,7 @@ import {
 	UploadedFiles,
 	BadRequestException,
 } from "@nestjs/common";
+import { Response } from "express";
 import { TechniquesService } from "./techniques.service";
 import { CreateTechniqueDto } from "./dto/create-technique.dto";
 import { UpdateTechniqueDto } from "./dto/update-technique.dto";
@@ -67,7 +68,7 @@ export class TechniquesController {
 File downloaded from ./file-downloads/`,
 	})
 	@Get("file-download")
-	async download(@Res() res: any): Promise<any> {
+	async download(@Res() res: Response): Promise<void> {
 		return this.techniquesService.download(res);
 	}
 
