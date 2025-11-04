@@ -47,6 +47,10 @@ export class TechniquesService {
 	async conditionallyDownloadJsonOrBuffer(response: Response) {
 		const returnJson: boolean = Math.random() < 0.5;
 
+		/**
+		 * setting status code to 200 results in a normal response
+		 * setting status code to 422 results in an error response
+		 */
 		if (returnJson) {
 			response.status(200).send({ message: "success" });
 		} else {
