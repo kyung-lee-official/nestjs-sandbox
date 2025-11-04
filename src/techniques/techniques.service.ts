@@ -44,6 +44,41 @@ export class TechniquesService {
 		res.download(file);
 	}
 
+	async conditionallyDownloadJsonOrBuffer(response: Response) {
+		const returnJson: boolean = Math.random() < 0.5;
+
+		if (returnJson) {
+			response.status(200).send({ message: "success" });
+		} else {
+			/**
+			 * use exceljs to create a xlsx file as buffer,
+			 * reporting multiple error found
+			 */
+			const workbook = new ExcelJS.Workbook();
+			const sheet = workbook.addWorksheet("My Sheet");
+			/* simulate error reporting */
+			sheet.getCell("A1").value = "an error found at line 23";
+			sheet.getCell("A2").value = "an error found at line 28";
+			const fileBuffer = await workbook.xlsx.writeBuffer();
+			response
+				.status(422)
+				.header(
+					"X-Error-Message",
+					"Validation errors found in the uploaded file"
+				)
+				.header("X-Error-Code", "VALIDATION_FAILED")
+				.header(
+					"Content-Type",
+					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+				)
+				.header(
+					"Content-Disposition",
+					'attachment; filename="error-report.xlsx"'
+				)
+				.send(fileBuffer);
+		}
+	}
+
 	async previewFileList() {
 		const items = await readdir("./file-uploads");
 		/* exclude .gitkeep */

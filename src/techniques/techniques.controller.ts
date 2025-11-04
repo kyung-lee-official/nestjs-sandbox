@@ -72,6 +72,21 @@ File downloaded from ./file-downloads/`,
 		return this.techniquesService.download(res);
 	}
 
+	@Get("conditionally-download-json-or-buffer")
+	async conditionallyDownloadJsonOrBuffer(@Res() response: Response) {
+		const res =
+			await this.techniquesService.conditionallyDownloadJsonOrBuffer(
+				response
+			);
+		/**
+		 * when using `@Res() response: Response`,
+		 * you must manually send the response using response methods like response.json(), response.send(), etc.
+		 * NestJS will NOT automatically handle the response for you.
+		 * `return res;` // ❌ This return value is IGNORED by NestJS!
+		 */
+		response.json(res);
+	}
+
 	@Get("preview-filelist")
 	async previewFileList(): Promise<any> {
 		return await this.techniquesService.previewFileList();
