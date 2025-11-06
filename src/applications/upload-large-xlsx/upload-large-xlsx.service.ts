@@ -64,8 +64,8 @@ export class UploadLargeXlsxService {
 			await sendValidationErrorXlsx(validationErrors, response);
 		}
 
-		/* Create a new batch */
-		const batch = await this.prismaService.uploadLargeXlsxBatch.create({
+		/* Create a new task */
+		const task = await this.prismaService.uploadLargeXlsxTask.create({
 			data: {},
 		});
 
@@ -74,21 +74,21 @@ export class UploadLargeXlsxService {
 			await this.prismaService.uploadLargeXlsxData.createMany({
 				data: data.map((item) => ({
 					...item,
-					batchId: batch.id,
+					taskId: task.id,
 				})),
 			});
 		}
 
 		response.status(200).json({
 			success: true,
-			batchId: batch.id,
+			taskId: task.id,
 			processedRecords: data.length,
 			message: `Successfully processed ${data.length} records`,
 		});
 	}
 
-	async getBatches() {
-		return this.prismaService.uploadLargeXlsxBatch.findMany({
+	async getTaskes() {
+		return this.prismaService.uploadLargeXlsxTask.findMany({
 			include: {
 				data: true,
 				_count: {
@@ -99,21 +99,21 @@ export class UploadLargeXlsxService {
 		});
 	}
 
-	async deleteDataByBatchId(batchId: number) {
-		/* Delete all data entries for this batch */
+	async deleteDataByTaskId(taskId: number) {
+		/* Delete all data entries for this task */
 		const deletedData =
 			await this.prismaService.uploadLargeXlsxData.deleteMany({
-				where: { batchId },
+				where: { taskId },
 			});
-		/* Delete the batch itself */
-		await this.prismaService.uploadLargeXlsxBatch.delete({
-			where: { id: batchId },
+		/* Delete the task itself */
+		await this.prismaService.uploadLargeXlsxTask.delete({
+			where: { id: taskId },
 		});
 
 		return {
 			success: true,
 			deletedRecords: deletedData.count,
-			message: `Batch ${batchId} and ${deletedData.count} records deleted successfully`,
+			message: `Task ${taskId} and ${deletedData.count} records deleted successfully`,
 		};
 	}
 }
