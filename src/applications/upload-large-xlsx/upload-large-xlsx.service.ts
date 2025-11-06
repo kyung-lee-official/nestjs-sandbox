@@ -24,7 +24,7 @@ export class UploadLargeXlsxService {
 		}
 
 		const data: CreateUploadLargeXlsxDto[] = [];
-		const columnMap = validateXlsxHeaders(file.buffer, [
+		const columnMap = await validateXlsxHeaders(file.buffer, [
 			"Name",
 			"Gender",
 			"Bio-ID",

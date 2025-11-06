@@ -6,15 +6,19 @@ export const uploadXlsxApiOperation: ApiOperationOptions = {
 };
 
 export const uploadXlsxApiBody: ApiBodyOptions = {
+	description: "Upload XLSX file for processing",
+	required: true,
+	type: "multipart/form-data",
 	schema: {
 		type: "object",
 		properties: {
 			file: {
 				type: "string",
 				format: "binary",
-				description: "XLSX file to upload",
+				description: "XLSX file to upload (accepts .xlsx files only)",
 			},
 		},
+		required: ["file"],
 	},
 };
 

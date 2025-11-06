@@ -11,7 +11,13 @@ import {
 	Res,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { ApiConsumes, ApiOperation, ApiParam, ApiBody } from "@nestjs/swagger";
+import {
+	ApiConsumes,
+	ApiOperation,
+	ApiParam,
+	ApiBody,
+	ApiTags,
+} from "@nestjs/swagger";
 import { UploadLargeXlsxService } from "./upload-large-xlsx.service";
 import {
 	uploadXlsxApiOperation,
@@ -22,6 +28,7 @@ import {
 } from "./swagger/upload-large-xlsx.swagger";
 import { Response } from "express";
 
+@ApiTags("Upload Large Xlsx")
 @Controller("applications/upload-large-xlsx")
 export class UploadLargeXlsxController {
 	constructor(

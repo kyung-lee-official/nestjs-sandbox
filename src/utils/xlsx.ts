@@ -6,7 +6,7 @@ import * as ExcelJS from "exceljs";
  * Validates XLSX file format by checking if all required headers are present
  * @param buffer - The XLSX file buffer
  * @param requiredHeaders - Array of required header names
- * @returns Object mapping header names to their column indices (0-based)
+ * @returns Object mapping header names to their column indices (1-based, compatible with ExcelJS getCell())
  * @throws BadRequestException if any required headers are missing
  */
 export async function validateXlsxHeaders(
@@ -42,7 +42,7 @@ export async function validateXlsxHeaders(
  * Alternative function that accepts worksheet directly
  * @param worksheet - ExcelJS worksheet object
  * @param requiredHeaders - Array of required header names
- * @returns Object mapping header names to their column indices (0-based)
+ * @returns Object mapping header names to their column indices (1-based, compatible with ExcelJS getCell())
  */
 export function validateWorksheetHeaders(
 	worksheet: ExcelJS.Worksheet,
@@ -61,7 +61,8 @@ export function validateWorksheetHeaders(
 	headerRow.eachCell({ includeEmpty: false }, (cell, colNumber) => {
 		const cellValue = cell.value?.toString().trim();
 		if (cellValue) {
-			headerMap[cellValue] = colNumber - 1; /* Convert to 0-based index */
+			/* Keep 1-based index for ExcelJS getCell() compatibility */
+			headerMap[cellValue] = colNumber;
 			foundHeaders.push(cellValue);
 		}
 	});

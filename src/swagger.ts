@@ -11,6 +11,7 @@ import { AssessmentsModule } from "./cerbos-authorization/assessments/assessment
 import { ProgramLifecycleModule } from "./applications/program-lifecycle/program-lifecycle.module";
 import { ResendModule } from "./applications/resend/resend.module";
 import { UploadLargeJsonModule } from "./applications/upload-large-json/upload-large-json.module";
+import { UploadLargeXlsxModule } from "./applications/upload-large-xlsx/upload-large-xlsx.module";
 
 export function setupSwagger(app: INestApplication) {
 	const authOption = new DocumentBuilder()
@@ -69,6 +70,7 @@ export function setupSwagger(app: INestApplication) {
 			include: [
 				ProgramLifecycleModule,
 				UploadLargeJsonModule,
+				UploadLargeXlsxModule,
 				ResendModule,
 			],
 		}
