@@ -12,11 +12,8 @@ import { AuthneticationModule } from "./cerbos-authorization/authnetication/auth
 import { RolesModule } from "./cerbos-authorization/roles/roles.module";
 import { PerformancesModule } from "./cerbos-authorization/performances/performances.module";
 import { AssessmentsModule } from "./cerbos-authorization/assessments/assessments.module";
-import { ProgramLifecycleModule } from "./applications/program-lifecycle/program-lifecycle.module";
-import { UploadLargeJsonModule } from "./applications/upload-large-json/upload-large-json.module";
+import { ApplicationsModule } from "./applications/applications.module";
 import { BullModule } from "@nestjs/bullmq";
-import { MockDataModule } from "./applications/mock-data/mock-data.module";
-import { ResendModule } from "./applications/resend/resend.module";
 
 @Module({
 	imports: [
@@ -30,16 +27,13 @@ import { ResendModule } from "./applications/resend/resend.module";
 		RolesModule,
 		PerformancesModule,
 		AssessmentsModule,
-		ProgramLifecycleModule,
-		MockDataModule,
-		UploadLargeJsonModule,
+		ApplicationsModule,
 		BullModule.forRoot({
 			connection: {
 				host: process.env.REDIS_HOST,
 				port: Number(process.env.REDIS_PORT),
 			},
 		}),
-		ResendModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
