@@ -13,7 +13,7 @@ import { ApiTags } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
 
 @ApiTags("Upload Large Json")
-@Controller("upload-large-json")
+@Controller("applications/upload-large-json")
 export class UploadLargeJsonController {
 	constructor(
 		private readonly uploadLargeJsonService: UploadLargeJsonService

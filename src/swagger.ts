@@ -9,8 +9,8 @@ import { RolesModule } from "./cerbos-authorization/roles/roles.module";
 import { PerformancesModule } from "./cerbos-authorization/performances/performances.module";
 import { AssessmentsModule } from "./cerbos-authorization/assessments/assessments.module";
 import { ProgramLifecycleModule } from "./applications/program-lifecycle/program-lifecycle.module";
-import { UploadLargeJsonModule } from "./upload-large-json/upload-large-json.module";
 import { ResendModule } from "./applications/resend/resend.module";
+import { UploadLargeJsonModule } from "./applications/upload-large-json/upload-large-json.module";
 
 export function setupSwagger(app: INestApplication) {
 	const authOption = new DocumentBuilder()
@@ -57,8 +57,8 @@ export function setupSwagger(app: INestApplication) {
 	SwaggerModule.setup("api/techniques", app, techniquesDocument);
 
 	const applicationOption = new DocumentBuilder()
-		.setTitle("Application")
-		.setDescription("# Application")
+		.setTitle("Applications")
+		.setDescription("# Applications")
 		.setVersion("1.0.0")
 		.addBearerAuth()
 		.build();
