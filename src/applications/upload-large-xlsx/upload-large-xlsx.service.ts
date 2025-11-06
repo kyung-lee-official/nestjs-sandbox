@@ -61,7 +61,7 @@ export class UploadLargeXlsxService {
 
 		/* If there are validation errors, create error XLSX file and return */
 		if (validationErrors.length > 0) {
-			return await sendValidationErrorXlsx(validationErrors, response);
+			await sendValidationErrorXlsx(validationErrors, response);
 		}
 
 		/* Create a new batch */
