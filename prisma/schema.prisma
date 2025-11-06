@@ -219,19 +219,19 @@ model TestDecimal {
 /**
  * Test UploadLargeXlsx
  */
-model UploadLargeXlsxBatch {
+model UploadLargeXlsxTask {
     id        Int                   @id @default(autoincrement())
     createdAt DateTime              @default(now())
     data      UploadLargeXlsxData[]
 }
 
 model UploadLargeXlsxData {
-    id      Int                  @id @default(autoincrement())
-    batch   UploadLargeXlsxBatch @relation(fields: [batchId], references: [id])
-    batchId Int
-    name    String
-    gender  String
-    bioId   String
+    id     Int                 @id @default(autoincrement())
+    task   UploadLargeXlsxTask @relation(fields: [taskId], references: [id])
+    taskId Int
+    name   String
+    gender String
+    bioId  String
 
-    @@index([batchId])
+    @@index([taskId])
 }
