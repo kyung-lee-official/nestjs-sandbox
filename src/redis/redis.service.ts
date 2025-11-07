@@ -16,7 +16,7 @@ export class RedisService implements OnModuleDestroy {
 			lazyConnect: true,
 		});
 
-		// Connection event handlers
+		/* Connection event handlers */
 		this.redis.on("connect", () => {
 			this.logger.log("Connected to Redis server");
 		});
