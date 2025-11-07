@@ -16,6 +16,7 @@ This module handles large XLSX file uploads with background processing using Bul
 -   Queue: `upload-xlsx-processing`
 -   Handles workbook loading and header validation
 -   Extracts row data and queues validation jobs
+-   **Note**: Includes buffer handling logic to fix BullMQ serialization issues where Buffer objects get converted to `{data: number[]}` format when stored in Redis
 
 ### ValidationProcessor
 
