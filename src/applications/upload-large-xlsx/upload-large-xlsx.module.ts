@@ -7,10 +7,13 @@ import { UploadXlsxProcessingProcessor } from "./upload-large-xlsx.queue/process
 import { UploadXlsxValidationProcessor } from "./upload-large-xlsx.queue/validation.processor";
 import { UploadXlsxSavingProcessor } from "./upload-large-xlsx.queue/saving.processor";
 import { PrismaModule } from "../../recipes/prisma/prisma.module";
+import { RedisModule } from "../../redis/redis.module";
+import { UploadLargeXlsxRedisService } from "./redis.service";
 
 @Module({
 	imports: [
 		PrismaModule,
+		RedisModule,
 		BullModule.registerQueue(
 			{ name: "upload-xlsx-processing" },
 			{ name: "upload-xlsx-validation" },
@@ -21,6 +24,7 @@ import { PrismaModule } from "../../recipes/prisma/prisma.module";
 	providers: [
 		UploadLargeXlsxService,
 		UploadLargeXlsxGateway,
+		UploadLargeXlsxRedisService,
 		UploadXlsxProcessingProcessor,
 		UploadXlsxValidationProcessor,
 		UploadXlsxSavingProcessor,
