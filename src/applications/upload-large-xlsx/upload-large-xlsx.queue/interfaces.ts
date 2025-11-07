@@ -1,3 +1,9 @@
+export interface UploadLargeXlsxRowData {
+	name: string;
+	gender: string;
+	bioId: string;
+}
+
 export interface ProcessFileJobData {
 	taskId: number;
 	fileBuffer: Buffer | { data: number[] } | any;
@@ -8,11 +14,7 @@ export interface ValidateChunkJobData {
 	taskId: number;
 	chunk: Array<{
 		rowNumber: number;
-		data: {
-			name: string;
-			gender: string;
-			bioId: string;
-		};
+		data: UploadLargeXlsxRowData;
 	}>;
 	chunkIndex: number;
 	totalChunks: number;
@@ -20,11 +22,7 @@ export interface ValidateChunkJobData {
 
 export interface SaveChunkJobData {
 	taskId: number;
-	validData: Array<{
-		name: string;
-		gender: string;
-		bioId: string;
-	}>;
+	validData: Array<UploadLargeXlsxRowData>;
 	chunkIndex: number;
 	totalChunks: number;
 }
