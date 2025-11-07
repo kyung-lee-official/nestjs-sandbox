@@ -219,10 +219,28 @@ model TestDecimal {
 /**
  * Test UploadLargeXlsx
  */
+enum UploadLargeXlsxTaskStatus {
+    PENDING
+    VALIDATING
+    SAVING
+    COMPLETED
+    HAS_ERRORS
+    FAILED
+}
+
 model UploadLargeXlsxTask {
-    id        Int                   @id @default(autoincrement())
-    createdAt DateTime              @default(now())
-    data      UploadLargeXlsxData[]
+    id                Int                        @id @default(autoincrement())
+    status            UploadLargeXlsxTaskStatus  @default(PENDING)
+    totalRows         Int                        @default(0)
+    validatedRows     Int                        @default(0)
+    savedRows         Int                        @default(0)
+    errorRows         Int                        @default(0)
+    validationProgress Float                     @default(0)
+    savingProgress    Float                      @default(0)
+    createdAt         DateTime                   @default(now())
+    updatedAt         DateTime                   @updatedAt
+    data              UploadLargeXlsxData[]
+    errors            UploadLargeXlsxError[]
 }
 
 model UploadLargeXlsxData {
@@ -232,6 +250,17 @@ model UploadLargeXlsxData {
     name   String
     gender String
     bioId  String
+
+    @@index([taskId])
+}
+
+model UploadLargeXlsxError {
+    id      Int                 @id @default(autoincrement())
+    task    UploadLargeXlsxTask @relation(fields: [taskId], references: [id])
+    taskId  Int
+    rowNumber Int
+    errors  String[] // Array of error messages for this row
+    rowData Json     // Store the original row data for reference
 
     @@index([taskId])
 }
