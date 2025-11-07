@@ -22,9 +22,11 @@ import { UploadLargeXlsxService } from "./upload-large-xlsx.service";
 import {
 	uploadXlsxApiOperation,
 	uploadXlsxApiBody,
-	getBatchesApiOperation,
-	deleteDataByBatchIdApiOperation,
-	deleteDataByBatchIdApiParam,
+	getTasksApiOperation,
+	getTaskByIdApiOperation,
+	getTaskByIdApiParam,
+	deleteDataByTaskIdApiOperation,
+	deleteDataByTaskIdApiParam,
 } from "./swagger/upload-large-xlsx.swagger";
 import { Response } from "express";
 
@@ -47,23 +49,32 @@ export class UploadLargeXlsxController {
 		await this.uploadLargeXlsxService.uploadXlsx(file, response);
 	}
 
-	@ApiOperation(getBatchesApiOperation)
-	@Get("batches")
-	async getBatches() {
-		return this.uploadLargeXlsxService.getBatches();
+	@ApiOperation(getTasksApiOperation)
+	@Get("tasks")
+	async getTasks() {
+		return this.uploadLargeXlsxService.getTasks();
 	}
 
-	@ApiOperation(deleteDataByBatchIdApiOperation)
-	@ApiParam(deleteDataByBatchIdApiParam)
-	@Delete("delete-data-by-batch-id/:batchId")
-	async deleteDataByBatchId(@Param("batchId", ParseIntPipe) batchId: number) {
+	@ApiOperation(getTaskByIdApiOperation)
+	@ApiParam(getTaskByIdApiParam)
+	@Get("tasks/:taskId")
+	async getTaskById(@Param("taskId", ParseIntPipe) taskId: number) {
+		const task = await this.uploadLargeXlsxService.getTaskById(taskId);
+		if (!task) {
+			throw new BadRequestException(`Task with ID ${taskId} not found`);
+		}
+		return task;
+	}
+
+	@ApiOperation(deleteDataByTaskIdApiOperation)
+	@ApiParam(deleteDataByTaskIdApiParam)
+	@Delete("delete-data-by-task-id/:taskId")
+	async deleteDataByTaskId(@Param("taskId", ParseIntPipe) taskId: number) {
 		try {
-			return await this.uploadLargeXlsxService.deleteDataByBatchId(
-				batchId
-			);
+			return await this.uploadLargeXlsxService.deleteDataByTaskId(taskId);
 		} catch (error) {
 			throw new BadRequestException(
-				`Failed to delete batch: ${(error as Error).message}`
+				`Failed to delete task: ${(error as Error).message}`
 			);
 		}
 	}

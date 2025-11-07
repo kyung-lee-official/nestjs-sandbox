@@ -1,8 +1,12 @@
-import { ApiBodyOptions, ApiOperationOptions, ApiParamOptions } from "@nestjs/swagger";
+import {
+	ApiBodyOptions,
+	ApiOperationOptions,
+	ApiParamOptions,
+} from "@nestjs/swagger";
 
 export const uploadXlsxApiOperation: ApiOperationOptions = {
 	summary: "Upload XLSX file",
-	description: "Upload an XLSX file and process the data into database batches",
+	description: "Upload an XLSX file and process the data into database tasks",
 };
 
 export const uploadXlsxApiBody: ApiBodyOptions = {
@@ -22,18 +26,31 @@ export const uploadXlsxApiBody: ApiBodyOptions = {
 	},
 };
 
-export const getBatchesApiOperation: ApiOperationOptions = {
-	summary: "Get all batches",
-	description: "Retrieve all upload batches with their data and record counts",
+export const getTasksApiOperation: ApiOperationOptions = {
+	summary: "Get all tasks",
+	description: "Retrieve all upload tasks with their data and record counts",
 };
 
-export const deleteDataByBatchIdApiOperation: ApiOperationOptions = {
-	summary: "Delete data by batch ID",
-	description: "Delete all data entries and the batch itself for the specified batch ID",
+export const deleteDataByTaskIdApiOperation: ApiOperationOptions = {
+	summary: "Delete data by task ID",
+	description:
+		"Delete all data entries and the task itself for the specified task ID",
 };
 
-export const deleteDataByBatchIdApiParam: ApiParamOptions = {
-	name: "batchId",
+export const deleteDataByTaskIdApiParam: ApiParamOptions = {
+	name: "taskId",
 	type: "number",
-	description: "The ID of the batch to delete",
+	description: "The ID of the task to delete",
+};
+
+export const getTaskByIdApiOperation: ApiOperationOptions = {
+	summary: "Get task by ID",
+	description:
+		"Retrieve a specific upload task with its progress, data, and errors",
+};
+
+export const getTaskByIdApiParam: ApiParamOptions = {
+	name: "taskId",
+	type: "number",
+	description: "The ID of the task to retrieve",
 };
