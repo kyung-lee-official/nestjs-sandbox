@@ -38,8 +38,8 @@ export class RedisService implements OnModuleDestroy {
 	}
 
 	/* Cleanup on module destroy */
-	async onModuleDestroy() {
+	onModuleDestroy() {
 		this.logger.log("Disconnecting from Redis...");
-		await this.redis.disconnect();
+		this.redis.disconnect();
 	}
 }
