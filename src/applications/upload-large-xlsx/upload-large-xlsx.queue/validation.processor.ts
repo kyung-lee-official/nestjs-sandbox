@@ -57,13 +57,25 @@ export class UploadXlsxValidationProcessor extends WorkerHost {
 			}
 		}
 
-		/* Update task progress and save errors if any */
+		/* Update task progress and save errors using Redis counters for atomic operations */
+		const [validatedRowsCount, errorRowsCount] = await Promise.all([
+			this.uploadLargeXlsxRedisService.incrementValidatedRows(
+				taskId,
+				chunk.length
+			),
+			this.uploadLargeXlsxRedisService.incrementErrorRows(
+				taskId,
+				errors.length
+			),
+		]);
+
+		/* Update database with current progress and Redis counter values */
 		const updatedTask = await this.prismaService.uploadLargeXlsxTask.update(
 			{
 				where: { id: taskId },
 				data: {
-					validatedRows: { increment: chunk.length },
-					errorRows: { increment: errors.length },
+					validatedRows: validatedRowsCount,
+					errorRows: errorRowsCount,
 					validationProgress: ((chunkIndex + 1) / totalChunks) * 100,
 				},
 			}

@@ -3,6 +3,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { Job } from "bullmq";
 import { PrismaService } from "../../../recipes/prisma/prisma.service";
 import { UploadLargeXlsxGateway } from "../upload-large-xlsx.gateway";
+import { UploadLargeXlsxRedisService } from "../redis.service";
 import { SaveChunkJobData } from "./interfaces";
 
 @Processor("upload-xlsx-saving")
@@ -12,7 +13,8 @@ export class UploadXlsxSavingProcessor extends WorkerHost {
 
 	constructor(
 		private readonly prismaService: PrismaService,
-		private readonly gateway: UploadLargeXlsxGateway
+		private readonly gateway: UploadLargeXlsxGateway,
+		private readonly uploadLargeXlsxRedisService: UploadLargeXlsxRedisService
 	) {
 		super();
 	}
@@ -32,12 +34,19 @@ export class UploadXlsxSavingProcessor extends WorkerHost {
 			})),
 		});
 
-		/* Update task progress */
+		/* Update task progress using Redis counters for atomic operations */
+		const savedRowsCount =
+			await this.uploadLargeXlsxRedisService.incrementSavedRows(
+				taskId,
+				validData.length
+			);
+
+		/* Update database with current progress and Redis counter values */
 		const updatedTask = await this.prismaService.uploadLargeXlsxTask.update(
 			{
 				where: { id: taskId },
 				data: {
-					savedRows: { increment: validData.length },
+					savedRows: savedRowsCount,
 					savingProgress: ((chunkIndex + 1) / totalChunks) * 100,
 				},
 			}
@@ -55,21 +64,36 @@ export class UploadXlsxSavingProcessor extends WorkerHost {
 
 		/* If this is the last saving chunk, mark task as completed */
 		if (chunkIndex === totalChunks - 1) {
+			/* Get final accurate counts from Redis before completing */
+			const finalCounters =
+				await this.uploadLargeXlsxRedisService.getTaskCounters(taskId);
+
 			const finalStatus =
-				updatedTask.errorRows > 0 ? "HAS_ERRORS" : "COMPLETED";
-			await this.prismaService.uploadLargeXlsxTask.update({
-				where: { id: taskId },
-				data: { status: finalStatus },
-			});
+				finalCounters.errorRows > 0 ? "HAS_ERRORS" : "COMPLETED";
+
+			/* Final update with accurate counts */
+			const finalTask =
+				await this.prismaService.uploadLargeXlsxTask.update({
+					where: { id: taskId },
+					data: {
+						status: finalStatus,
+						validatedRows: finalCounters.validatedRows,
+						savedRows: finalCounters.savedRows,
+						errorRows: finalCounters.errorRows,
+					},
+				});
 
 			this.gateway.emitTaskProgress(taskId, {
 				status: finalStatus,
 				validationProgress: 100,
 				savingProgress: 100,
-				validatedRows: updatedTask.validatedRows,
-				errorRows: updatedTask.errorRows,
-				savedRows: updatedTask.savedRows,
+				validatedRows: finalTask.validatedRows,
+				errorRows: finalTask.errorRows,
+				savedRows: finalTask.savedRows,
 			});
+
+			/* Clean up Redis counters after completion */
+			await this.uploadLargeXlsxRedisService.cleanupTaskData(taskId);
 		}
 
 		// this.logger.log(
@@ -79,9 +103,9 @@ export class UploadXlsxSavingProcessor extends WorkerHost {
 
 	@OnWorkerEvent("completed")
 	onCompleted(job: Job<SaveChunkJobData>) {
-		this.logger.log(
-			`Saving job ${job.id} completed for task ${job.data.taskId}`
-		);
+		// this.logger.log(
+		// 	`Saving job ${job.id} completed for task ${job.data.taskId}`
+		// );
 	}
 
 	@OnWorkerEvent("failed")
