@@ -48,20 +48,16 @@ export class UploadLargeXlsxService {
 		} as ProcessFileJobData);
 	}
 
-	async getTasks() {
-		return this.prismaService.uploadLargeXlsxTask.findMany({
-			include: {
-				data: true,
-				errors: true,
-				_count: {
-					select: {
-						data: true,
-						errors: true,
-					},
-				},
-			},
+	async getTasks(page: number = 1) {
+		const pageSize = 10;
+		const skip = (page - 1) * pageSize;
+
+		const tasks = await this.prismaService.uploadLargeXlsxTask.findMany({
+			skip,
+			take: pageSize,
 			orderBy: { createdAt: "desc" },
 		});
+		return tasks;
 	}
 
 	async getTaskById(taskId: number) {

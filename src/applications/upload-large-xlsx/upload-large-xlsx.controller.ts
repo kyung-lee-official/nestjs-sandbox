@@ -9,6 +9,7 @@ import {
 	ParseIntPipe,
 	BadRequestException,
 	Res,
+	Query,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import {
@@ -51,8 +52,8 @@ export class UploadLargeXlsxController {
 
 	@ApiOperation(getTasksApiOperation)
 	@Get("tasks")
-	async getTasks() {
-		return this.uploadLargeXlsxService.getTasks();
+	async getTasks(@Query("page", ParseIntPipe) page: number = 1) {
+		return this.uploadLargeXlsxService.getTasks(page);
 	}
 
 	@ApiOperation(getTaskByIdApiOperation)
@@ -68,7 +69,7 @@ export class UploadLargeXlsxController {
 
 	@ApiOperation(deleteDataByTaskIdApiOperation)
 	@ApiParam(deleteDataByTaskIdApiParam)
-	@Delete("delete-data-by-task-id/:taskId")
+	@Delete("delete-task-by-id/:taskId")
 	async deleteDataByTaskId(@Param("taskId", ParseIntPipe) taskId: number) {
 		try {
 			return await this.uploadLargeXlsxService.deleteDataByTaskId(taskId);
