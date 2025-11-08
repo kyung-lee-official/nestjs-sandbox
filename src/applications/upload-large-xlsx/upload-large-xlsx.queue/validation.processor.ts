@@ -4,11 +4,13 @@ import { Job } from "bullmq";
 import { PrismaService } from "../../../recipes/prisma/prisma.service";
 import { CreateUploadLargeXlsxSchema } from "../dto/create-upload-large-xlsx.dto";
 import { UploadLargeXlsxGateway } from "../upload-large-xlsx.gateway";
+import { UploadLargeXlsxQueueService } from "./upload-large-xlsx.queue";
 import {
 	ValidateChunkJobData,
 	SaveChunkJobData,
 	UploadLargeXlsxRowData,
 } from "./interfaces";
+import { UploadLargeXlsxRedisService } from "../redis.service";
 
 @Processor("upload-xlsx-validation")
 @Injectable()
@@ -17,7 +19,9 @@ export class UploadXlsxValidationProcessor extends WorkerHost {
 
 	constructor(
 		private readonly prismaService: PrismaService,
-		private readonly gateway: UploadLargeXlsxGateway
+		private readonly gateway: UploadLargeXlsxGateway,
+		private readonly queueService: UploadLargeXlsxQueueService,
+		private readonly uploadLargeXlsxRedisService: UploadLargeXlsxRedisService
 	) {
 		super();
 	}
@@ -88,6 +92,22 @@ export class UploadXlsxValidationProcessor extends WorkerHost {
 			}
 		}
 
+		/* Save valid data to Redis for this chunk */
+		if (validData.length > 0) {
+			await this.uploadLargeXlsxRedisService.saveValidDataChunk(
+				taskId,
+				validData
+			);
+		}
+
+		/* Mark this chunk as completed and check if all chunks are done */
+		const allChunksCompleted =
+			await this.uploadLargeXlsxRedisService.markChunkCompleted(
+				taskId,
+				chunkIndex,
+				totalChunks
+			);
+
 		/* Emit progress update */
 		this.gateway.emitTaskProgress(taskId, {
 			status: updatedTask.status,
@@ -98,10 +118,23 @@ export class UploadXlsxValidationProcessor extends WorkerHost {
 			savedRows: updatedTask.savedRows,
 		});
 
-		/* If this is the last validation chunk and there's valid data, queue saving jobs */
-		if (chunkIndex === totalChunks - 1 && validData.length > 0) {
+		/* If all validation chunks are completed, queue saving jobs */
+		if (allChunksCompleted) {
 			const allValidData = await this.getAllValidDataForTask(taskId);
-			await this.queueSavingJobs(taskId, allValidData);
+			if (allValidData.length > 0) {
+				await this.queueSavingJobs(taskId, allValidData);
+			} else {
+				/* No valid data to save, mark as completed or failed based on errors */
+				const finalStatus =
+					updatedTask.errorRows > 0 ? "HAS_ERRORS" : "COMPLETED";
+				await this.prismaService.uploadLargeXlsxTask.update({
+					where: { id: taskId },
+					data: { status: finalStatus },
+				});
+
+				/* Clean up Redis data */
+				await this.uploadLargeXlsxRedisService.cleanupTaskData(taskId);
+			}
 		}
 
 		// this.logger.log(
@@ -112,15 +145,21 @@ export class UploadXlsxValidationProcessor extends WorkerHost {
 	private async getAllValidDataForTask(
 		taskId: number
 	): Promise<Array<UploadLargeXlsxRowData>> {
-		/* This is a simplified approach - in production, you might want to store valid data temporarily */
-		/* For now, we'll re-validate to get clean data (this could be optimized) */
-		const task = await this.prismaService.uploadLargeXlsxTask.findUnique({
-			where: { id: taskId },
-			include: { errors: true },
-		});
-
-		/* This is placeholder logic - you'd implement proper valid data collection here */
-		return [];
+		/* Retrieve all valid data from Redis that was stored during validation */
+		try {
+			const allValidData =
+				await this.uploadLargeXlsxRedisService.getAllValidData(taskId);
+			// this.logger.debug(
+			// 	`Retrieved ${allValidData.length} total valid records for task ${taskId}`
+			// );
+			return allValidData;
+		} catch (error) {
+			this.logger.error(
+				`Failed to retrieve valid data for task ${taskId}:`,
+				error
+			);
+			throw error;
+		}
 	}
 
 	private async queueSavingJobs(
@@ -142,15 +181,21 @@ export class UploadXlsxValidationProcessor extends WorkerHost {
 		}
 
 		/* Queue saving jobs */
-		const savingQueue = this.gateway.getSavingQueue();
 		for (let i = 0; i < chunks.length; i++) {
-			await savingQueue.add("save-chunk", {
+			const jobData: SaveChunkJobData = {
 				taskId,
 				validData: chunks[i],
 				chunkIndex: i,
 				totalChunks: chunks.length,
-			} as SaveChunkJobData);
+			};
+			await this.queueService.addSavingJob(taskId, jobData);
 		}
+
+		/* Clean up Redis data after successfully queuing all saving jobs */
+		await this.uploadLargeXlsxRedisService.cleanupTaskData(taskId);
+		// this.logger.debug(
+		// 	`Queued ${chunks.length} saving jobs and cleaned up Redis data for task ${taskId}`
+		// );
 	}
 
 	@OnWorkerEvent("completed")

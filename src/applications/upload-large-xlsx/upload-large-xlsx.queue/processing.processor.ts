@@ -1,12 +1,17 @@
-import { Processor, WorkerHost, InjectQueue } from "@nestjs/bullmq";
+import { Processor, WorkerHost } from "@nestjs/bullmq";
 import { Injectable, Logger } from "@nestjs/common";
-import { Job, Queue } from "bullmq";
+import { Job } from "bullmq";
 import { PrismaService } from "../../../recipes/prisma/prisma.service";
 import { UploadLargeXlsxGateway } from "../upload-large-xlsx.gateway";
+import { UploadLargeXlsxQueueService } from "./upload-large-xlsx.queue";
 import * as ExcelJS from "exceljs";
 import { validateWorksheetHeaders } from "src/utils/xlsx";
 import { convertSerializedDataToBuffer } from "src/utils/bullmq";
-import { ProcessFileJobData, ValidateChunkJobData, UploadLargeXlsxRowData } from "./interfaces";
+import {
+	ProcessFileJobData,
+	ValidateChunkJobData,
+	UploadLargeXlsxRowData,
+} from "./interfaces";
 
 @Processor("upload-xlsx-processing")
 @Injectable()
@@ -16,8 +21,7 @@ export class UploadXlsxProcessingProcessor extends WorkerHost {
 	constructor(
 		private readonly prismaService: PrismaService,
 		private readonly gateway: UploadLargeXlsxGateway,
-		@InjectQueue("upload-xlsx-validation")
-		private readonly validationQueue: Queue
+		private readonly queueService: UploadLargeXlsxQueueService
 	) {
 		super();
 	}
@@ -137,19 +141,9 @@ export class UploadXlsxProcessingProcessor extends WorkerHost {
 					chunkIndex: i,
 					totalChunks: chunks.length,
 				};
-				const queuePromise = this.validationQueue.add(
-					"validate-chunk",
-					jobData,
-					{
-						/* Job options for better reliability */
-						attempts: 3,
-						backoff: {
-							type: "exponential",
-							delay: 2000,
-						},
-						removeOnComplete: 10 /* Keep last 10 completed jobs */,
-						removeOnFail: 50 /* Keep last 50 failed jobs for debugging */,
-					}
+				const queuePromise = this.queueService.addValidationJob(
+					taskId,
+					jobData
 				);
 				queuePromises.push(queuePromise);
 			}

@@ -7,25 +7,11 @@ export class UploadLargeXlsxQueueService {
 	private readonly logger = new Logger(UploadLargeXlsxQueueService.name);
 
 	constructor(
-		@InjectQueue("upload-xlsx-validation") private validationQueue: Queue,
-		@InjectQueue("upload-xlsx-saving") private savingQueue: Queue
+		@InjectQueue("upload-xlsx-validation")
+		private validationQueue: Queue,
+		@InjectQueue("upload-xlsx-saving")
+		private savingQueue: Queue
 	) {}
-
-	/**
-	 * Get the validation queue instance
-	 * @returns The validation queue
-	 */
-	getValidationQueue(): Queue {
-		return this.validationQueue;
-	}
-
-	/**
-	 * Get the saving queue instance
-	 * @returns The saving queue
-	 */
-	getSavingQueue(): Queue {
-		return this.savingQueue;
-	}
 
 	/**
 	 * Add a validation job to the queue
@@ -35,12 +21,14 @@ export class UploadLargeXlsxQueueService {
 	 */
 	async addValidationJob(taskId: number, jobData: any) {
 		const job = await this.validationQueue.add("validate-chunk", jobData, {
-			// Add job options if needed
+			/* Job options for better reliability */
 			attempts: 3,
 			backoff: {
 				type: "exponential",
 				delay: 2000,
 			},
+			removeOnComplete: 10 /* Keep last 10 completed jobs */,
+			removeOnFail: 50 /* Keep last 50 failed jobs for debugging */,
 		});
 
 		this.logger.debug(`Added validation job for task ${taskId}: ${job.id}`);
@@ -54,13 +42,15 @@ export class UploadLargeXlsxQueueService {
 	 * @returns Promise resolving to the created job
 	 */
 	async addSavingJob(taskId: number, jobData: any) {
-		const job = await this.savingQueue.add("save-data", jobData, {
-			// Add job options if needed
+		const job = await this.savingQueue.add("save-chunk", jobData, {
+			/* Job options for better reliability */
 			attempts: 3,
 			backoff: {
 				type: "exponential",
 				delay: 2000,
 			},
+			removeOnComplete: 10 /* Keep last 10 completed jobs */,
+			removeOnFail: 50 /* Keep last 50 failed jobs for debugging */,
 		});
 
 		this.logger.debug(`Added saving job for task ${taskId}: ${job.id}`);
