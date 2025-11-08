@@ -31,6 +31,6 @@ import { UploadLargeXlsxRedisService } from "./redis.service";
 		UploadXlsxValidationProcessor,
 		UploadXlsxSavingProcessor,
 	],
-	exports: [UploadLargeXlsxService, UploadLargeXlsxGateway],
+	exports: [UploadLargeXlsxService],
 })
 export class UploadLargeXlsxModule {}
