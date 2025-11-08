@@ -19,6 +19,7 @@ export interface TaskProgressData {
 	savedRows: number;
 }
 
+/* When NestJS app starts up */
 @Injectable()
 @WebSocketGateway({
 	cors: {
@@ -36,30 +37,35 @@ export class UploadLargeXlsxGateway
 		this.logger.log("Upload XLSX WebSocket Gateway initialized");
 	}
 
+	/* Client Connection Handling */
+	/* New client connects to /upload-xlsx namespace */
 	handleConnection(client: Socket) {
 		this.logger.log(`Client connected: ${client.id}`);
 	}
-
+	/* Client disconnects (tab close, network issue, etc.) */
 	handleDisconnect(client: Socket) {
 		this.logger.log(`Client disconnected: ${client.id}`);
 	}
 
+	/* Room Management */
 	@SubscribeMessage("join-task")
 	handleJoinTask(@MessageBody() data: { taskId: number }, client: Socket) {
 		const roomName = `task-${data.taskId}`;
 		client.join(roomName);
 		this.logger.log(`Client ${client.id} joined task room: ${roomName}`);
+		/* Now client will receive updates for this task only */
 		return { event: "joined-task", data: { taskId: data.taskId } };
 	}
-
 	@SubscribeMessage("leave-task")
 	handleLeaveTask(@MessageBody() data: { taskId: number }, client: Socket) {
 		const roomName = `task-${data.taskId}`;
 		client.leave(roomName);
 		this.logger.log(`Client ${client.id} left task room: ${roomName}`);
+		/* No more updates for this task */
 		return { event: "left-task", data: { taskId: data.taskId } };
 	}
 
+	/* Progress Broadcasting (From Job Processors) */
 	/* Method to emit task progress updates */
 	emitTaskProgress(taskId: number, progressData: TaskProgressData) {
 		const roomName = `task-${taskId}`;
@@ -69,7 +75,6 @@ export class UploadLargeXlsxGateway
 			timestamp: new Date().toISOString(),
 		});
 	}
-
 	/* Method to emit task completion */
 	emitTaskCompleted(taskId: number, finalData: any) {
 		const roomName = `task-${taskId}`;
@@ -79,7 +84,6 @@ export class UploadLargeXlsxGateway
 			timestamp: new Date().toISOString(),
 		});
 	}
-
 	/* Method to emit task failure */
 	emitTaskFailed(taskId: number, error: string) {
 		const roomName = `task-${taskId}`;
@@ -89,7 +93,6 @@ export class UploadLargeXlsxGateway
 			timestamp: new Date().toISOString(),
 		});
 	}
-
 	/* Method to emit workbook loading status */
 	emitWorkbookLoadingStatus(taskId: number) {
 		const roomName = `task-${taskId}`;
@@ -100,7 +103,6 @@ export class UploadLargeXlsxGateway
 			timestamp: new Date().toISOString(),
 		});
 	}
-
 	/* Method to emit header validation status */
 	emitHeaderValidationStatus(taskId: number) {
 		const roomName = `task-${taskId}`;
@@ -111,7 +113,6 @@ export class UploadLargeXlsxGateway
 			timestamp: new Date().toISOString(),
 		});
 	}
-
 	/* Method to emit processing completion */
 	emitProcessingCompleted(taskId: number, totalRows: number) {
 		const roomName = `task-${taskId}`;
