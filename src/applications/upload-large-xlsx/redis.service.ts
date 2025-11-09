@@ -1,12 +1,16 @@
 import { Injectable, Logger } from "@nestjs/common";
+import Redis from "ioredis";
 import { RedisService } from "../../redis/redis.service";
 import { UploadLargeXlsxRowData } from "./upload-large-xlsx.queue/interfaces";
 
 @Injectable()
 export class UploadLargeXlsxRedisService {
 	private readonly logger = new Logger(UploadLargeXlsxRedisService.name);
+	private readonly redis: Redis;
 
-	constructor(private readonly redisService: RedisService) {}
+	constructor(private readonly redisService: RedisService) {
+		this.redis = this.redisService.getClient();
+	}
 
 	/**
 	 * Store valid data for a task in Redis as a list
@@ -17,18 +21,14 @@ export class UploadLargeXlsxRedisService {
 		taskId: number,
 		validData: UploadLargeXlsxRowData[]
 	): Promise<void> {
-		const redis = this.redisService.getClient();
 		const key = this.getValidDataKey(taskId);
-		const pipeline = redis.pipeline();
-
+		const pipeline = this.redis.pipeline();
 		/* Add each valid record to the list */
 		validData.forEach((data) => {
 			pipeline.lpush(key, JSON.stringify(data));
 		});
-
 		/* Set expiration (24 hours) */
 		pipeline.expire(key, 24 * 60 * 60);
-
 		await pipeline.exec();
 		// this.logger.debug(
 		// 	`Saved ${validData.length} valid records for task ${taskId}`
@@ -41,9 +41,8 @@ export class UploadLargeXlsxRedisService {
 	 * @returns Array of all valid data records
 	 */
 	async getAllValidData(taskId: number): Promise<UploadLargeXlsxRowData[]> {
-		const redis = this.redisService.getClient();
 		const key = this.getValidDataKey(taskId);
-		const rawData = await redis.lrange(key, 0, -1);
+		const rawData = await this.redis.lrange(key, 0, -1);
 
 		const validData = rawData.map((item) =>
 			JSON.parse(item)
@@ -60,7 +59,6 @@ export class UploadLargeXlsxRedisService {
 	 * @param taskId - The task ID
 	 */
 	async cleanupTaskData(taskId: number): Promise<void> {
-		const redis = this.redisService.getClient();
 		const keys = [
 			this.getValidDataKey(taskId),
 			this.getChunkStatusKey(taskId),
@@ -68,9 +66,10 @@ export class UploadLargeXlsxRedisService {
 			this.getValidatedRowsKey(taskId),
 			this.getSavedRowsKey(taskId),
 			this.getErrorRowsKey(taskId),
+			this.getCompletionLockKey(taskId),
 		];
 
-		await redis.del(...keys);
+		await this.redis.del(...keys);
 		// this.logger.debug(`Cleaned up temporary data for task ${taskId}`);
 	}
 
@@ -79,30 +78,48 @@ export class UploadLargeXlsxRedisService {
 	 * @param taskId - The task ID
 	 * @param chunkIndex - The completed chunk index
 	 * @param totalChunks - Total number of chunks
-	 * @returns True if all chunks are completed
+	 * @returns True if all chunks are completed AND this is the first to detect completion
 	 */
 	async markChunkCompleted(
 		taskId: number,
 		chunkIndex: number,
 		totalChunks: number
 	): Promise<boolean> {
-		const redis = this.redisService.getClient();
 		const key = this.getChunkStatusKey(taskId);
+		const lockKey = this.getCompletionLockKey(taskId);
 
 		/* Add chunk to completed set */
-		await redis.sadd(key, chunkIndex.toString());
-		/* await redis.expire(key, 24 * 60 * 60); 24 hours TTL */
+		await this.redis.sadd(key, chunkIndex.toString());
+		await this.redis.expire(key, 24 * 60 * 60); // 24 hours TTL - same as counters
 
 		/* Check if all chunks are completed */
-		const completedCount = await redis.scard(key);
+		const completedCount = await this.redis.scard(key);
 		const isAllCompleted = completedCount >= totalChunks;
 
-		// this.logger.debug(
-		// 	`Task ${taskId}: Chunk ${chunkIndex + 1}/${totalChunks} completed. ` +
-		// 		`Total completed: ${completedCount}/${totalChunks}`
-		// );
+		if (isAllCompleted) {
+			/* Try to acquire completion lock to ensure only one chunk handles completion */
+			const lockAcquired = await this.redis.set(
+				lockKey,
+				"1",
+				"EX",
+				300,
+				"NX"
+			); // 5 minute lock
 
-		return isAllCompleted;
+			this.logger.debug(
+				`Task ${taskId}: Chunk ${chunkIndex + 1}/${totalChunks} completed. ` +
+					`Total completed: ${completedCount}/${totalChunks}. Lock acquired: ${!!lockAcquired}`
+			);
+
+			return !!lockAcquired; // Only return true if we acquired the lock
+		}
+
+		this.logger.debug(
+			`Task ${taskId}: Chunk ${chunkIndex + 1}/${totalChunks} completed. ` +
+				`Total completed: ${completedCount}/${totalChunks}`
+		);
+
+		return false;
 	}
 
 	/**
@@ -114,9 +131,8 @@ export class UploadLargeXlsxRedisService {
 		taskId: number,
 		metadata: Record<string, any>
 	): Promise<void> {
-		const redis = this.redisService.getClient();
 		const key = this.getTaskMetadataKey(taskId);
-		await redis.hset(key, metadata);
+		await this.redis.hset(key, metadata);
 		/* await redis.expire(key, 24 * 60 * 60); 24 hours TTL */
 	}
 
@@ -126,9 +142,8 @@ export class UploadLargeXlsxRedisService {
 	 * @returns Task metadata object
 	 */
 	async getTaskMetadata(taskId: number): Promise<Record<string, string>> {
-		const redis = this.redisService.getClient();
 		const key = this.getTaskMetadataKey(taskId);
-		return await redis.hgetall(key);
+		return await this.redis.hgetall(key);
 	}
 
 	/**
@@ -136,8 +151,7 @@ export class UploadLargeXlsxRedisService {
 	 * @param taskId - The task ID
 	 */
 	async initializeTaskCounters(taskId: number): Promise<void> {
-		const redis = this.redisService.getClient();
-		const pipeline = redis.pipeline();
+		const pipeline = this.redis.pipeline();
 
 		pipeline.set(this.getValidatedRowsKey(taskId), 0);
 		pipeline.set(this.getSavedRowsKey(taskId), 0);
@@ -148,7 +162,18 @@ export class UploadLargeXlsxRedisService {
 		pipeline.expire(this.getSavedRowsKey(taskId), 24 * 60 * 60);
 		pipeline.expire(this.getErrorRowsKey(taskId), 24 * 60 * 60);
 
-		await pipeline.exec();
+		const results = await pipeline.exec();
+
+		this.logger.debug(
+			`Initialized Redis counters for task ${taskId}:`,
+			{
+				validatedRowsKey: this.getValidatedRowsKey(taskId),
+				savedRowsKey: this.getSavedRowsKey(taskId),
+				errorRowsKey: this.getErrorRowsKey(taskId),
+			},
+			`Pipeline results:`,
+			results
+		);
 	}
 
 	/**
@@ -161,10 +186,9 @@ export class UploadLargeXlsxRedisService {
 		taskId: number,
 		count: number
 	): Promise<number> {
-		const redis = this.redisService.getClient();
 		const key = this.getValidatedRowsKey(taskId);
-		const newCount = await redis.incrby(key, count);
-		await redis.expire(key, 24 * 60 * 60); // 24 hours TTL
+		const newCount = await this.redis.incrby(key, count);
+		await this.redis.expire(key, 24 * 60 * 60); // 24 hours TTL
 		return newCount;
 	}
 
@@ -175,10 +199,9 @@ export class UploadLargeXlsxRedisService {
 	 * @returns Updated count
 	 */
 	async incrementSavedRows(taskId: number, count: number): Promise<number> {
-		const redis = this.redisService.getClient();
 		const key = this.getSavedRowsKey(taskId);
-		const newCount = await redis.incrby(key, count);
-		await redis.expire(key, 24 * 60 * 60); // 24 hours TTL
+		const newCount = await this.redis.incrby(key, count);
+		await this.redis.expire(key, 24 * 60 * 60); // 24 hours TTL
 		return newCount;
 	}
 
@@ -189,10 +212,9 @@ export class UploadLargeXlsxRedisService {
 	 * @returns Updated count
 	 */
 	async incrementErrorRows(taskId: number, count: number): Promise<number> {
-		const redis = this.redisService.getClient();
 		const key = this.getErrorRowsKey(taskId);
-		const newCount = await redis.incrby(key, count);
-		await redis.expire(key, 24 * 60 * 60); // 24 hours TTL
+		const newCount = await this.redis.incrby(key, count);
+		await this.redis.expire(key, 24 * 60 * 60); // 24 hours TTL
 		return newCount;
 	}
 
@@ -206,8 +228,7 @@ export class UploadLargeXlsxRedisService {
 		savedRows: number;
 		errorRows: number;
 	}> {
-		const redis = this.redisService.getClient();
-		const pipeline = redis.pipeline();
+		const pipeline = this.redis.pipeline();
 
 		pipeline.get(this.getValidatedRowsKey(taskId));
 		pipeline.get(this.getSavedRowsKey(taskId));
@@ -215,11 +236,20 @@ export class UploadLargeXlsxRedisService {
 
 		const results = await pipeline.exec();
 
-		return {
+		const counters = {
 			validatedRows: parseInt((results?.[0]?.[1] as string) || "0"),
 			savedRows: parseInt((results?.[1]?.[1] as string) || "0"),
 			errorRows: parseInt((results?.[2]?.[1] as string) || "0"),
 		};
+
+		this.logger.debug(
+			`Retrieved Redis counters for task ${taskId}:`,
+			counters,
+			`Raw results:`,
+			results?.map((r) => r?.[1])
+		);
+
+		return counters;
 	}
 
 	/* Private helper methods for generating Redis keys */
@@ -245,5 +275,9 @@ export class UploadLargeXlsxRedisService {
 
 	private getErrorRowsKey(taskId: number): string {
 		return `upload-xlsx:${taskId}:error-rows`;
+	}
+
+	private getCompletionLockKey(taskId: number): string {
+		return `upload-xlsx:${taskId}:completion-lock`;
 	}
 }
