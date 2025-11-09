@@ -1,9 +1,6 @@
 import { z } from "zod";
 
-/**
- * Database Status - Persistent states stored in PostgreSQL
- * These represent major lifecycle stages and are durable
- */
+/* Database task status enum schema - persistent states stored in PostgreSQL */
 export const DbTaskStatusSchema = z.enum([
 	"PENDING" /* Task created, not yet started processing */,
 	"PROCESSING" /* Task is actively being processed (covers all intermediate steps) */,
@@ -14,10 +11,7 @@ export const DbTaskStatusSchema = z.enum([
 
 export type DbTaskStatus = z.infer<typeof DbTaskStatusSchema>;
 
-/**
- * Redis Progress Status - Detailed real-time states stored in Redis
- * These provide granular progress information for active tasks
- */
+/* Redis progress status enum schema - detailed real-time states for active tasks */
 export const RedisProgressStatusSchema = z.enum([
 	"LOADING_WORKBOOK" /* Reading and parsing Excel file */,
 	"VALIDATING_HEADERS" /* Checking column headers match expected format */,
@@ -27,9 +21,7 @@ export const RedisProgressStatusSchema = z.enum([
 
 export type RedisProgressStatus = z.infer<typeof RedisProgressStatusSchema>;
 
-/**
- * Progress Metrics - Numerical progress indicators stored in Redis
- */
+/* Progress metrics schema - numerical progress indicators */
 export const TaskProgressMetricsSchema = z.object({
 	totalRows: z.number().int().min(0).default(0),
 	validatedRows: z.number().int().min(0).default(0),
@@ -41,38 +33,58 @@ export const TaskProgressMetricsSchema = z.object({
 
 export type TaskProgressMetrics = z.infer<typeof TaskProgressMetricsSchema>;
 
-/**
- * Complete Redis Progress State - Combines status and metrics
- */
-export const TaskProgressStateSchema = z.object({
-	detailedStatus: RedisProgressStatusSchema,
-	metrics: TaskProgressMetricsSchema,
-	lastHeartbeat: z.number().int().positive(),
-	startedAt: z.number().int().positive().optional(),
-	estimatedCompletionAt: z.number().int().positive().optional(),
+/* Excel row data validation schema */
+export const UploadLargeXlsxRowDataSchema = z.object({
+	name: z.string().min(1, "Name is required"),
+	gender: z.string().min(1, "Gender is required"),
+	bioId: z.string().min(1, "Bio ID is required"),
 });
 
-export type TaskProgressState = z.infer<typeof TaskProgressStateSchema>;
+export type UploadLargeXlsxRowData = z.infer<
+	typeof UploadLargeXlsxRowDataSchema
+>;
 
-/**
- * Combined Task Status - For API responses and UI display
- * Merges persistent DB status with real-time Redis progress
- */
-export const CombinedTaskStatusSchema = z.object({
-	id: z.number().int().positive(),
-	persistentStatus: DbTaskStatusSchema,
-	detailedStatus: RedisProgressStatusSchema.optional(),
-	metrics: TaskProgressMetricsSchema,
-	createdAt: z.date(),
-	updatedAt: z.date(),
-	isActive: z.boolean() /* true if task is currently being processed */,
+/* Bull job data schema */
+export const ProcessFileJobDataSchema = z.object({
+	taskId: z.number().int().positive(),
+	fileKey: z.string().min(1) /* Redis key for stored file */,
+	fileName: z.string().min(1),
 });
 
-export type CombinedTaskStatus = z.infer<typeof CombinedTaskStatusSchema>;
+export type ProcessFileJobData = z.infer<typeof ProcessFileJobDataSchema>;
 
-/**
- * Status transition mappings
- */
+/* Validation error schema */
+export const ValidationErrorSchema = z.object({
+	rowNumber: z.number().int().positive(),
+	errors: z.array(z.string()),
+	rowData: z.any() /* Raw row data that failed validation */,
+});
+
+export type ValidationError = z.infer<typeof ValidationErrorSchema>;
+
+/* Progress update event schema */
+export const ProgressUpdateSchema = z.object({
+	taskId: z.number().int().positive(),
+	phase: RedisProgressStatusSchema,
+	progress: z.number().min(0).max(100),
+	metrics: TaskProgressMetricsSchema.partial(),
+});
+
+export type ProgressUpdate = z.infer<typeof ProgressUpdateSchema>;
+
+/* Task completion result schema */
+export const TaskCompletionResultSchema = z.object({
+	taskId: z.number().int().positive(),
+	status: DbTaskStatusSchema,
+	totalRows: z.number().int().min(0),
+	validRows: z.number().int().min(0),
+	errorRows: z.number().int().min(0),
+	savedRows: z.number().int().min(0),
+});
+
+export type TaskCompletionResult = z.infer<typeof TaskCompletionResultSchema>;
+
+/* Status transition mappings */
 export const TERMINAL_STATUSES: readonly DbTaskStatus[] = [
 	"COMPLETED",
 	"HAS_ERRORS",
@@ -84,9 +96,7 @@ export const ACTIVE_STATUSES: readonly DbTaskStatus[] = [
 	"PROCESSING",
 ] as const;
 
-/**
- * Helper functions for status checking
- */
+/* Helper functions for status checking */
 export const isTerminalStatus = (status: DbTaskStatus): boolean => {
 	return (TERMINAL_STATUSES as readonly string[]).includes(status);
 };
@@ -95,9 +105,7 @@ export const isActiveStatus = (status: DbTaskStatus): boolean => {
 	return (ACTIVE_STATUSES as readonly string[]).includes(status);
 };
 
-/**
- * Status transition validation
- */
+/* Status transition validation */
 export const validateStatusTransition = (
 	from: DbTaskStatus,
 	to: DbTaskStatus
@@ -113,74 +121,8 @@ export const validateStatusTransition = (
 	return validTransitions[from]?.includes(to) ?? false;
 };
 
-/**
- * Redis key patterns for task progress storage
- */
+/* Redis key patterns */
 export const REDIS_KEYS = {
-	taskProgress: (taskId: number) => `task:${taskId}:progress`,
-	taskCounters: (taskId: number) => `task:${taskId}:counters`,
-	taskChunks: (taskId: number) => `task:${taskId}:chunks`,
-	taskValidData: (taskId: number) => `task:${taskId}:valid_data`,
-	taskLock: (taskId: number) => `task:${taskId}:lock`,
+	fileStorage: (taskId: number) => `upload:file:${taskId}`,
+	taskProgress: (taskId: number) => `upload:progress:${taskId}`,
 } as const;
-
-/**
- * Upload Large XLSX Row Data Schema
- * Defines the structure of each row in the Excel file
- */
-export const UploadLargeXlsxRowDataSchema = z.object({
-	name: z.string().min(1, "Name is required"),
-	gender: z.string().min(1, "Gender is required"),
-	bioId: z.string().min(1, "Bio ID is required"),
-});
-
-export type UploadLargeXlsxRowData = z.infer<
-	typeof UploadLargeXlsxRowDataSchema
->;
-
-/**
- * Process File Job Data Schema
- * Data structure for the file processing queue job
- */
-export const ProcessFileJobDataSchema = z.object({
-	taskId: z.number().int().positive(),
-	fileBuffer: z.union([
-		z.instanceof(Buffer),
-		z.object({ data: z.array(z.number()) }),
-		z.any(),
-	]),
-	fileName: z.string().min(1),
-});
-
-export type ProcessFileJobData = z.infer<typeof ProcessFileJobDataSchema>;
-
-/**
- * Validate Chunk Job Data Schema
- * Data structure for validation queue jobs
- */
-export const ValidateChunkJobDataSchema = z.object({
-	taskId: z.number().int().positive(),
-	chunk: z.array(
-		z.object({
-			rowNumber: z.number().int().positive(),
-			data: UploadLargeXlsxRowDataSchema,
-		})
-	),
-	chunkIndex: z.number().int().min(0),
-	totalChunks: z.number().int().positive(),
-});
-
-export type ValidateChunkJobData = z.infer<typeof ValidateChunkJobDataSchema>;
-
-/**
- * Save Chunk Job Data Schema
- * Data structure for saving queue jobs
- */
-export const SaveChunkJobDataSchema = z.object({
-	taskId: z.number().int().positive(),
-	validData: z.array(UploadLargeXlsxRowDataSchema),
-	chunkIndex: z.number().int().min(0),
-	totalChunks: z.number().int().positive(),
-});
-
-export type SaveChunkJobData = z.infer<typeof SaveChunkJobDataSchema>;
