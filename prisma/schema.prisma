@@ -231,8 +231,9 @@ enum UploadLargeXlsxTaskStatus {
 
 model UploadLargeXlsxTask {
     id            Int                       @id @default(autoincrement())
-    status        UploadLargeXlsxTaskStatus @default(PENDING) /* Progress metrics moved to Redis for real-time updates */
+    status        UploadLargeXlsxTaskStatus @default(PENDING)
     /**
+     * Progress metrics moved to Redis for real-time updates
      * These fields kept for final summary and historical queries
      */
     totalRows     Int                       @default(0)
