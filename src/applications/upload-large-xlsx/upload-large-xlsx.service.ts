@@ -1,16 +1,20 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { Response } from "express";
-import { InjectQueue } from "@nestjs/bullmq";
-import { Queue } from "bullmq";
 import { PrismaService } from "../../recipes/prisma/prisma.service";
-import { ProcessFileJobData } from "./types";
+import { BullQueueService } from "./services/bull-queue.service";
+import { RedisStorageService } from "./services/redis-storage.service";
+import {
+	ProcessFileJobData,
+	DbTaskStatusSchema,
+	ProcessFileJobDataSchema,
+} from "./types";
 
 @Injectable()
 export class UploadLargeXlsxService {
 	constructor(
-		private prismaService: PrismaService,
-		@InjectQueue("upload-xlsx-processing")
-		private processingQueue: Queue
+		private readonly prismaService: PrismaService,
+		private readonly bullQueueService: BullQueueService,
+		private readonly redisStorageService: RedisStorageService
 	) {}
 
 	async uploadXlsx(file: Express.Multer.File, response: Response) {
@@ -27,25 +31,49 @@ export class UploadLargeXlsxService {
 		/* Create a new task with pending status */
 		const task = await this.prismaService.uploadLargeXlsxTask.create({
 			data: {
-				status: "PENDING",
-				/* Will be updated after processing */
-				totalRows: 0,
+				status: DbTaskStatusSchema.enum.PENDING,
+				totalRows: 0 /* Will be updated after processing */,
 			},
 		});
+
+		/* Store file temporarily in Redis */
+		const fileKey = await this.redisStorageService.storeFile(
+			task.id,
+			file.buffer
+		);
+
+		/* Create job data and validate it */
+		const jobData: ProcessFileJobData = {
+			taskId: task.id,
+			fileKey,
+			fileName: file.originalname,
+		};
+
+		/* Validate job data with Zod */
+		const validatedJobData = ProcessFileJobDataSchema.parse(jobData);
 
 		/* Return immediately with task info */
 		response.status(200).json({
 			success: true,
 			taskId: task.id,
-			message: `Task created successfully. File will be processed asynchronously.`,
+			message: "Upload finished, starting validation",
 		});
 
 		/* Queue file processing job asynchronously (don't await) */
-		this.processingQueue.add("process-file", {
-			taskId: task.id,
-			fileBuffer: file.buffer,
-			fileName: file.originalname,
-		} as ProcessFileJobData);
+		setImmediate(async () => {
+			try {
+				await this.bullQueueService.addFileProcessingJob(
+					validatedJobData
+				);
+			} catch (error) {
+				/* If job queuing fails, update task status and clean up */
+				await this.prismaService.uploadLargeXlsxTask.update({
+					where: { id: task.id },
+					data: { status: DbTaskStatusSchema.enum.FAILED as any },
+				});
+				await this.redisStorageService.deleteFile(fileKey);
+			}
+		});
 	}
 
 	async getTasks(page: number = 1) {

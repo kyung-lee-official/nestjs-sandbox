@@ -9,14 +9,15 @@ import {
 } from "@nestjs/websockets";
 import { Logger, Injectable } from "@nestjs/common";
 import { Server, Socket } from "socket.io";
+import { TaskCompletionResult } from "./types";
 
 export interface TaskProgressData {
-	status: string;
-	validationProgress: number;
-	savingProgress: number;
-	validatedRows: number;
-	errorRows: number;
-	savedRows: number;
+	phase?: string;
+	progress?: number;
+	totalRows?: number;
+	validatedRows?: number;
+	errorRows?: number;
+	savedRows?: number;
 }
 
 /* When NestJS app starts up */
@@ -76,10 +77,9 @@ export class UploadLargeXlsxGateway
 		});
 	}
 	/* Method to emit task completion */
-	emitTaskCompleted(taskId: number, finalData: any) {
+	emitTaskCompleted(taskId: number, finalData: TaskCompletionResult) {
 		const roomName = `task-${taskId}`;
 		this.server.to(roomName).emit("task-completed", {
-			taskId,
 			...finalData,
 			timestamp: new Date().toISOString(),
 		});
