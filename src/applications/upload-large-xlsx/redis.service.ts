@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import Redis from "ioredis";
 import { RedisService } from "../../redis/redis.service";
-import { UploadLargeXlsxRowData } from "./upload-large-xlsx.queue/interfaces";
+import { UploadLargeXlsxRowData } from "./types";
 
 @Injectable()
 export class UploadLargeXlsxRedisService {
@@ -52,25 +52,6 @@ export class UploadLargeXlsxRedisService {
 		// );
 
 		return validData;
-	}
-
-	/**
-	 * Clean up temporary data for a task
-	 * @param taskId - The task ID
-	 */
-	async cleanupTaskData(taskId: number): Promise<void> {
-		const keys = [
-			this.getValidDataKey(taskId),
-			this.getChunkStatusKey(taskId),
-			this.getTaskMetadataKey(taskId),
-			this.getValidatedRowsKey(taskId),
-			this.getSavedRowsKey(taskId),
-			this.getErrorRowsKey(taskId),
-			this.getCompletionLockKey(taskId),
-		];
-
-		await this.redis.del(...keys);
-		// this.logger.debug(`Cleaned up temporary data for task ${taskId}`);
 	}
 
 	/**
@@ -250,6 +231,25 @@ export class UploadLargeXlsxRedisService {
 		);
 
 		return counters;
+	}
+
+	/**
+	 * Clean up temporary data for a task
+	 * @param taskId - The task ID
+	 */
+	async cleanupTaskData(taskId: number): Promise<void> {
+		const keys = [
+			this.getValidDataKey(taskId),
+			this.getChunkStatusKey(taskId),
+			this.getTaskMetadataKey(taskId),
+			this.getValidatedRowsKey(taskId),
+			this.getSavedRowsKey(taskId),
+			this.getErrorRowsKey(taskId),
+			this.getCompletionLockKey(taskId),
+		];
+
+		await this.redis.del(...keys);
+		// this.logger.debug(`Cleaned up temporary data for task ${taskId}`);
 	}
 
 	/* Private helper methods for generating Redis keys */

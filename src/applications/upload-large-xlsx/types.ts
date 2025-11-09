@@ -123,3 +123,64 @@ export const REDIS_KEYS = {
 	taskValidData: (taskId: number) => `task:${taskId}:valid_data`,
 	taskLock: (taskId: number) => `task:${taskId}:lock`,
 } as const;
+
+/**
+ * Upload Large XLSX Row Data Schema
+ * Defines the structure of each row in the Excel file
+ */
+export const UploadLargeXlsxRowDataSchema = z.object({
+	name: z.string().min(1, "Name is required"),
+	gender: z.string().min(1, "Gender is required"),
+	bioId: z.string().min(1, "Bio ID is required"),
+});
+
+export type UploadLargeXlsxRowData = z.infer<
+	typeof UploadLargeXlsxRowDataSchema
+>;
+
+/**
+ * Process File Job Data Schema
+ * Data structure for the file processing queue job
+ */
+export const ProcessFileJobDataSchema = z.object({
+	taskId: z.number().int().positive(),
+	fileBuffer: z.union([
+		z.instanceof(Buffer),
+		z.object({ data: z.array(z.number()) }),
+		z.any(),
+	]),
+	fileName: z.string().min(1),
+});
+
+export type ProcessFileJobData = z.infer<typeof ProcessFileJobDataSchema>;
+
+/**
+ * Validate Chunk Job Data Schema
+ * Data structure for validation queue jobs
+ */
+export const ValidateChunkJobDataSchema = z.object({
+	taskId: z.number().int().positive(),
+	chunk: z.array(
+		z.object({
+			rowNumber: z.number().int().positive(),
+			data: UploadLargeXlsxRowDataSchema,
+		})
+	),
+	chunkIndex: z.number().int().min(0),
+	totalChunks: z.number().int().positive(),
+});
+
+export type ValidateChunkJobData = z.infer<typeof ValidateChunkJobDataSchema>;
+
+/**
+ * Save Chunk Job Data Schema
+ * Data structure for saving queue jobs
+ */
+export const SaveChunkJobDataSchema = z.object({
+	taskId: z.number().int().positive(),
+	validData: z.array(UploadLargeXlsxRowDataSchema),
+	chunkIndex: z.number().int().min(0),
+	totalChunks: z.number().int().positive(),
+});
+
+export type SaveChunkJobData = z.infer<typeof SaveChunkJobDataSchema>;

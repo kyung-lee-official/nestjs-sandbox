@@ -3,7 +3,7 @@ import { Response } from "express";
 import { InjectQueue } from "@nestjs/bullmq";
 import { Queue } from "bullmq";
 import { PrismaService } from "../../recipes/prisma/prisma.service";
-import { ProcessFileJobData } from "./upload-large-xlsx.queue/interfaces";
+import { ProcessFileJobData } from "./types";
 
 @Injectable()
 export class UploadLargeXlsxService {
