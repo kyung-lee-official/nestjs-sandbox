@@ -53,7 +53,7 @@ export class UploadLargeXlsxQueueService {
 			removeOnFail: 50 /* Keep last 50 failed jobs for debugging */,
 		});
 
-		this.logger.debug(`Added saving job for task ${taskId}: ${job.id}`);
+		// this.logger.debug(`Added saving job for task ${taskId}: ${job.id}`);
 		return job;
 	}
 
