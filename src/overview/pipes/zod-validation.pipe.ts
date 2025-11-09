@@ -3,7 +3,7 @@ import {
 	ArgumentMetadata,
 	BadRequestException,
 } from "@nestjs/common";
-import { ZodError, ZodSchema } from "zod";
+import { ZodError, z } from "zod";
 import { TestPipeDto } from "../dto/test-pipe.dto";
 
 export class ZodValidationPipe
@@ -16,19 +16,28 @@ export class ZodValidationPipe
 			}
 		>
 {
-	constructor(private schema: ZodSchema) {}
+	constructor(private schema: z.ZodType<TestPipeDto>) {}
 
-	transform(value: unknown, metadata: ArgumentMetadata) {
+	transform(
+		value: unknown,
+		metadata: ArgumentMetadata
+	): {
+		value: TestPipeDto;
+		type: "body" | "query" | "param" | "custom";
+	} {
 		try {
 			const parsedValue = this.schema.parse(value);
 			return {
-				value: parsedValue,
+				value: parsedValue as TestPipeDto,
 				type: metadata.type,
 			};
 		} catch (error) {
-			throw new BadRequestException(
-				(error as ZodError).errors[0].message
-			);
+			if (error instanceof ZodError) {
+				throw new BadRequestException(
+					error.issues[0]?.message || "Validation failed"
+				);
+			}
+			throw new BadRequestException("Validation failed");
 		}
 	}
 }

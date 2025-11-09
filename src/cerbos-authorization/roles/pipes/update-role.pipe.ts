@@ -3,22 +3,25 @@ import {
 	ArgumentMetadata,
 	BadRequestException,
 } from "@nestjs/common";
-import { ZodError, ZodSchema } from "zod";
+import { ZodError, z } from "zod";
 import { UpdateRoleDto } from "../dto/update-role.dto";
 
 export class UpdateRolePipe
 	implements PipeTransform<UpdateRoleDto, UpdateRoleDto>
 {
-	constructor(private schema: ZodSchema) {}
+	constructor(private schema: z.ZodType<UpdateRoleDto>) {}
 
-	transform(value: unknown, metadata: ArgumentMetadata) {
+	transform(value: unknown, metadata: ArgumentMetadata): UpdateRoleDto {
 		try {
 			const parsedValue = this.schema.parse(value);
-			return parsedValue;
+			return parsedValue as UpdateRoleDto;
 		} catch (error) {
-			throw new BadRequestException(
-				(error as ZodError).errors[0].message
-			);
+			if (error instanceof ZodError) {
+				throw new BadRequestException(
+					error.issues[0]?.message || "Validation failed"
+				);
+			}
+			throw new BadRequestException("Validation failed");
 		}
 	}
 }

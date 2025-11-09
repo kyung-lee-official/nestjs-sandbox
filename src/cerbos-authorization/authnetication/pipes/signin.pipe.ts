@@ -3,20 +3,23 @@ import {
 	ArgumentMetadata,
 	BadRequestException,
 } from "@nestjs/common";
-import { ZodError, ZodSchema } from "zod";
+import { ZodError, z } from "zod";
 import { SignInDto } from "../dto/signin.dto";
 
 export class SignInPipe implements PipeTransform<SignInDto, SignInDto> {
-	constructor(private schema: ZodSchema) {}
+	constructor(private schema: z.ZodType<SignInDto>) {}
 
-	transform(value: unknown, metadata: ArgumentMetadata) {
+	transform(value: unknown, metadata: ArgumentMetadata): SignInDto {
 		try {
 			const parsedValue = this.schema.parse(value);
-			return parsedValue;
+			return parsedValue as SignInDto;
 		} catch (error) {
-			throw new BadRequestException(
-				(error as ZodError).errors[0].message
-			);
+			if (error instanceof ZodError) {
+				throw new BadRequestException(
+					error.issues[0]?.message || "Validation failed"
+				);
+			}
+			throw new BadRequestException("Validation failed");
 		}
 	}
 }
