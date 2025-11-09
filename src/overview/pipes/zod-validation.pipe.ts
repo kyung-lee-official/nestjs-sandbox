@@ -4,31 +4,30 @@ import {
 	BadRequestException,
 } from "@nestjs/common";
 import { ZodError, z } from "zod";
-import { TestPipeDto } from "../dto/test-pipe.dto";
 
-export class ZodValidationPipe
+export class ZodValidationPipe<T>
 	implements
 		PipeTransform<
-			TestPipeDto,
+			unknown,
 			{
-				value: TestPipeDto;
+				value: T;
 				type: "body" | "query" | "param" | "custom";
 			}
 		>
 {
-	constructor(private schema: z.ZodType<TestPipeDto>) {}
+	constructor(private schema: z.ZodType<T>) {}
 
 	transform(
 		value: unknown,
 		metadata: ArgumentMetadata
 	): {
-		value: TestPipeDto;
+		value: T;
 		type: "body" | "query" | "param" | "custom";
 	} {
 		try {
 			const parsedValue = this.schema.parse(value);
 			return {
-				value: parsedValue as TestPipeDto,
+				value: parsedValue,
 				type: metadata.type,
 			};
 		} catch (error) {
