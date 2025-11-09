@@ -60,7 +60,7 @@ model Event {
 }
 
 /**
- * Cerbos Authoization
+ * Cerbos Authorization
  */
 model Member {
     id          String        @id
@@ -218,31 +218,31 @@ model TestDecimal {
 
 /**
  * Test UploadLargeXlsx
+ * Detailed progress is tracked in Redis
+ * Database only stores major lifecycle stages for durability
  */
 enum UploadLargeXlsxTaskStatus {
-    PENDING
-    LOADING_WORKBOOK
-    VALIDATING_HEADERS
-    VALIDATING
-    SAVING
-    COMPLETED
-    HAS_ERRORS
-    FAILED
+    PENDING /* Task created, not yet started processing */
+    PROCESSING /* Task is actively being processed (replaces LOADING_WORKBOOK, VALIDATING_HEADERS, VALIDATING, SAVING) */
+    COMPLETED /* Successfully finished with no errors */
+    HAS_ERRORS /* Finished but some rows had validation errors */
+    FAILED /* Critical failure, task could not complete */
 }
 
 model UploadLargeXlsxTask {
-    id                Int                        @id @default(autoincrement())
-    status            UploadLargeXlsxTaskStatus  @default(PENDING)
-    totalRows         Int                        @default(0)
-    validatedRows     Int                        @default(0)
-    savedRows         Int                        @default(0)
-    errorRows         Int                        @default(0)
-    validationProgress Float                     @default(0)
-    savingProgress    Float                      @default(0)
-    createdAt         DateTime                   @default(now())
-    updatedAt         DateTime                   @updatedAt
-    data              UploadLargeXlsxData[]
-    errors            UploadLargeXlsxError[]
+    id            Int                       @id @default(autoincrement())
+    status        UploadLargeXlsxTaskStatus @default(PENDING) /* Progress metrics moved to Redis for real-time updates */
+    /**
+     * These fields kept for final summary and historical queries
+     */
+    totalRows     Int                       @default(0)
+    validatedRows Int                       @default(0)
+    savedRows     Int                       @default(0)
+    errorRows     Int                       @default(0)
+    createdAt     DateTime                  @default(now())
+    updatedAt     DateTime                  @updatedAt
+    data          UploadLargeXlsxData[]
+    errors        UploadLargeXlsxError[]
 }
 
 model UploadLargeXlsxData {
@@ -257,12 +257,12 @@ model UploadLargeXlsxData {
 }
 
 model UploadLargeXlsxError {
-    id      Int                 @id @default(autoincrement())
-    task    UploadLargeXlsxTask @relation(fields: [taskId], references: [id])
-    taskId  Int
+    id        Int                 @id @default(autoincrement())
+    task      UploadLargeXlsxTask @relation(fields: [taskId], references: [id])
+    taskId    Int
     rowNumber Int
-    errors  String[] // Array of error messages for this row
-    rowData Json     // Store the original row data for reference
+    errors    String[] /* Array of error messages for this row */
+    rowData   Json /* Store the original row data for reference */
 
     @@index([taskId])
 }
