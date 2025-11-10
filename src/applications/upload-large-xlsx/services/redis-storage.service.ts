@@ -20,9 +20,9 @@ export class RedisStorageService {
 		/* Store with 1 hour TTL (3600 seconds) */
 		await this.redis.setex(fileKey, 3600, base64Data);
 
-		this.logger.debug(
-			`Stored file for task ${taskId} with key ${fileKey} (${Math.round(base64Data.length / 1024)}KB)`
-		);
+		// this.logger.debug(
+		// 	`Stored file for task ${taskId} with key ${fileKey} (${Math.round(base64Data.length / 1024)}KB)`
+		// );
 
 		return fileKey;
 	}
@@ -30,17 +30,15 @@ export class RedisStorageService {
 	/* Retrieve file buffer from Redis */
 	async getFile(fileKey: string): Promise<Buffer | null> {
 		const base64Data = await this.redis.get(fileKey);
-
 		if (!base64Data) {
 			this.logger.warn(`File not found for key ${fileKey}`);
 			return null;
 		}
-
 		const fileBuffer = Buffer.from(base64Data, "base64");
 
-		this.logger.debug(
-			`Retrieved file for key ${fileKey} (${Math.round(fileBuffer.length / 1024)}KB)`
-		);
+		// this.logger.debug(
+		// 	`Retrieved file for key ${fileKey} (${Math.round(fileBuffer.length / 1024)}KB)`
+		// );
 
 		return fileBuffer;
 	}

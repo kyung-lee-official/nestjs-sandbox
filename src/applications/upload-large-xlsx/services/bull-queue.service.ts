@@ -50,7 +50,7 @@ export class BullQueueService implements OnModuleInit, OnModuleDestroy {
 		/* Set up event listeners */
 		this.setupEventListeners();
 
-		this.logger.log("Bull queue service initialized");
+		// this.logger.log("Bull queue service initialized");
 	}
 
 	async onModuleDestroy() {
@@ -68,9 +68,9 @@ export class BullQueueService implements OnModuleInit, OnModuleDestroy {
 			jobId: `task-${jobData.taskId}` /* Unique job ID to prevent duplicates */,
 		});
 
-		this.logger.debug(
-			`Added file processing job for task ${jobData.taskId}`
-		);
+		// this.logger.debug(
+		// 	`Added file processing job for task ${jobData.taskId}`
+		// );
 
 		return job;
 	}
@@ -99,13 +99,13 @@ export class BullQueueService implements OnModuleInit, OnModuleDestroy {
 
 	/* Process job - delegates to FileProcessingProcessor */
 	private async processJob(job: Bull.Job<ProcessFileJobData>) {
-		this.logger.debug(
-			`Processing job ${job.id} for task ${job.data.taskId}`
-		);
+		// this.logger.debug(
+		// 	`Processing job ${job.id} for task ${job.data.taskId}`
+		// );
 
 		try {
 			const result = await this.fileProcessingProcessor.process(job);
-			this.logger.debug(`Job ${job.id} completed successfully`);
+			// this.logger.debug(`Job ${job.id} completed successfully`);
 			return result;
 		} catch (error) {
 			this.logger.error(`Job ${job.id} failed:`, error);
@@ -116,9 +116,9 @@ export class BullQueueService implements OnModuleInit, OnModuleDestroy {
 	/* Set up Bull event listeners for monitoring */
 	private setupEventListeners() {
 		this.fileProcessingQueue.on("completed", (job, result) => {
-			this.logger.log(
-				`Job ${job.id} completed for task ${job.data.taskId}`
-			);
+			// this.logger.log(
+			// 	`Job ${job.id} completed for task ${job.data.taskId}`
+			// );
 		});
 
 		this.fileProcessingQueue.on("failed", (job, err) => {
@@ -135,17 +135,17 @@ export class BullQueueService implements OnModuleInit, OnModuleDestroy {
 		});
 
 		this.fileProcessingQueue.on("progress", (job, progress) => {
-			this.logger.debug(`Job ${job.id} progress: ${progress}%`);
+			// this.logger.debug(`Job ${job.id} progress: ${progress}%`);
 		});
 
 		this.fileProcessingQueue.on("waiting", (jobId) => {
-			this.logger.debug(`Job ${jobId} is waiting`);
+			// this.logger.debug(`Job ${jobId} is waiting`);
 		});
 
 		this.fileProcessingQueue.on("active", (job, jobPromise) => {
-			this.logger.debug(
-				`Job ${job.id} started for task ${job.data.taskId}`
-			);
+			// this.logger.debug(
+			// 	`Job ${job.id} started for task ${job.data.taskId}`
+			// );
 		});
 	}
 }
