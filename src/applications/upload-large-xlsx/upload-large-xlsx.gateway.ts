@@ -89,10 +89,9 @@ export class UploadLargeXlsxGateway
 	/* Method to emit task completion */
 	emitTaskCompleted(taskId: number, finalData: Task) {
 		const roomName = `task-${taskId}`;
-		this.server.to(roomName).emit(UploadXlsxOutgoingEvents.TASK_COMPLETED, {
-			...finalData,
-			timestamp: new Date().toISOString(),
-		});
+		this.server
+			.to(roomName)
+			.emit(UploadXlsxOutgoingEvents.TASK_COMPLETED, finalData);
 	}
 	/* Method to emit task failure */
 	emitTaskFailed(taskId: number, error: string) {

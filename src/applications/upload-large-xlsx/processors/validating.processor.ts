@@ -25,7 +25,7 @@ export class ValidatingProcessor {
 		job: Job
 	) {
 		try {
-			const validData: any[] = [];
+			const validatedData: any[] = [];
 			const errors: ValidationError[] = [];
 			const totalRows = worksheet.rowCount - 1; /* Exclude header row */
 			const BATCH_SIZE = 1000;
@@ -49,7 +49,7 @@ export class ValidatingProcessor {
 				const result = UploadLargeXlsxRowDataSchema.safeParse(rowData);
 
 				if (result.success) {
-					validData.push(result.data);
+					validatedData.push(result.data);
 				} else {
 					/* Collect validation errors */
 					const errorMessages = result.error.issues.map(
@@ -90,7 +90,7 @@ export class ValidatingProcessor {
 				}
 			}
 
-			return { validData, errors, totalRows };
+			return { validatedData, errors, totalRows };
 		} catch (error) {
 			this.logger.error(
 				`ValidatingProcessor failed for task ${taskId}:`,

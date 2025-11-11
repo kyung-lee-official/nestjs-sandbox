@@ -92,12 +92,14 @@ export type ProgressUpdate = z.infer<typeof ProgressUpdateSchema>;
 
 /* Task schema */
 export const TaskSchema = z.object({
-	taskId: z.number().int().positive(),
+	id: z.number().int().positive(),
 	status: DbTaskStatusSchema,
 	totalRows: z.number().int().min(0),
-	validRows: z.number().int().min(0),
+	validatedRows: z.number().int().min(0),
 	errorRows: z.number().int().min(0),
 	savedRows: z.number().int().min(0),
+	createdAt: z.iso.datetime(),
+	updatedAt: z.iso.datetime(),
 });
 
 export type Task = z.infer<typeof TaskSchema>;

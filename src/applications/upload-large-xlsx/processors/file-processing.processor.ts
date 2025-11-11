@@ -15,6 +15,7 @@ import {
 } from "../types";
 import { ValidatingProcessor } from "./validating.processor";
 import { SavingProcessor } from "./saving.processor";
+import dayjs = require("dayjs");
 
 @Injectable()
 export class FileProcessingProcessor {
@@ -70,9 +71,10 @@ export class FileProcessingProcessor {
 				"Name",
 				"Gender",
 				"Bio-ID",
-			]); /* Phase 3: Extract and validate data */
+			]);
+			/* Phase 3: Extract and validate data */
 			/* Delegate to ValidatingProcessor which WILL emit real-time progress */
-			const { validData, errors, totalRows } =
+			const { validatedData, errors, totalRows } =
 				await this.validatingProcessor.process(
 					worksheet,
 					columnMap,
@@ -88,7 +90,7 @@ export class FileProcessingProcessor {
 
 			/* Phase 4: Save valid data - delegate to SavingProcessor which WILL emit progress */
 			const savedRows = await this.savingProcessor.process(
-				validData,
+				validatedData,
 				taskId,
 				job
 			);
@@ -105,30 +107,31 @@ export class FileProcessingProcessor {
 					: DbTaskStatusSchema.enum.COMPLETED;
 
 			/* Update final task status and counts */
-			await this.updateTaskCompletion(taskId, {
-				status: finalStatus,
-				totalRows,
-				validatedRows: totalRows,
-				errorRows: errors.length,
-				savedRows,
-			});
+			const updatedData =
+				await this.prismaService.uploadLargeXlsxTask.update({
+					where: { id: taskId },
+					data: {
+						status: finalStatus,
+						totalRows: totalRows,
+						validatedRows: validatedData.length,
+						errorRows: errors.length,
+						savedRows: savedRows,
+					},
+				});
+			const finalData: Task = {
+				...updatedData,
+				createdAt: dayjs(updatedData.createdAt).toISOString(),
+				updatedAt: dayjs(updatedData.updatedAt).toISOString(),
+			};
 
 			/* Clean up Redis file */
 			await this.redisStorageService.deleteFile(fileKey);
 
 			/* Emit completion event */
-			const result: Task = {
-				taskId,
-				status: finalStatus,
-				totalRows,
-				validRows: validData.length,
-				errorRows: errors.length,
-				savedRows,
-			};
-
-			this.gateway.emitTaskCompleted(taskId, result);
-
-			return result;
+			this.gateway.emitTaskCompleted(taskId, {
+				...finalData,
+			});
+			return finalData;
 		} catch (error) {
 			this.logger.error(`Task ${taskId} failed:`, error);
 
