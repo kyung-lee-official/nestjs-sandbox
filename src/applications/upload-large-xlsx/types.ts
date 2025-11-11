@@ -101,6 +101,10 @@ export const TaskSchema = z.object({
 	updatedAt: z.iso.datetime(),
 });
 export type Task = z.infer<typeof TaskSchema>;
+export const TaskWithProgressSchema = TaskSchema.extend(
+	TaskProgressEmittedDataSchema
+);
+export type TaskWithProgress = z.infer<typeof TaskWithProgressSchema>;
 
 /* Redis key patterns */
 export const REDIS_KEYS = {
