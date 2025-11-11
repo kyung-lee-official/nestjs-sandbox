@@ -1,16 +1,24 @@
 import { z } from "zod";
 
 /* Database task status definitions - persistent states stored in PostgreSQL */
-export const ACTIVE_STATUSES = [
+export const ActiveStatusesSchema = z.enum([
 	"PENDING" /* Task created, not yet started processing */,
 	"PROCESSING" /* Task is actively being processed (covers all intermediate steps) */,
-] as const;
+]);
 
-export const TERMINAL_STATUSES = [
+export const TerminalStatusesSchema = z.enum([
 	"COMPLETED" /* Successfully finished with no errors */,
 	"HAS_ERRORS" /* Finished but some rows had validation errors */,
 	"FAILED" /* Critical failure, task could not complete */,
-] as const;
+]);
+
+/* Type definitions for individual status categories */
+export type ActiveStatus = z.infer<typeof ActiveStatusesSchema>;
+export type TerminalStatus = z.infer<typeof TerminalStatusesSchema>;
+
+/* Extract the options for easier access */
+export const ACTIVE_STATUSES = ActiveStatusesSchema.options;
+export const TERMINAL_STATUSES = TerminalStatusesSchema.options;
 
 /* Helper functions for status checking */
 export const isTerminalStatus = (status: DbTaskStatus): boolean => {
@@ -21,11 +29,11 @@ export const isActiveStatus = (status: DbTaskStatus): boolean => {
 	return (ACTIVE_STATUSES as readonly string[]).includes(status);
 };
 
-/* Database task status enum schema */
-export const DbTaskStatusSchema = z.enum([
-	...ACTIVE_STATUSES,
-	...TERMINAL_STATUSES,
-] as const);
+/* Database task status enum schema - combines active and terminal statuses */
+export const DbTaskStatusSchema = z.union([
+	ActiveStatusesSchema,
+	TerminalStatusesSchema,
+]);
 
 export type DbTaskStatus = z.infer<typeof DbTaskStatusSchema>;
 

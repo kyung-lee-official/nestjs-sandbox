@@ -7,6 +7,8 @@ import {
 	ProcessFileJobData,
 	DbTaskStatusSchema,
 	ProcessFileJobDataSchema,
+	ActiveStatusesSchema,
+	TerminalStatusesSchema,
 } from "./types";
 
 @Injectable()
@@ -31,7 +33,7 @@ export class UploadLargeXlsxService {
 		/* Create a new task with pending status */
 		const task = await this.prismaService.uploadLargeXlsxTask.create({
 			data: {
-				status: DbTaskStatusSchema.enum.PENDING,
+				status: ActiveStatusesSchema.enum.PENDING,
 				totalRows: 0 /* Will be updated after processing */,
 			},
 		});
@@ -69,7 +71,7 @@ export class UploadLargeXlsxService {
 				/* If job queuing fails, update task status and clean up */
 				await this.prismaService.uploadLargeXlsxTask.update({
 					where: { id: task.id },
-					data: { status: DbTaskStatusSchema.enum.FAILED as any },
+					data: { status: TerminalStatusesSchema.enum.FAILED as any },
 				});
 				await this.redisStorageService.deleteFile(fileKey);
 			}

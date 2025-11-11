@@ -8,10 +8,11 @@ import { validateWorksheetHeaders } from "../../../utils/xlsx";
 import {
 	ProcessFileJobData,
 	ProcessFileJobDataSchema,
-	DbTaskStatusSchema,
 	RedisProgressStatusSchema,
 	ValidationError,
 	Task,
+	ActiveStatusesSchema,
+	TerminalStatusesSchema,
 } from "../types";
 import { ValidatingProcessor } from "./validating.processor";
 import { SavingProcessor } from "./saving.processor";
@@ -39,7 +40,7 @@ export class FileProcessingProcessor {
 			/* Update task status to processing */
 			await this.updateTaskStatus(
 				taskId,
-				DbTaskStatusSchema.enum.PROCESSING
+				ActiveStatusesSchema.enum.PROCESSING
 			);
 
 			/* Phase 1: Load workbook from Redis */
@@ -103,8 +104,8 @@ export class FileProcessingProcessor {
 			/* Determine final status */
 			const finalStatus =
 				errors.length > 0
-					? DbTaskStatusSchema.enum.HAS_ERRORS
-					: DbTaskStatusSchema.enum.COMPLETED;
+					? TerminalStatusesSchema.enum.HAS_ERRORS
+					: TerminalStatusesSchema.enum.COMPLETED;
 
 			/* Update final task status and counts */
 			const updatedData =
@@ -136,7 +137,10 @@ export class FileProcessingProcessor {
 			this.logger.error(`Task ${taskId} failed:`, error);
 
 			/* Update task status to failed */
-			await this.updateTaskStatus(taskId, DbTaskStatusSchema.enum.FAILED);
+			await this.updateTaskStatus(
+				taskId,
+				TerminalStatusesSchema.enum.FAILED
+			);
 
 			/* Clean up Redis file on failure */
 			await this.redisStorageService.deleteFile(fileKey);
