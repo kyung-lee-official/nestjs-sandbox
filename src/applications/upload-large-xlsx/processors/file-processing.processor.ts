@@ -129,9 +129,7 @@ export class FileProcessingProcessor {
 			await this.redisStorageService.deleteFile(fileKey);
 
 			/* Emit completion event */
-			this.gateway.emitTaskCompleted(taskId, {
-				...finalData,
-			});
+			this.gateway.emitTaskCompleted(taskId, finalData);
 			return finalData;
 		} catch (error) {
 			this.logger.error(`Task ${taskId} failed:`, error);

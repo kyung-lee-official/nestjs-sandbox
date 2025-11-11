@@ -59,6 +59,18 @@ export const TaskProgressMetricsSchema = z.object({
 
 export type TaskProgressMetrics = z.infer<typeof TaskProgressMetricsSchema>;
 
+/* Task progress data schema - used for WebSocket progress updates */
+export const TaskProgressDataSchema = z.object({
+	phase: z.string().optional(),
+	progress: z.number().min(0).max(100).optional(),
+	totalRows: z.number().int().min(0).optional(),
+	validatedRows: z.number().int().min(0).optional(),
+	errorRows: z.number().int().min(0).optional(),
+	savedRows: z.number().int().min(0).optional(),
+});
+
+export type TaskProgressData = z.infer<typeof TaskProgressDataSchema>;
+
 /* Excel row data validation schema */
 export const UploadLargeXlsxRowDataSchema = z.object({
 	name: z.string().min(1, "Name is required"),

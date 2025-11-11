@@ -10,20 +10,12 @@ import {
 } from "@nestjs/websockets";
 import { Logger, Injectable } from "@nestjs/common";
 import { Server, Socket } from "socket.io";
-import { RedisProgressStatusSchema, Task } from "./types";
+import { RedisProgressStatusSchema, Task, TaskProgressData } from "./types";
 import {
 	UploadXlsxIncomingEvents,
 	UploadXlsxOutgoingEvents,
 } from "./websocket-events.enum";
-
-export interface TaskProgressData {
-	phase?: string;
-	progress?: number;
-	totalRows?: number;
-	validatedRows?: number;
-	errorRows?: number;
-	savedRows?: number;
-}
+import dayjs from "dayjs";
 
 /* When NestJS app starts up */
 @Injectable()
@@ -90,15 +82,16 @@ export class UploadLargeXlsxGateway
 		this.server.to(roomName).emit(UploadXlsxOutgoingEvents.TASK_PROGRESS, {
 			taskId,
 			...progressData,
-			timestamp: new Date().toISOString(),
+			timestamp: dayjs().toISOString(),
 		});
 	}
 	/* Method to emit task completion */
 	emitTaskCompleted(taskId: number, finalData: Task) {
 		const roomName = `task-${taskId}`;
-		this.server
-			.to(roomName)
-			.emit(UploadXlsxOutgoingEvents.TASK_COMPLETED, finalData);
+		this.server.to(roomName).emit(UploadXlsxOutgoingEvents.TASK_COMPLETED, {
+			...finalData,
+			timestamp: dayjs().toISOString(),
+		});
 	}
 	/* Method to emit task failure */
 	emitTaskFailed(taskId: number, error: string) {
@@ -106,7 +99,7 @@ export class UploadLargeXlsxGateway
 		this.server.to(roomName).emit(UploadXlsxOutgoingEvents.TASK_FAILED, {
 			taskId,
 			error,
-			timestamp: new Date().toISOString(),
+			timestamp: dayjs().toISOString(),
 		});
 	}
 	/* Method to emit workbook loading status */
@@ -118,7 +111,7 @@ export class UploadLargeXlsxGateway
 				taskId,
 				status: RedisProgressStatusSchema.enum.LOADING_WORKBOOK,
 				message: "Loading workbook...",
-				timestamp: new Date().toISOString(),
+				timestamp: dayjs().toISOString(),
 			});
 	}
 	/* Method to emit header validation status */
@@ -130,7 +123,7 @@ export class UploadLargeXlsxGateway
 				taskId,
 				status: RedisProgressStatusSchema.enum.VALIDATING_HEADERS,
 				message: "Validating headers...",
-				timestamp: new Date().toISOString(),
+				timestamp: dayjs().toISOString(),
 			});
 	}
 	/* Method to emit processing completion */
@@ -143,7 +136,7 @@ export class UploadLargeXlsxGateway
 				status: RedisProgressStatusSchema.enum.VALIDATING,
 				message: `Processing completed. Found ${totalRows} rows. Starting validation...`,
 				totalRows,
-				timestamp: new Date().toISOString(),
+				timestamp: dayjs().toISOString(),
 			});
 	}
 }
