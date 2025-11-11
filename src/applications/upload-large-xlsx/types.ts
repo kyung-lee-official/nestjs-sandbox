@@ -34,7 +34,6 @@ export const DbTaskStatusSchema = z.union([
 	ActiveStatusesSchema,
 	TerminalStatusesSchema,
 ]);
-
 export type DbTaskStatus = z.infer<typeof DbTaskStatusSchema>;
 
 /* Redis progress status enum schema - detailed real-time states for active tasks */
@@ -44,20 +43,7 @@ export const RedisProgressStatusSchema = z.enum([
 	"VALIDATING" /* Processing and validating data rows */,
 	"SAVING" /* Saving valid data to database */,
 ]);
-
 export type RedisProgressStatus = z.infer<typeof RedisProgressStatusSchema>;
-
-/* Progress metrics schema - numerical progress indicators */
-export const TaskProgressMetricsSchema = z.object({
-	totalRows: z.number().int().min(0).default(0),
-	validatedRows: z.number().int().min(0).default(0),
-	savedRows: z.number().int().min(0).default(0),
-	errorRows: z.number().int().min(0).default(0),
-	validationProgress: z.number().min(0).max(100).default(0),
-	savingProgress: z.number().min(0).max(100).default(0),
-});
-
-export type TaskProgressMetrics = z.infer<typeof TaskProgressMetricsSchema>;
 
 /* Task progress data schema - used for WebSocket progress updates */
 export const TaskProgressDataSchema = z.object({
@@ -68,8 +54,14 @@ export const TaskProgressDataSchema = z.object({
 	errorRows: z.number().int().min(0).optional(),
 	savedRows: z.number().int().min(0).optional(),
 });
-
 export type TaskProgressData = z.infer<typeof TaskProgressDataSchema>;
+export const TaskProgressEmittedDataSchema = TaskProgressDataSchema.extend({
+	taskId: z.number().int().positive(),
+	timestamp: z.iso.datetime(),
+});
+export type TaskProgressEmittedData = z.infer<
+	typeof TaskProgressEmittedDataSchema
+>;
 
 /* Excel row data validation schema */
 export const UploadLargeXlsxRowDataSchema = z.object({
@@ -77,7 +69,6 @@ export const UploadLargeXlsxRowDataSchema = z.object({
 	gender: z.string().min(1, "Gender is required"),
 	bioId: z.string().min(1, "Bio ID is required"),
 });
-
 export type UploadLargeXlsxRowData = z.infer<
 	typeof UploadLargeXlsxRowDataSchema
 >;
@@ -88,7 +79,6 @@ export const ProcessFileJobDataSchema = z.object({
 	fileKey: z.string().min(1) /* Redis key for stored file */,
 	fileName: z.string().min(1),
 });
-
 export type ProcessFileJobData = z.infer<typeof ProcessFileJobDataSchema>;
 
 /* Validation error schema */
@@ -97,18 +87,7 @@ export const ValidationErrorSchema = z.object({
 	errors: z.array(z.string()),
 	rowData: z.any() /* Raw row data that failed validation */,
 });
-
 export type ValidationError = z.infer<typeof ValidationErrorSchema>;
-
-/* Progress update event schema */
-export const ProgressUpdateSchema = z.object({
-	taskId: z.number().int().positive(),
-	phase: RedisProgressStatusSchema,
-	progress: z.number().min(0).max(100),
-	metrics: TaskProgressMetricsSchema.partial(),
-});
-
-export type ProgressUpdate = z.infer<typeof ProgressUpdateSchema>;
 
 /* Task schema */
 export const TaskSchema = z.object({
@@ -121,7 +100,6 @@ export const TaskSchema = z.object({
 	createdAt: z.iso.datetime(),
 	updatedAt: z.iso.datetime(),
 });
-
 export type Task = z.infer<typeof TaskSchema>;
 
 /* Redis key patterns */

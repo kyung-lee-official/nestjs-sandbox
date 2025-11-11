@@ -10,7 +10,12 @@ import {
 } from "@nestjs/websockets";
 import { Logger, Injectable } from "@nestjs/common";
 import { Server, Socket } from "socket.io";
-import { RedisProgressStatusSchema, Task, TaskProgressData } from "./types";
+import {
+	RedisProgressStatusSchema,
+	Task,
+	TaskProgressData,
+	TaskProgressEmittedData,
+} from "./types";
 import {
 	UploadXlsxIncomingEvents,
 	UploadXlsxOutgoingEvents,
@@ -83,7 +88,7 @@ export class UploadLargeXlsxGateway
 			taskId,
 			...progressData,
 			timestamp: dayjs().toISOString(),
-		});
+		} as TaskProgressEmittedData);
 	}
 	/* Method to emit task completion */
 	emitTaskCompleted(taskId: number, finalData: Task) {
