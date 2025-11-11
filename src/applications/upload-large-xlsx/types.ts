@@ -47,7 +47,7 @@ export type RedisProgressStatus = z.infer<typeof RedisProgressStatusSchema>;
 
 /* Task progress data schema - used for WebSocket progress updates */
 export const TaskProgressDataSchema = z.object({
-	phase: z.string().optional(),
+	phase: RedisProgressStatusSchema,
 	progress: z.number().min(0).max(100).optional(),
 	totalRows: z.number().int().min(0).optional(),
 	validatedRows: z.number().int().min(0).optional(),
