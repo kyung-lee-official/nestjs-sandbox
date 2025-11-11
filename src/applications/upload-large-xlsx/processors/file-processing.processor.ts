@@ -11,7 +11,7 @@ import {
 	DbTaskStatusSchema,
 	RedisProgressStatusSchema,
 	ValidationError,
-	TaskCompletionResult,
+	Task,
 } from "../types";
 import { ValidatingProcessor } from "./validating.processor";
 import { SavingProcessor } from "./saving.processor";
@@ -29,7 +29,7 @@ export class FileProcessingProcessor {
 	) {}
 
 	/* Main processing method called by Bull */
-	async process(job: Job<ProcessFileJobData>): Promise<TaskCompletionResult> {
+	async process(job: Job<ProcessFileJobData>): Promise<Task> {
 		/* Validate job data */
 		const validatedData = ProcessFileJobDataSchema.parse(job.data);
 		const { taskId, fileKey } = validatedData;
@@ -117,7 +117,7 @@ export class FileProcessingProcessor {
 			await this.redisStorageService.deleteFile(fileKey);
 
 			/* Emit completion event */
-			const result: TaskCompletionResult = {
+			const result: Task = {
 				taskId,
 				status: finalStatus,
 				totalRows,

@@ -9,7 +9,7 @@ import {
 } from "@nestjs/websockets";
 import { Logger, Injectable } from "@nestjs/common";
 import { Server, Socket } from "socket.io";
-import { RedisProgressStatusSchema, TaskCompletionResult } from "./types";
+import { RedisProgressStatusSchema, Task } from "./types";
 import {
 	UploadXlsxIncomingEvents,
 	UploadXlsxOutgoingEvents,
@@ -87,7 +87,7 @@ export class UploadLargeXlsxGateway
 		});
 	}
 	/* Method to emit task completion */
-	emitTaskCompleted(taskId: number, finalData: TaskCompletionResult) {
+	emitTaskCompleted(taskId: number, finalData: Task) {
 		const roomName = `task-${taskId}`;
 		this.server.to(roomName).emit(UploadXlsxOutgoingEvents.TASK_COMPLETED, {
 			...finalData,

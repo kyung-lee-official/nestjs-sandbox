@@ -90,8 +90,8 @@ export const ProgressUpdateSchema = z.object({
 
 export type ProgressUpdate = z.infer<typeof ProgressUpdateSchema>;
 
-/* Task completion result schema */
-export const TaskCompletionResultSchema = z.object({
+/* Task schema */
+export const TaskSchema = z.object({
 	taskId: z.number().int().positive(),
 	status: DbTaskStatusSchema,
 	totalRows: z.number().int().min(0),
@@ -100,7 +100,7 @@ export const TaskCompletionResultSchema = z.object({
 	savedRows: z.number().int().min(0),
 });
 
-export type TaskCompletionResult = z.infer<typeof TaskCompletionResultSchema>;
+export type Task = z.infer<typeof TaskSchema>;
 
 /* Redis key patterns */
 export const REDIS_KEYS = {
