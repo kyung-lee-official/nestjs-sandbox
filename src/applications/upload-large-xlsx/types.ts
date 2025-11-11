@@ -102,7 +102,7 @@ export const TaskSchema = z.object({
 });
 export type Task = z.infer<typeof TaskSchema>;
 export const TaskWithProgressSchema = TaskSchema.extend(
-	TaskProgressEmittedDataSchema
+	TaskProgressEmittedDataSchema.shape
 );
 export type TaskWithProgress = z.infer<typeof TaskWithProgressSchema>;
 
