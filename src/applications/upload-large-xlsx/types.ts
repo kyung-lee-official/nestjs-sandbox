@@ -1,13 +1,31 @@
 import { z } from "zod";
 
-/* Database task status enum schema - persistent states stored in PostgreSQL */
-export const DbTaskStatusSchema = z.enum([
+/* Database task status definitions - persistent states stored in PostgreSQL */
+export const ACTIVE_STATUSES = [
 	"PENDING" /* Task created, not yet started processing */,
 	"PROCESSING" /* Task is actively being processed (covers all intermediate steps) */,
+] as const;
+
+export const TERMINAL_STATUSES = [
 	"COMPLETED" /* Successfully finished with no errors */,
 	"HAS_ERRORS" /* Finished but some rows had validation errors */,
 	"FAILED" /* Critical failure, task could not complete */,
-]);
+] as const;
+
+/* Helper functions for status checking */
+export const isTerminalStatus = (status: DbTaskStatus): boolean => {
+	return (TERMINAL_STATUSES as readonly string[]).includes(status);
+};
+
+export const isActiveStatus = (status: DbTaskStatus): boolean => {
+	return (ACTIVE_STATUSES as readonly string[]).includes(status);
+};
+
+/* Database task status enum schema */
+export const DbTaskStatusSchema = z.enum([
+	...ACTIVE_STATUSES,
+	...TERMINAL_STATUSES,
+] as const);
 
 export type DbTaskStatus = z.infer<typeof DbTaskStatusSchema>;
 
@@ -83,43 +101,6 @@ export const TaskCompletionResultSchema = z.object({
 });
 
 export type TaskCompletionResult = z.infer<typeof TaskCompletionResultSchema>;
-
-/* Status transition mappings */
-export const TERMINAL_STATUSES: readonly DbTaskStatus[] = [
-	"COMPLETED",
-	"HAS_ERRORS",
-	"FAILED",
-] as const;
-
-export const ACTIVE_STATUSES: readonly DbTaskStatus[] = [
-	"PENDING",
-	"PROCESSING",
-] as const;
-
-/* Helper functions for status checking */
-export const isTerminalStatus = (status: DbTaskStatus): boolean => {
-	return (TERMINAL_STATUSES as readonly string[]).includes(status);
-};
-
-export const isActiveStatus = (status: DbTaskStatus): boolean => {
-	return (ACTIVE_STATUSES as readonly string[]).includes(status);
-};
-
-/* Status transition validation */
-export const validateStatusTransition = (
-	from: DbTaskStatus,
-	to: DbTaskStatus
-): boolean => {
-	const validTransitions: Record<DbTaskStatus, DbTaskStatus[]> = {
-		PENDING: ["PROCESSING", "FAILED"],
-		PROCESSING: ["COMPLETED", "HAS_ERRORS", "FAILED"],
-		COMPLETED: [] /* Terminal state */,
-		HAS_ERRORS: [] /* Terminal state */,
-		FAILED: [] /* Terminal state */,
-	};
-
-	return validTransitions[from]?.includes(to) ?? false;
-};
 
 /* Redis key patterns */
 export const REDIS_KEYS = {
