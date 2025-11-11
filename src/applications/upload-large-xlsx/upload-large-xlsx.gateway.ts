@@ -6,6 +6,7 @@ import {
 	OnGatewayDisconnect,
 	SubscribeMessage,
 	MessageBody,
+	ConnectedSocket,
 } from "@nestjs/websockets";
 import { Logger, Injectable } from "@nestjs/common";
 import { Server, Socket } from "socket.io";
@@ -54,7 +55,10 @@ export class UploadLargeXlsxGateway
 
 	/* Room Management */
 	@SubscribeMessage(UploadXlsxIncomingEvents.JOIN_TASK)
-	handleJoinTask(@MessageBody() data: { taskId: number }, client: Socket) {
+	handleJoinTask(
+		@MessageBody() data: { taskId: number },
+		@ConnectedSocket() client: Socket
+	) {
 		const roomName = `task-${data.taskId}`;
 		client.join(roomName);
 		this.logger.log(`Client ${client.id} joined task room: ${roomName}`);
@@ -65,7 +69,10 @@ export class UploadLargeXlsxGateway
 		};
 	}
 	@SubscribeMessage(UploadXlsxIncomingEvents.LEAVE_TASK)
-	handleLeaveTask(@MessageBody() data: { taskId: number }, client: Socket) {
+	handleLeaveTask(
+		@MessageBody() data: { taskId: number },
+		@ConnectedSocket() client: Socket
+	) {
 		const roomName = `task-${data.taskId}`;
 		client.leave(roomName);
 		this.logger.log(`Client ${client.id} left task room: ${roomName}`);
