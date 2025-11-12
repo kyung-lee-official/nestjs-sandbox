@@ -67,6 +67,7 @@ export class ValidatingProcessor {
 
 				/* Update progress every batch */
 				if (
+					/* when to update progress */
 					processedRows % BATCH_SIZE === 0 ||
 					processedRows === totalRows
 				) {
