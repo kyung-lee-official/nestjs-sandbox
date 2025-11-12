@@ -54,3 +54,15 @@ export const getTaskByIdApiParam: ApiParamOptions = {
 	type: "number",
 	description: "The ID of the task to retrieve",
 };
+
+export const getValidationErrorsByTaskIdApiOperation: ApiOperationOptions = {
+	summary: "Download validation errors as Excel file",
+	description:
+		"Get validation errors for a specific task as an Excel file download",
+};
+
+export const getValidationErrorsByTaskIdApiParam: ApiParamOptions = {
+	name: "taskId",
+	type: "number",
+	description: "Task ID to get validation errors for",
+};

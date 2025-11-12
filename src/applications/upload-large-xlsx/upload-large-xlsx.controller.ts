@@ -28,6 +28,8 @@ import {
 	getTaskByIdApiParam,
 	deleteDataByTaskIdApiOperation,
 	deleteDataByTaskIdApiParam,
+	getValidationErrorsByTaskIdApiOperation,
+	getValidationErrorsByTaskIdApiParam,
 } from "./swagger/upload-large-xlsx.swagger";
 import { Response } from "express";
 
@@ -78,5 +80,18 @@ export class UploadLargeXlsxController {
 				`Failed to delete task: ${(error as Error).message}`
 			);
 		}
+	}
+
+	@ApiOperation(getValidationErrorsByTaskIdApiOperation)
+	@ApiParam(getValidationErrorsByTaskIdApiParam)
+	@Get("get-validation-errors-by-task-id/:taskId")
+	async getValidationErrorsByTaskId(
+		@Param("taskId", ParseIntPipe) taskId: number,
+		@Res() response: Response
+	) {
+		await this.uploadLargeXlsxService.getValidationErrorsByTaskId(
+			taskId,
+			response
+		);
 	}
 }
