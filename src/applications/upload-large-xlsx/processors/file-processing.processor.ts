@@ -97,6 +97,9 @@ export class FileProcessingProcessor {
 			);
 
 			/* Save validation errors if any */
+			/**
+			 * TODO: Consider batching if errors array is too large
+			 */
 			if (errors.length > 0) {
 				await this.saveValidationErrors(errors, taskId);
 			}
@@ -175,29 +178,6 @@ export class FileProcessingProcessor {
 		await this.prismaService.uploadLargeXlsxTask.update({
 			where: { id: taskId },
 			data: { status: status as any },
-		});
-	}
-
-	/* Update task completion data */
-	private async updateTaskCompletion(
-		taskId: number,
-		data: {
-			status: string;
-			totalRows: number;
-			validatedRows: number;
-			errorRows: number;
-			savedRows: number;
-		}
-	): Promise<void> {
-		await this.prismaService.uploadLargeXlsxTask.update({
-			where: { id: taskId },
-			data: {
-				status: data.status as any,
-				totalRows: data.totalRows,
-				validatedRows: data.validatedRows,
-				errorRows: data.errorRows,
-				savedRows: data.savedRows,
-			},
 		});
 	}
 }
