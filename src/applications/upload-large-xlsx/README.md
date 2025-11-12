@@ -1,6 +1,6 @@
 # Upload Large XLSX
 
-This module handles large XLSX file uploads with background processing using Bull queues and provides real-time progress updates via Socket.IO WebSocket gateway. The implementation uses a three-processor architecture with Redis for temporary file storage and Zod for type-safe validation.
+This module handles large XLSX file uploads with background processing using Bull queues and provides real-time progress updates via Socket.IO WebSocket gateway. The implementation uses a three-processor architecture with Redis for temporary file storage, Zod for type-safe validation, and includes validation error export functionality for user-friendly error review.
 
 ## Module Structure
 
@@ -10,7 +10,8 @@ This module handles large XLSX file uploads with background processing using Bul
 -   **upload-large-xlsx.controller.ts** - REST API endpoints for file upload and task management
 -   **upload-large-xlsx.service.ts** - Business logic for file upload, Redis storage, and Bull job queuing
 -   **upload-large-xlsx.gateway.ts** - Socket.IO WebSocket gateway for real-time progress updates
--   **types.ts** - Zod schemas and TypeScript type definitions
+-   **types.ts** - Zod schemas and TypeScript type definitions with status management
+-   **websocket-events.enum.ts** - WebSocket event enums for type-safe communication
 
 ### Services
 
@@ -31,9 +32,10 @@ This module handles large XLSX file uploads with background processing using Bul
 ## API Endpoints
 
 -   `POST /applications/upload-large-xlsx/upload` - Upload XLSX file
--   `GET /applications/upload-large-xlsx/tasks` - Get all tasks
--   `GET /applications/upload-large-xlsx/tasks/:taskId` - Get specific task by ID
+-   `GET /applications/upload-large-xlsx/tasks` - Get all tasks (paginated)
+-   `GET /applications/upload-large-xlsx/tasks/:taskId` - Get specific task by ID with data and error counts
 -   `DELETE /applications/upload-large-xlsx/delete-data-by-task-id/:taskId` - Delete task and associated data
+-   `GET /applications/upload-large-xlsx/get-validation-errors-by-task-id/:taskId` - Download validation errors as Excel file
 
 ## Bull Queue Architecture
 
@@ -104,6 +106,39 @@ The `UploadLargeXlsxGateway` provides real-time WebSocket communication for task
 })
 ```
 
+### WebSocket Event Management
+
+The gateway uses type-safe WebSocket events defined in `websocket-events.enum.ts`:
+
+#### Incoming Events (Client → Server)
+
+```typescript
+export enum UploadXlsxIncomingEvents {
+	JOIN_TASK = "join-task",
+	LEAVE_TASK = "leave-task",
+}
+```
+
+#### Outgoing Events (Server → Client)
+
+```typescript
+export enum UploadXlsxOutgoingEvents {
+	// Room management responses
+	JOINED_TASK = "joined-task",
+	LEFT_TASK = "left-task",
+
+	// Task progress and status
+	TASK_PROGRESS = "task-progress",
+	TASK_COMPLETED = "task-completed",
+	TASK_FAILED = "task-failed",
+
+	// Phase-specific events
+	WORKBOOK_LOADING = "workbook-loading",
+	HEADER_VALIDATION = "header-validation",
+	PROCESSING_COMPLETED = "processing-completed",
+}
+```
+
 ### Lifecycle Events
 
 #### 1. Gateway Initialization
@@ -124,13 +159,15 @@ The `UploadLargeXlsxGateway` provides real-time WebSocket communication for task
 
 #### 3. Room-Based Task Subscription
 
--   **Event**: `@SubscribeMessage("join-task")`
+-   **Event**: `@SubscribeMessage(UploadXlsxIncomingEvents.JOIN_TASK)`
 -   **Trigger**: Client sends `join-task` message with `{taskId: number}`
 -   **Purpose**: Subscribe client to specific task updates via room `task-${taskId}`
+-   **Response**: Returns `{event: UploadXlsxOutgoingEvents.JOINED_TASK, data: {taskId}}`
 
--   **Event**: `@SubscribeMessage("leave-task")`
+-   **Event**: `@SubscribeMessage(UploadXlsxIncomingEvents.LEAVE_TASK)`
 -   **Trigger**: Client sends `leave-task` message with `{taskId: number}`
 -   **Purpose**: Unsubscribe client from task updates
+-   **Response**: Returns `{event: UploadXlsxOutgoingEvents.LEFT_TASK, data: {taskId}}`
 
 #### 4. Progress Broadcasting Methods
 
@@ -150,13 +187,28 @@ Called by `FileProcessingProcessor` to emit real-time updates:
 
 ```javascript
 const socket = io("/upload-xlsx");
-socket.emit("join-task", { taskId: 123 });
-socket.on("task-progress", (data) => {
-	console.log("Progress:", data.validationProgress, data.savingProgress);
+
+// Join task room for specific task updates
+socket.emit(UploadXlsxIncomingEvents.JOIN_TASK, { taskId: 123 });
+
+// Listen for real-time progress updates
+socket.on(UploadXlsxOutgoingEvents.TASK_PROGRESS, (data) => {
+	console.log("Phase:", data.phase, "Progress:", data.progress);
+	console.log("Rows:", data.totalRows, "Validated:", data.validatedRows);
 });
-socket.on("task-completed", (data) => {
+
+// Listen for task completion
+socket.on(UploadXlsxOutgoingEvents.TASK_COMPLETED, (data) => {
 	console.log("Task completed:", data);
 });
+
+// Listen for task failure
+socket.on(UploadXlsxOutgoingEvents.TASK_FAILED, (data) => {
+	console.error("Task failed:", data.error);
+});
+
+// Leave task room when done
+socket.emit(UploadXlsxIncomingEvents.LEAVE_TASK, { taskId: 123 });
 ```
 
 ### Task Status Flow via WebSocket
@@ -212,25 +264,65 @@ socket.on("task-completed", (data) => {
 
 ### Zod Schema Validation
 
+The module uses comprehensive Zod schemas for type safety and validation:
+
+#### Status Management Schemas
+
 ```typescript
-/* Type-safe validation throughout */
+/* Database task status definitions */
+export const ActiveStatusesSchema = z.enum(["PENDING", "PROCESSING"]);
+export const TerminalStatusesSchema = z.enum([
+	"COMPLETED",
+	"HAS_ERRORS",
+	"FAILED",
+]);
+export const DbTaskStatusSchema = z.union([
+	ActiveStatusesSchema,
+	TerminalStatusesSchema,
+]);
+
+/* Redis progress status for real-time updates */
+export const RedisProgressStatusSchema = z.enum([
+	"LOADING_WORKBOOK",
+	"VALIDATING_HEADERS",
+	"VALIDATING",
+	"SAVING",
+]);
+```
+
+#### Data Validation Schemas
+
+```typescript
+/* Excel row data validation */
 export const UploadLargeXlsxRowDataSchema = z.object({
 	name: z.string().min(1, "Name is required"),
 	gender: z.string().min(1, "Gender is required"),
 	bioId: z.string().min(1, "Bio ID is required"),
 });
 
-/* All types inferred from schemas */
-export type UploadLargeXlsxRowData = z.infer<
-	typeof UploadLargeXlsxRowDataSchema
->;
+/* Task progress data for WebSocket updates */
+export const TaskProgressDataSchema = z.object({
+	phase: z.string().optional(),
+	progress: z.number().min(0).max(100).optional(),
+	totalRows: z.number().int().min(0).optional(),
+	validatedRows: z.number().int().min(0).optional(),
+	errorRows: z.number().int().min(0).optional(),
+	savedRows: z.number().int().min(0).optional(),
+});
+
+/* Task completion data with timestamp */
+export const TaskCompletionDataSchema = TaskSchema.extend({
+	completedAt: z.string().datetime(),
+});
 ```
 
 **Benefits:**
 
 -   **Runtime Validation** - Catch invalid data with descriptive errors
--   **Type Safety** - TypeScript types automatically inferred
--   **Consistent Schemas** - Single source of truth for data structure
+-   **Type Safety** - TypeScript types automatically inferred from schemas
+-   **Status Management** - Separate schemas for active vs terminal states
+-   **Composable Schemas** - TaskCompletionDataSchema extends TaskSchema
+-   **WebSocket Type Safety** - TaskProgressDataSchema ensures consistent progress updates
 
 ## Error Handling and Recovery
 
@@ -269,6 +361,49 @@ defaultJobOptions: {
 7. **Resource Cleanup** - Automatic Redis and job cleanup
 8. **Type Safety** - Zod validation prevents runtime type errors
 9. **Real-time Updates** - Status-only notifications for quick phases, detailed progress for long phases
+
+## Validation Errors Export
+
+The module provides functionality to export validation errors as Excel files for easy review and correction.
+
+### API Endpoint
+
+```
+GET /applications/upload-large-xlsx/get-validation-errors-by-task-id/:taskId
+```
+
+### Features
+
+-   **Excel Generation**: Uses ExcelJS to create properly formatted xlsx files
+-   **Structured Error Data**: Includes row numbers, original data, and detailed error messages
+-   **Automatic Download**: Sets proper headers for file download with descriptive filename
+-   **Error Handling**: Validates task existence and error data availability
+
+### Excel File Structure
+
+| Row Number | Name | Gender | Bio-ID | Error Messages     |
+| ---------- | ---- | ------ | ------ | ------------------ |
+| 5          | John | M      | ABC123 | Name is required   |
+| 12         | Jane |        | DEF456 | Gender is required |
+
+### Implementation
+
+```typescript
+async getValidationErrorsByTaskId(taskId: number, response: Response): Promise<void> {
+  // 1. Validate task exists
+  // 2. Fetch validation errors from database
+  // 3. Create Excel workbook with formatted data
+  // 4. Set download headers (Content-Type, Content-Disposition)
+  // 5. Send Excel buffer via res.send()
+}
+```
+
+**Benefits:**
+
+-   **User-Friendly Error Review** - Non-technical users can open Excel files easily
+-   **Batch Error Correction** - Users can see all errors at once for efficient fixing
+-   **Data Context** - Original row data included alongside error messages
+-   **Professional Output** - Styled Excel headers and proper column formatting
 
 # Frontend Integration Best Practices
 
