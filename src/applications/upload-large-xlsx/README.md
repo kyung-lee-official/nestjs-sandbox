@@ -2,6 +2,45 @@
 
 This module handles large XLSX file uploads with background processing using Bull queues and provides real-time progress updates via Socket.IO WebSocket gateway. The implementation uses a three-processor architecture with Redis for temporary file storage, Zod for type-safe validation, and includes validation error export functionality for user-friendly error review.
 
+## Quick Start
+
+1. **Upload File**: POST `/applications/upload-large-xlsx/upload` with XLSX file
+2. **Track Progress**: Connect to WebSocket namespace `/upload-xlsx` and join task room
+3. **View Results**: GET `/applications/upload-large-xlsx/tasks` to see completed tasks
+4. **Download Errors**: GET `/applications/upload-large-xlsx/get-validation-errors-by-task-id/:taskId` for error reports
+
+## Prerequisites
+
+-   **Redis**: Required for file storage and real-time progress tracking
+-   **PostgreSQL**: Database for task metadata and processed data
+-   **Bull Queue**: Background job processing
+-   **Socket.IO**: Real-time WebSocket communication
+
+## Configuration
+
+### Environment Variables
+
+```env
+DATABASE_URL=postgresql://...
+REDIS_URL=redis://...
+```
+
+### Bull Queue Configuration
+
+```typescript
+defaultJobOptions: {
+    removeOnComplete: 10,
+    removeOnFail: 50,
+    attempts: 3,
+    backoff: { type: 'exponential', delay: 2000 }
+}
+```
+
+### Redis Storage
+
+-   File TTL: 1 hour
+-   Progress tracking with automatic cleanup
+
 ## Module Structure
 
 ### Core Files
@@ -34,7 +73,7 @@ This module handles large XLSX file uploads with background processing using Bul
 -   `POST /applications/upload-large-xlsx/upload` - Upload XLSX file
 -   `GET /applications/upload-large-xlsx/tasks` - Get all tasks (paginated)
 -   `GET /applications/upload-large-xlsx/tasks/:taskId` - Get specific task by ID with data and error counts
--   `DELETE /applications/upload-large-xlsx/delete-data-by-task-id/:taskId` - Delete task and associated data
+-   `DELETE /applications/upload-large-xlsx/delete-task-by-id/:taskId` - Delete task and associated data
 -   `GET /applications/upload-large-xlsx/get-validation-errors-by-task-id/:taskId` - Download validation errors as Excel file
 
 ## Bull Queue Architecture
@@ -350,18 +389,6 @@ defaultJobOptions: {
 -   **WebSocket Resilience** - Failed emissions don't crash processing
 -   **Database Consistency** - Final counts always match processed data
 
-## Best Practices Implemented
-
-1. **Single Responsibility** - Each processor has a specific role (orchestration, validation, saving)
-2. **Atomic Job Processing** - One Bull job coordinates all processors for complete workflow
-3. **Idempotent Operations** - Jobs can be safely retried
-4. **Phase-Specific Progress** - Independent 0-100% progress tracking per processor
-5. **Graceful Degradation** - Failures don't corrupt partial data
-6. **Comprehensive Logging** - Full audit trail with processor-specific error handling
-7. **Resource Cleanup** - Automatic Redis and job cleanup
-8. **Type Safety** - Zod validation prevents runtime type errors
-9. **Real-time Updates** - Status-only notifications for quick phases, detailed progress for long phases
-
 ## Validation Errors Export
 
 The module provides functionality to export validation errors as Excel files for easy review and correction.
@@ -653,141 +680,7 @@ socket.on("reconnect", () => {
 });
 ```
 
-## 🎨 UI State Management
-
-### Task Status Classification
-
-```typescript
-const isActiveTask = (task) => ['PENDING', 'PROCESSING'].includes(task.status)
-const isTerminalTask = (task) => ['COMPLETED', 'HAS_ERRORS', 'FAILED'].includes(task.status)
-
-/* Separate rendering logic by state */
-const TaskCard = ({ task }) => {
-  if (isActiveTask(task)) {
-    return <ActiveTaskCard task={task} /> /* Shows progress, real-time updates */
-  }
-  return <CompletedTaskCard task={task} /> /* Shows final results, static */
-}
-```
-
-### Progress State Management
-
-```typescript
-/* Local progress state enhanced by WebSocket */
-const useTaskProgress = (task) => {
-	const [progress, setProgress] = useState({
-		phase: task.detailedStatus || "PENDING",
-		percentage: 0,
-		metrics: { validatedRows: 0, errorRows: 0, savedRows: 0 },
-	});
-
-	/* Update from WebSocket events */
-	useEffect(() => {
-		const handleProgress = (data) => {
-			if (data.taskId === task.id) {
-				setProgress((prev) => ({ ...prev, ...data }));
-			}
-		};
-
-		socket?.on("task-progress", handleProgress);
-		return () => socket?.off("task-progress", handleProgress);
-	}, [task.id]);
-
-	return progress;
-};
-```
-
-## ⚡ Performance Optimizations
-
-### Selective Subscriptions
-
-```typescript
-/* Only subscribe to tasks that need real-time updates */
-const useSelectiveSubscriptions = (tasks) => {
-	const activeTasks = useMemo(
-		() => tasks?.filter(isActiveTask) || [],
-		[tasks]
-	);
-
-	/* Subscribe/unsubscribe efficiently */
-	useEffect(() => {
-		const taskIds = activeTasks.map((t) => t.id);
-
-		/* Join new tasks */
-		taskIds.forEach((id) => {
-			if (!subscribedTasks.has(id)) {
-				socket.emit("join-task", { taskId: id });
-				subscribedTasks.add(id);
-			}
-		});
-
-		/* Leave old tasks */
-		subscribedTasks.forEach((id) => {
-			if (!taskIds.includes(id)) {
-				socket.emit("leave-task", { taskId: id });
-				subscribedTasks.delete(id);
-			}
-		});
-	}, [activeTasks.map((t) => t.id).join(",")]);
-};
-```
-
-### Debounced Updates
-
-```typescript
-/* Prevent UI thrashing from rapid WebSocket updates */
-const useDebouncedProgress = (rawProgress) => {
-	const [debouncedProgress, setDebouncedProgress] = useState(rawProgress);
-
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			setDebouncedProgress(rawProgress);
-		}, 100); /* Update UI max every 100ms */
-
-		return () => clearTimeout(timer);
-	}, [rawProgress]);
-
-	return debouncedProgress;
-};
-```
-
-## 🔄 Data Consistency Patterns
-
-### Server-First Updates
-
-```typescript
-const uploadFile = useMutation({
-	mutationFn: api.uploadFile,
-	onSuccess: (response) => {
-		/* Refresh task list to get server state */
-		queryClient.invalidateQueries(["upload-tasks"]);
-	},
-	onError: (error) => {
-		/* Show error message, refresh to get consistent state */
-		queryClient.invalidateQueries(["upload-tasks"]);
-	},
-});
-```
-
-### Conflict Resolution Strategy
-
-```typescript
-/* Handle conflicts between HTTP and WebSocket data */
-const mergeTaskData = (httpTask, socketUpdate) => {
-	return {
-		...httpTask,
-		...socketUpdate,
-		/* HTTP data takes precedence for critical fields */
-		id: httpTask.id,
-		createdAt: httpTask.createdAt,
-		/* WebSocket data enhances with real-time info */
-		progress: socketUpdate.progress ?? httpTask.progress,
-		updatedAt: new Date() /* Mark as recently updated */,
-	};
-};
-```
-
-## 🎯 Frontend Architecture Benefits
+## Frontend Architecture Benefits
 
 ### Reliability
 
