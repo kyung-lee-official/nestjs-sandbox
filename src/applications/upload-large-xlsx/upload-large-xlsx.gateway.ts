@@ -20,7 +20,7 @@ import {
 	UploadXlsxIncomingEvents,
 	UploadXlsxOutgoingEvents,
 } from "./websocket-events.enum";
-import dayjs from "dayjs";
+import dayjs = require("dayjs");
 
 /* When NestJS app starts up */
 @Injectable()
