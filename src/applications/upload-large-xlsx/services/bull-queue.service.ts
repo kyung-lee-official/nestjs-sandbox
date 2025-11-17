@@ -32,7 +32,18 @@ export class BullQueueService implements OnModuleInit, OnModuleDestroy {
 					password: redisClient.options.password,
 					db: redisClient.options.db || 0,
 				},
+				/**
+				 * Bull queue settings
+				 * if the job is CPU intensive or long-running,
+				 * consider adjusting stalledInterval accordingly,
+				 * or, better yet, implement heartbeat updates in the job processor.
+				 */
+				settings: {
+					stalledInterval: 30000 /* Check for stalled jobs every 30 seconds */,
+					maxStalledCount: 1,
+				},
 				defaultJobOptions: {
+					timeout: 300000 /* 5 minutes default */,
 					removeOnComplete: 10 /* Keep 10 completed jobs for debugging */,
 					removeOnFail: 50 /* Keep 50 failed jobs for analysis */,
 					attempts: 3 /* Retry failed jobs up to 3 times */,

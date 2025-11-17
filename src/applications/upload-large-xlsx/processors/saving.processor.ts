@@ -58,6 +58,12 @@ export class SavingProcessor {
 						savingProgress /* Send SAVING-specific progress (0-100%) */,
 					savedRows,
 				});
+
+				/**
+				 * Update job heartbeat to prevent timeout (stalled job)
+				 * this is crucial for long-running save operations,
+				 */
+				job.update({ heartbeat: Date.now() });
 			}
 
 			return savedRows;
