@@ -17,6 +17,11 @@ import {
 import { ValidatingProcessor } from "./validating.processor";
 import { SavingProcessor } from "./saving.processor";
 import dayjs = require("dayjs");
+import z from "zod";
+
+/* Zod schema for Excel header validation */
+export const excelHeadersSchema = z.enum(["Name", "Gender", "Bio-ID"]);
+export type ExcelHeaders = z.infer<typeof excelHeadersSchema>;
 
 @Injectable()
 export class FileProcessingProcessor {
@@ -68,11 +73,10 @@ export class FileProcessingProcessor {
 				phase: RedisProgressStatusSchema.enum.VALIDATING_HEADERS,
 			});
 
-			const columnMap = validateWorksheetHeaders(worksheet, [
-				"Name",
-				"Gender",
-				"Bio-ID",
-			]);
+			const columnMap = validateWorksheetHeaders(
+				worksheet,
+				excelHeadersSchema.options
+			);
 			/* Phase 3: Extract and validate data */
 			/* Delegate to ValidatingProcessor which WILL emit real-time progress */
 			const { validatedData, errors, totalRows } =

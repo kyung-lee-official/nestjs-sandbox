@@ -7,6 +7,7 @@ import {
 	UploadLargeXlsxRowDataSchema,
 	ValidationError,
 } from "../types";
+import { excelHeadersSchema } from "./file-processing.processor";
 
 @Injectable()
 export class ValidatingProcessor {
@@ -40,9 +41,14 @@ export class ValidatingProcessor {
 				const row = worksheet.getRow(rowNumber);
 
 				const rowData = {
-					name: row.getCell(columnMap["Name"]).text,
-					gender: row.getCell(columnMap["Gender"]).text,
-					bioId: row.getCell(columnMap["Bio-ID"]).text,
+					name: row.getCell(columnMap[excelHeadersSchema.enum.Name])
+						.text,
+					gender: row.getCell(
+						columnMap[excelHeadersSchema.enum.Gender]
+					).text,
+					bioId: row.getCell(
+						columnMap[excelHeadersSchema.enum["Bio-ID"]]
+					).text,
 				};
 
 				/* Validate row data using Zod */
