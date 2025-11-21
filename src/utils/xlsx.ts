@@ -59,7 +59,7 @@ export function validateWorksheetHeaders(
 	const foundHeaders: string[] = [];
 
 	headerRow.eachCell({ includeEmpty: false }, (cell, colNumber) => {
-		const cellValue = cell.value?.toString().trim();
+		const cellValue = cell.text.trim();
 		if (cellValue) {
 			/* Keep 1-based index for ExcelJS getCell() compatibility */
 			headerMap[cellValue] = colNumber;
