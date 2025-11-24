@@ -4,7 +4,6 @@ import * as ExcelJS from "exceljs";
 import { PrismaService } from "../../../recipes/prisma/prisma.service";
 import { UploadLargeXlsxGateway } from "../upload-large-xlsx.gateway";
 import { RedisStorageService } from "../services/redis-storage.service";
-import { validateWorksheetHeaders } from "../../../utils/xlsx";
 import {
 	ProcessFileJobData,
 	ProcessFileJobDataSchema,
@@ -18,6 +17,7 @@ import { ValidatingProcessor } from "./validating.processor";
 import { SavingProcessor } from "./saving.processor";
 import dayjs = require("dayjs");
 import z from "zod";
+import { validateWorksheetHeaders } from "exceljs-ext";
 
 /* Zod schema for Excel header validation */
 export const excelHeadersSchema = z.enum(["Name", "Gender", "Bio-ID"]);
