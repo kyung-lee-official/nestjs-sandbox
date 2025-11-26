@@ -34,6 +34,8 @@
     "@nestjs/swagger": "^7.4.2",
     "@nestjs/websockets": "^10.4.4",
     "@prisma/client": "^6.18.0",
+    "@ts-rest/core": "^3.52.1",
+    "@ts-rest/express": "^3.52.1",
     "bull": "^4.16.5",
     "bullmq": "^5.63.0",
     "class-transformer": "^0.5.1",
