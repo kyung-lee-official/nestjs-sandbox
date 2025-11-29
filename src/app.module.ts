@@ -14,7 +14,6 @@ import { PerformancesModule } from "./cerbos-authorization/performances/performa
 import { AssessmentsModule } from "./cerbos-authorization/assessments/assessments.module";
 import { ApplicationsModule } from "./applications/applications.module";
 import { BullModule } from "@nestjs/bullmq";
-import { PokemonModule } from "./adapters/nest/pokemon.module";
 
 @Module({
 	imports: [
@@ -29,7 +28,6 @@ import { PokemonModule } from "./adapters/nest/pokemon.module";
 		PerformancesModule,
 		AssessmentsModule,
 		ApplicationsModule,
-		PokemonModule,
 		BullModule.forRoot({
 			connection: {
 				host: process.env.REDIS_HOST,
