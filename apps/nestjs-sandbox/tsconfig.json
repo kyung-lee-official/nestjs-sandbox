@@ -22,6 +22,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@utils/*": ["./src/utils/*"],
+      "@repo/database": ["../../packages/database/*"],
+      "@repo/schema": ["../../packages/schema/*"],
       "@repo/types": ["../../packages/types/*"]
     }
   },
