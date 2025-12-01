@@ -9,6 +9,10 @@
       "cache": false,
       "persistent": true
     },
+    "db:generate": {
+      "cache": true,
+      "persistent": true
+    },
     "typecheck": {
       "dependsOn": ["^build"]
     }
