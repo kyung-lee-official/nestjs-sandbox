@@ -12,6 +12,7 @@
     /* DO NOT set rootDir to src, or typescript will error on files outside src, like internal packages */
     // "rootDir": "./src",
     "incremental": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "skipLibCheck": true,
     "noEmit": false,
     // "strictNullChecks": false,
