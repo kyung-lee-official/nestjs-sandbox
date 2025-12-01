@@ -1,0 +1,19 @@
+{
+  "name": "@repo/types",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+	"build": "tsc",
+    "lint": "biome lint ."
+  },
+  "exports": {
+    ".": "./index.ts",
+    "./*": "./*.ts"
+  },
+  "devDependencies": {
+    "typescript": "latest"
+  },
+  "dependencies": {
+    "zod": "^4.1.13"
+  }
+}
