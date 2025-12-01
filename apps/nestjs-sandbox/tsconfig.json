@@ -9,7 +9,8 @@
     "target": "ES2020",
     "sourceMap": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+	/* DO NOT set rootDir to src, or typescript will error on files outside src, like internal packages */
+    // "rootDir": "./src",
     "incremental": true,
     "skipLibCheck": true,
     "noEmit": false,
@@ -22,7 +23,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@utils/*": ["./src/utils/*"],
-      "@repo/database": ["../../packages/database/*"],
+      "@repo/database": ["../../packages/database/src"],
       "@repo/schema": ["../../packages/schema/*"],
       "@repo/types": ["../../packages/types/*"]
     }
