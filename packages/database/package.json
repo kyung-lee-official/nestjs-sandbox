@@ -9,7 +9,6 @@
     "./*": "./dist/*.js"
   },
   "scripts": {
-    "dev": "tsc --watch",
     "build": "tsc",
     "db:generate": "prisma generate --schema=./prisma/schema.prisma"
   },
