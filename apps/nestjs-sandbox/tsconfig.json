@@ -9,8 +9,10 @@
     "target": "ES2020",
     "sourceMap": true,
     "outDir": "./dist",
+    "rootDir": "./src",
     "incremental": true,
     "skipLibCheck": true,
+    "noEmit": false,
     // "strictNullChecks": false,
     "noImplicitAny": false,
     // "strictBindCallApply": false,
@@ -22,5 +24,7 @@
       "@utils/*": ["./src/utils/*"],
       "@repo/types": ["../../packages/types/*"]
     }
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "test"]
 }
