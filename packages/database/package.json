@@ -1,0 +1,20 @@
+{
+  "name": "@repo/database",
+  "devDependencies": {
+    "prisma": "^7.0.1",
+    "typescript": "latest"
+  },
+  "exports": {
+    ".": "./index.ts",
+    "./*": "./*.ts"
+  },
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc",
+    "db:generate": "prisma generate --schema=./prisma/schema.prisma"
+  },
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^17.2.3"
+  }
+}
