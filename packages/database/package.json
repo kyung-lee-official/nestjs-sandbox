@@ -5,8 +5,8 @@
     "typescript": "latest"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./*": "./*.ts"
+    ".": "./dist/index.js",
+    "./*": "./dist/*.js"
   },
   "scripts": {
     "dev": "tsc --watch",
