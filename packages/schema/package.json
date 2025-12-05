@@ -1,18 +1,21 @@
 {
   "name": "@repo/schema",
+  "version": "0.0.0",
+  "private": true,
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
   "scripts": {
     "build": "tsc",
     "lint": "biome lint ."
   },
-  "exports": {
-    ".": "./index.ts",
-    "./*": "./*.ts"
-  },
-  "devDependencies": {
-    "typescript": "latest"
-  },
   "dependencies": {
     "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*"
   }
 }
