@@ -1,20 +1,24 @@
 {
   "name": "@repo/database",
-  "devDependencies": {
-    "prisma": "^7.0.1",
-    "typescript": "latest"
-  },
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js",
-    "./*": "./dist/*.js"
+    ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --build",
     "db:generate": "prisma generate --schema=./prisma/schema.prisma"
   },
-  "type": "module",
   "dependencies": {
     "@prisma/client": "^7.0.1",
     "dotenv": "^17.2.3"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "latest",
+    "prisma": "^7.0.1"
   }
 }
