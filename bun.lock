@@ -68,17 +68,20 @@
     },
     "packages/database": {
       "name": "@repo/database",
+      "version": "0.0.0",
       "dependencies": {
         "@prisma/client": "^7.0.1",
         "dotenv": "^17.2.3",
       },
       "devDependencies": {
+        "@repo/typescript-config": "workspace:*",
         "prisma": "^7.0.1",
         "typescript": "latest",
       },
     },
     "packages/schema": {
       "name": "@repo/schema",
+      "version": "0.0.0",
       "dependencies": {
         "zod": "^4.1.13",
       },
