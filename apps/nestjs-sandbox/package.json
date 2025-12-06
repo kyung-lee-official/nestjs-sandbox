@@ -34,6 +34,8 @@
     "@nestjs/swagger": "^7.4.2",
     "@nestjs/websockets": "^10.4.4",
     "@repo/database": "workspace:*",
+    "@repo/schema": "workspace:*",
+    "@repo/types": "workspace:*",
     "bull": "^4.16.5",
     "bullmq": "^5.63.0",
     "class-transformer": "^0.5.1",
