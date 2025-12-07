@@ -16,7 +16,7 @@ import type {
   Post as PostModel,
   User,
 } from "@repo/database";
-import { Decimal } from "@repo/database/generated/runtime/client";
+import Decimal from "decimal.js";
 import type { BigIntService } from "./bigint.service";
 import type { CategoriesService } from "./categories.service";
 import { CreateCategoryDto } from "./dto/create-category.dto";

@@ -6,10 +6,13 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 // The client is instantiated once here, ready to be used
 const prisma = new PrismaClient({
   adapter,
-  // log: ["query"], // Centralized logging configuration
 });
 
-// We only export the instance and the types for use
-export * from "@prisma/client";
+// Export everything from the generated client (includes all models and types)
+export { PrismaClient } from "./client/client.js";
+export * from "./client/enums.js";
+export * from "./client/models.js";
+
+// Export the configured prisma instance
 export { prisma };
 export default prisma;

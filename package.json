@@ -15,5 +15,8 @@
   "devDependencies": {
     "@biomejs/biome": "2.3.8",
     "turbo": "^2.6.3"
+  },
+  "dependencies": {
+    "decimal.js": "^10.6.0"
   }
 }
