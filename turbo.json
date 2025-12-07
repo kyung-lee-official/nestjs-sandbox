@@ -11,6 +11,9 @@
       "cache": false,
       "persistent": true
     },
+	"start": {
+	  "cache": false
+	},
     "db:generate": {
       "cache": true,
       "persistent": true
