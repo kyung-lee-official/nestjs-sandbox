@@ -8,7 +8,7 @@ export class PerformancesService {
 
   async create(createPerformanceDto: CreatePerformanceDto) {
     const { score, ownerId } = createPerformanceDto;
-    return await this.prismaService.performance.create({
+    return await this.prismaService.client.performance.create({
       data: {
         score,
         ownerId,
@@ -17,7 +17,7 @@ export class PerformancesService {
   }
 
   async findAll() {
-    return await this.prismaService.performance.findMany({
+    return await this.prismaService.client.performance.findMany({
       include: {
         owner: {
           include: {
@@ -37,7 +37,7 @@ export class PerformancesService {
   // }
 
   async remove(id: number) {
-    return await this.prismaService.performance.delete({
+    return await this.prismaService.client.performance.delete({
       where: {
         id,
       },

@@ -7,7 +7,7 @@ export class OrderService {
 	constructor(private prisma: PrismaService) {}
 
 	async createOrder() {
-		const order = await this.prisma.testConnectOrCreateOrder.create({
+		const order = await this.prisma.client.testConnectOrCreateOrder.create({
 			data: {
 				product: {
 					connectOrCreate: {
@@ -24,7 +24,7 @@ export class OrderService {
 	}
 
 	async createRetailSalesData() {
-		const order = await this.prisma.retailSalesData.create({
+		const order = await this.prisma.client.retailSalesData.create({
 			data: {
 				/**
 				 * ❌ this won't work,

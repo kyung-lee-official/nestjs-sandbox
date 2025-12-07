@@ -383,7 +383,7 @@ export class PrismaController {
     @Body() createDecimalDto: CreateDecimalDto,
   ): Promise<TestDecimal> {
     const { decimal, rate, monetary } = createDecimalDto;
-    return await this.prismaService.testDecimal.create({
+    return await this.prismaService.client.testDecimal.create({
       data: {
         decimal: new Decimal(decimal),
         rate: new Decimal(rate),

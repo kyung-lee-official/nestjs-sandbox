@@ -87,7 +87,7 @@ export class FileProcessingProcessor {
         );
 
       /* Update database with total rows */
-      await this.prismaService.uploadLargeXlsxTask.update({
+      await this.prismaService.client.uploadLargeXlsxTask.update({
         where: { id: taskId },
         data: { totalRows },
       });
@@ -114,7 +114,7 @@ export class FileProcessingProcessor {
           : TerminalStatusesSchema.enum.COMPLETED;
 
       /* Update final task status and counts */
-      const updatedData = await this.prismaService.uploadLargeXlsxTask.update({
+      const updatedData = await this.prismaService.client.uploadLargeXlsxTask.update({
         where: { id: taskId },
         data: {
           status: finalStatus,
@@ -159,7 +159,7 @@ export class FileProcessingProcessor {
   ): Promise<void> {
     if (errors.length === 0) return;
 
-    await this.prismaService.uploadLargeXlsxError.createMany({
+    await this.prismaService.client.uploadLargeXlsxError.createMany({
       data: errors.map((error) => ({
         taskId,
         rowNumber: error.rowNumber,
@@ -174,7 +174,7 @@ export class FileProcessingProcessor {
     taskId: number,
     status: string,
   ): Promise<void> {
-    await this.prismaService.uploadLargeXlsxTask.update({
+    await this.prismaService.client.uploadLargeXlsxTask.update({
       where: { id: taskId },
       data: { status: status as any },
     });

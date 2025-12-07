@@ -8,12 +8,12 @@ export class EventsService {
   constructor(private prisma: PrismaService) {}
 
   async createEvent(createEventDto: CreateEventDto): Promise<Event> {
-    return await this.prisma.event.create({
+    return await this.prisma.client.event.create({
       data: createEventDto,
     });
   }
 
   async getAllEvents(): Promise<Event[]> {
-    return await this.prisma.event.findMany();
+    return await this.prisma.client.event.findMany();
   }
 }

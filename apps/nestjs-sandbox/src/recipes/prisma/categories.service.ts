@@ -9,7 +9,7 @@ export class CategoriesService {
 
 	async createCategory(createCategoryDto: CreateCategoryDto) {
 		const { name } = createCategoryDto;
-		return await this.prisma.category.create({
+		return await this.prisma.client.category.create({
 			data: {
 				name,
 			},
@@ -17,7 +17,7 @@ export class CategoriesService {
 	}
 
 	async getAllCategories() {
-		return await this.prisma.category.findMany({
+		return await this.prisma.client.category.findMany({
 			include: {
 				posts: true,
 			},
@@ -26,7 +26,7 @@ export class CategoriesService {
 
 	async updateCategory(updateCategoryDto: UpdateCategoryDto) {
 		const { name, postSlugs } = updateCategoryDto;
-		return await this.prisma.category.update({
+		return await this.prisma.client.category.update({
 			where: {
 				name,
 			},

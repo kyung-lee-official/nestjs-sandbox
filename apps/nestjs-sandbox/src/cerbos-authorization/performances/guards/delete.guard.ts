@@ -19,7 +19,7 @@ export class DeleteCerbosGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
     const { id } = req.jwtPayload;
-    const requester = await this.prismaService.member.findUnique({
+    const requester = await this.prismaService.client.member.findUnique({
       where: {
         id: id,
       },
@@ -42,7 +42,7 @@ export class DeleteCerbosGuard implements CanActivate {
     if (isNaN(performanceId)) {
       throw new BadRequestException("Invalid resource id");
     }
-    const performance = await this.prismaService.performance.findUnique({
+    const performance = await this.prismaService.client.performance.findUnique({
       where: {
         id: performanceId,
       },

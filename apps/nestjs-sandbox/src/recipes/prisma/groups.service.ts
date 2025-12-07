@@ -8,7 +8,7 @@ export class GroupsService {
 
   async createGroupWithOwner(body: any): Promise<Group> {
     const { name, email, ownerName } = body;
-    const group = await this.prisma.group.create({
+    const group = await this.prisma.client.group.create({
       data: {
         name: name,
         owner: {
@@ -30,7 +30,7 @@ export class GroupsService {
   }
 
   async getAllGroups(): Promise<Group[]> {
-    return await this.prisma.group.findMany({
+    return await this.prisma.client.group.findMany({
       include: {
         owner: {
           include: {

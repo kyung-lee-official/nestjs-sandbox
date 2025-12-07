@@ -89,7 +89,7 @@ export class ProgramLifecycleService implements OnModuleInit, OnModuleDestroy {
   }
 
   async getDbStatus() {
-    const status = await this.prisma.lifecycle.findFirst();
+    const status = await this.prisma.client.lifecycle.findFirst();
     if (!status) {
       return { status: "no status in db" };
     }

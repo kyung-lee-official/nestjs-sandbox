@@ -32,7 +32,7 @@ export class UploadLargeXlsxService {
     }
 
     /* Create a new task with pending status */
-    const task = await this.prismaService.uploadLargeXlsxTask.create({
+    const task = await this.prismaService.client.uploadLargeXlsxTask.create({
       data: {
         status: ActiveStatusesSchema.enum.PENDING,
         totalRows: 0 /* Will be updated after processing */,
@@ -68,7 +68,7 @@ export class UploadLargeXlsxService {
         await this.bullQueueService.addFileProcessingJob(validatedJobData);
       } catch (error) {
         /* If job queuing fails, update task status and clean up */
-        await this.prismaService.uploadLargeXlsxTask.update({
+        await this.prismaService.client.uploadLargeXlsxTask.update({
           where: { id: task.id },
           data: { status: TerminalStatusesSchema.enum.FAILED as any },
         });
@@ -81,7 +81,7 @@ export class UploadLargeXlsxService {
     const pageSize = 10;
     const skip = (page - 1) * pageSize;
 
-    const tasks = await this.prismaService.uploadLargeXlsxTask.findMany({
+    const tasks = await this.prismaService.client.uploadLargeXlsxTask.findMany({
       skip,
       take: pageSize,
       orderBy: { createdAt: "desc" },
@@ -90,7 +90,7 @@ export class UploadLargeXlsxService {
   }
 
   async getTaskById(taskId: number): Promise<UploadLargeXlsxTask | null> {
-    const task = await this.prismaService.uploadLargeXlsxTask.findUnique({
+    const task = await this.prismaService.client.uploadLargeXlsxTask.findUnique({
       where: { id: taskId },
       include: {
         data: true,
@@ -108,7 +108,7 @@ export class UploadLargeXlsxService {
 
   async deleteDataByTaskId(taskId: number) {
     /* Delete all data entries for this task */
-    const deletedData = await this.prismaService.uploadLargeXlsxData.deleteMany(
+    const deletedData = await this.prismaService.client.uploadLargeXlsxData.deleteMany(
       {
         where: { taskId },
       },
@@ -116,12 +116,12 @@ export class UploadLargeXlsxService {
 
     /* Delete all error entries for this task */
     const deletedErrors =
-      await this.prismaService.uploadLargeXlsxError.deleteMany({
+      await this.prismaService.client.uploadLargeXlsxError.deleteMany({
         where: { taskId },
       });
 
     /* Delete the task itself */
-    await this.prismaService.uploadLargeXlsxTask.delete({
+    await this.prismaService.client.uploadLargeXlsxTask.delete({
       where: { id: taskId },
     });
 
@@ -139,7 +139,7 @@ export class UploadLargeXlsxService {
   ): Promise<void> {
     try {
       /* First, check if task exists */
-      const task = await this.prismaService.uploadLargeXlsxTask.findUnique({
+      const task = await this.prismaService.client.uploadLargeXlsxTask.findUnique({
         where: { id: taskId },
       });
 
@@ -148,7 +148,7 @@ export class UploadLargeXlsxService {
       }
 
       /* Get all validation errors for this task */
-      const errors = await this.prismaService.uploadLargeXlsxError.findMany({
+      const errors = await this.prismaService.client.uploadLargeXlsxError.findMany({
         where: { taskId },
         orderBy: { rowNumber: "asc" },
       });

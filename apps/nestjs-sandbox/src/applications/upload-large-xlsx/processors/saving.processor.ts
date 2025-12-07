@@ -31,7 +31,7 @@ export class SavingProcessor {
 				const batch = validData.slice(i, i + BATCH_SIZE);
 
 				/* Insert batch to database */
-				await this.prismaService.uploadLargeXlsxData.createMany({
+				await this.prismaService.client.uploadLargeXlsxData.createMany({
 					data: batch.map((row) => ({
 						taskId,
 						name: row.name,

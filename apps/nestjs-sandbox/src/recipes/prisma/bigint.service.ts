@@ -6,7 +6,7 @@ export class BigIntService {
   constructor(private prisma: PrismaService) {}
 
   async createBigInt(bigint: bigint): Promise<{ id: number; value: string }> {
-    const bi = await this.prisma.testBigInt.create({
+    const bi = await this.prisma.client.testBigInt.create({
       data: {
         value: BigInt(bigint),
       },
@@ -26,7 +26,7 @@ export class BigIntService {
   }
 
   async getBigInt(): Promise<{ id: number; value: string }[]> {
-    const bis = await this.prisma.testBigInt.findMany();
+    const bis = await this.prisma.client.testBigInt.findMany();
     return bis.map((bi) => ({
       ...bi,
       value: bi.value.toString(),
@@ -34,7 +34,7 @@ export class BigIntService {
   }
 
   async deteteBigInt(id: number): Promise<{ id: number; value: string }> {
-    const res = await this.prisma.testBigInt.delete({
+    const res = await this.prisma.client.testBigInt.delete({
       where: {
         id,
       },

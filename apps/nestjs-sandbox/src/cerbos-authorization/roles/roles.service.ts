@@ -10,7 +10,7 @@ export class RolesService {
 
   async create(createRoleDto: CreateRoleDto) {
     const { id } = createRoleDto;
-    return await this.prismaService.role.create({
+    return await this.prismaService.client.role.create({
       data: {
         id,
       },
@@ -18,7 +18,7 @@ export class RolesService {
   }
 
   async findAll() {
-    return await this.prismaService.role.findMany({
+    return await this.prismaService.client.role.findMany({
       include: {
         members: true,
       },
@@ -26,7 +26,7 @@ export class RolesService {
   }
 
   async findOne(id: string) {
-    return await this.prismaService.role.findUnique({
+    return await this.prismaService.client.role.findUnique({
       where: {
         id,
       },
@@ -35,7 +35,7 @@ export class RolesService {
 
   async update(updateRoleDto: UpdateRoleDto) {
     const { id, members } = updateRoleDto;
-    return await this.prismaService.role.update({
+    return await this.prismaService.client.role.update({
       where: {
         id,
       },
@@ -50,7 +50,7 @@ export class RolesService {
   }
 
   async remove(id: string) {
-    const res = await this.prismaService.role.delete({
+    const res = await this.prismaService.client.role.delete({
       where: {
         id,
       },

@@ -1,13 +1,13 @@
 import { Module } from "@nestjs/common";
-import { PrismaService } from "./prisma.service";
-import { PrismaController } from "./prisma.controller";
-import { UsersService } from "./users.service";
-import { PostsService } from "./posts.service";
+import { BigIntService } from "./bigint.service";
 import { CategoriesService } from "./categories.service";
 import { EventsService } from "./events.service";
 import { GroupsService } from "./groups.service";
-import { BigIntService } from "./bigint.service";
 import { OrderService } from "./order.service";
+import { PostsService } from "./posts.service";
+import { PrismaController } from "./prisma.controller";
+import { PrismaService } from "./prisma.service";
+import { UsersService } from "./users.service";
 
 @Module({
 	controllers: [PrismaController],

@@ -18,7 +18,7 @@ export class GetCerbosGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
     const { id } = req.jwtPayload;
-    const requester = await this.prismaService.member.findUnique({
+    const requester = await this.prismaService.client.member.findUnique({
       where: {
         id: id,
       },
@@ -37,7 +37,7 @@ export class GetCerbosGuard implements CanActivate {
     const actions = ["get"];
 
     /* resource */
-    const performanceIds = await this.prismaService.performance.findMany({
+    const performanceIds = await this.prismaService.client.performance.findMany({
       select: {
         id: true,
       },

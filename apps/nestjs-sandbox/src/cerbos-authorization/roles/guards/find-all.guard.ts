@@ -16,7 +16,7 @@ export class FindAllCerbosGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     const { id } = req.jwtPayload;
 
-    const requester = await this.prismaService.role.findUnique({
+    const requester = await this.prismaService.client.role.findUnique({
       where: {
         id: id,
       },

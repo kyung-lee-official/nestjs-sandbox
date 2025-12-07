@@ -10,7 +10,7 @@ export class PostsService {
 
   async createPost(createPostDto: CreatePostDto): Promise<Post> {
     const { userEmail, ...rest } = createPostDto;
-    return await this.prisma.post.create({
+    return await this.prisma.client.post.create({
       data: {
         ...rest,
         author: {
@@ -23,7 +23,7 @@ export class PostsService {
   }
 
   async getAllPosts(): Promise<Post[]> {
-    return await this.prisma.post.findMany({
+    return await this.prisma.client.post.findMany({
       include: {
         author: true,
         categories: true,
@@ -33,7 +33,7 @@ export class PostsService {
 
   async findPosts(findPostDto: FindPostDto): Promise<Post[]> {
     const { slugs, categoryNames } = findPostDto;
-    return await this.prisma.post.findMany({
+    return await this.prisma.client.post.findMany({
       where: {
         AND: [
           {

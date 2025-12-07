@@ -10,7 +10,7 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    return await this.prisma.user.create({
+    return await this.prisma.client.user.create({
       data: {
         ...createUserDto,
         titles: {
@@ -21,7 +21,7 @@ export class UsersService {
   }
 
   async getAllUsers(): Promise<User[]> {
-    return await this.prisma.user.findMany({
+    return await this.prisma.client.user.findMany({
       include: {
         posts: {
           include: {
@@ -33,7 +33,7 @@ export class UsersService {
   }
 
   async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    return await this.prisma.user.update({
+    return await this.prisma.client.user.update({
       where: { id },
       data: {
         ...updateUserDto,
@@ -45,7 +45,7 @@ export class UsersService {
     JsonFieldFilterDto: JsonFieldFilterDto,
   ): Promise<User[]> {
     const { recoveryEmail } = JsonFieldFilterDto;
-    const users = await this.prisma.user.findMany({
+    const users = await this.prisma.client.user.findMany({
       where: {
         recoveryEmails: {
           has: recoveryEmail,

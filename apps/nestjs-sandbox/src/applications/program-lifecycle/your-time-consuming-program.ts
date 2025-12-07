@@ -38,15 +38,15 @@ export class YourTimeConsumingProgram {
 		if (this.shouldAbort) return;
 		if (this.shouldPause) {
 			/* pause the task, save status to db */
-			const status = await this.prisma.lifecycle.findFirst();
+			const status = await this.prisma.client.lifecycle.findFirst();
 			if (status) {
-				await this.prisma.lifecycle.update({
+				await this.prisma.client.lifecycle.update({
 					where: { id: status.id },
 					data: { value: chunkIndex },
 				});
 			} else {
 				/* create a new lifecycle status */
-				await this.prisma.lifecycle.create({
+				await this.prisma.client.lifecycle.create({
 					data: { value: chunkIndex },
 				});
 			}
@@ -75,7 +75,7 @@ export class YourTimeConsumingProgram {
 
 	async resume() {
 		/* resume the task */
-		const status = await this.prisma.lifecycle.findFirst();
+		const status = await this.prisma.client.lifecycle.findFirst();
 		if (!status) {
 			throw new Error("No lifecycle status found.");
 		}
@@ -83,7 +83,7 @@ export class YourTimeConsumingProgram {
 	}
 
 	async abort() {
-		await this.prisma.lifecycle.deleteMany();
+		await this.prisma.client.lifecycle.deleteMany();
 		this.shouldAbort = true;
 	}
 }

@@ -13,7 +13,7 @@ export class AuthneticationService {
 
   async signUp(signUpDto: SignUpDto) {
     const { id } = signUpDto;
-    return await this.prismaService.member.create({
+    return await this.prismaService.client.member.create({
       data: {
         id,
       },
@@ -22,7 +22,7 @@ export class AuthneticationService {
 
   async signIn(signInDto: SignInDto) {
     const { id } = signInDto;
-    const member = await this.prismaService.member.findUnique({
+    const member = await this.prismaService.client.member.findUnique({
       where: {
         id,
       },

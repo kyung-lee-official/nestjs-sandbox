@@ -9,7 +9,7 @@ export class MembersService {
 
   async create(createMemberDto: CreateMemberDto) {
     const { id } = createMemberDto;
-    return await this.prismaService.member.create({
+    return await this.prismaService.client.member.create({
       data: {
         id,
       },
@@ -17,7 +17,7 @@ export class MembersService {
   }
 
   async findAll() {
-    return await this.prismaService.member.findMany({
+    return await this.prismaService.client.member.findMany({
       include: {
         roles: true,
       },
@@ -33,7 +33,7 @@ export class MembersService {
   }
 
   async remove(id: string) {
-    return await this.prismaService.member.delete({
+    return await this.prismaService.client.member.delete({
       where: {
         id,
       },
