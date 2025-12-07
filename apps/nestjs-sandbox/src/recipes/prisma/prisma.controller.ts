@@ -14,6 +14,7 @@ import type {
   Event,
   Group,
   Post as PostModel,
+  TestDecimal,
   User,
 } from "@repo/database";
 import Decimal from "decimal.js";
@@ -160,7 +161,9 @@ export class PrismaController {
     },
   })
   @Post("users/find-by-json-field")
-  async findUsersByJsonField(@Body() jsonFieldFilter: JsonFieldFilterDto) {
+  async findUsersByJsonField(
+    @Body() jsonFieldFilter: JsonFieldFilterDto,
+  ): Promise<User[]> {
     return this.usersService.findUsersByJsonField(jsonFieldFilter);
   }
 
@@ -376,7 +379,9 @@ export class PrismaController {
   @ApiOperation({ summary: "Test Decimal" })
   @ApiBody(createDecimalApiBody)
   @Post("create-decimal")
-  async createDecimal(@Body() createDecimalDto: CreateDecimalDto) {
+  async createDecimal(
+    @Body() createDecimalDto: CreateDecimalDto,
+  ): Promise<TestDecimal> {
     const { decimal, rate, monetary } = createDecimalDto;
     return await this.prismaService.testDecimal.create({
       data: {
