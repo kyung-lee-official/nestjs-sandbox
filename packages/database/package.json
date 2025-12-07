@@ -6,19 +6,30 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime/index.d.ts",
+      "import": "./dist/runtime/index.js",
+      "require": "./dist/runtime/index.js",
+      "default": "./dist/runtime/index.js"
+    }
   },
   "scripts": {
     "build": "tsc --build",
     "db:generate": "prisma generate --schema=./prisma/schema.prisma"
   },
   "dependencies": {
-    "@prisma/client": "^7.0.1",
+    "@prisma/client": "^7.1.0",
     "dotenv": "^17.2.3"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "typescript": "latest",
-    "prisma": "^7.0.1"
+    "prisma": "^7.1.0"
   }
 }
