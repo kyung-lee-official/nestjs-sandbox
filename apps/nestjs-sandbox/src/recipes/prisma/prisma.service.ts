@@ -4,22 +4,18 @@ import {
   type OnModuleDestroy,
   type OnModuleInit,
 } from "@nestjs/common";
-import { PrismaClient, prisma } from "@repo/database"; // shared client
+import { prisma } from "@repo/database"; // shared client
 
 @Injectable()
-export class PrismaService
-  extends PrismaClient
-  implements OnModuleInit, OnModuleDestroy
-{
+export class PrismaService implements OnModuleInit, OnModuleDestroy {
+  // Expose the client instance for injection and use in other services
+  public client = prisma;
+
   async onModuleInit() {
-    await prisma.$connect();
+    await this.client.$connect();
   }
 
   async onModuleDestroy() {
-    await prisma.$disconnect();
-  }
-
-  get client() {
-    return prisma;
+    await this.client.$disconnect();
   }
 }
