@@ -1,0 +1,4 @@
+# Use text-based lockfile instead of binary
+[install]
+saveTextLockfile = true
+linker = "isolated"
