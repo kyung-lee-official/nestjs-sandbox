@@ -73,7 +73,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@repo/typescript-config": "*",
+    "@repo/typescript-config": "workspace:*",
     "@biomejs/biome": "2.3.8",
     "@hookform/devtools": "^4.4.0",
     "@types/node": "^22.15.17",
