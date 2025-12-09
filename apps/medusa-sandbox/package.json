@@ -1,5 +1,5 @@
 {
-  "name": "medusa-backend-sandbox",
+  "name": "medusa-sandbox",
   "version": "0.0.1",
   "description": "A starter for Medusa projects.",
   "author": "Medusa (https://medusajs.com)",
@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@medusajs/admin-sdk": "2.12.1",
+    "@medusajs/admin-shared": "^2.12.1",
     "@medusajs/cli": "2.12.1",
     "@medusajs/dashboard": "^2.12.1",
     "@medusajs/draft-order": "^2.12.1",
