@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useAnimationControls, useAnimationFrame } from "framer-motion";
+import { motion, useAnimationControls, useAnimationFrame } from "motion/react";
 import { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 

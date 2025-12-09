@@ -1,4 +1,4 @@
-import { animate, motion } from "framer-motion";
+import { animate, motion } from "motion/react";
 import React, { useEffect, useState } from "react";
 
 let shapes = [

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useMotionValue } from "framer-motion";
+import { motion, useMotionValue } from "motion/react";
 import { useControls } from "leva";
 import { useCallback, useEffect, useRef } from "react";
 

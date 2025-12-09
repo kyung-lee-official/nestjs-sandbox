@@ -1,6 +1,6 @@
 "use client";
 
-import { animate, motion, motionValue, useMotionValue } from "framer-motion";
+import { animate, motion, motionValue, useMotionValue } from "motion/react";
 import { useCallback, useEffect, useRef } from "react";
 
 const Pattern3 = () => {

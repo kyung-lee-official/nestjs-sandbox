@@ -20,7 +20,7 @@ const Content = () => {
 				the same query key, TanStack Query thereby treat them as the
 				same query and only fetch the data once (check the network tab
 				in the devtools) regardless of we passed different parameter to
-				the API function `fetchPokemon`. However, if you change the
+				the API function `fetchTodo`. However, if you change the
 				query key, TanStack Query will treat it as a different query and
 				fetch the data separately.
 			</div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { animate, motion, motionValue, useTransform } from "framer-motion";
+import { animate, motion, motionValue, useTransform } from "motion/react";
 import { useEffect } from "react";
 
 const MotionValue = () => {

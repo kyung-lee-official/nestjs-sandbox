@@ -1,4 +1,4 @@
-import { motion, useCycle } from "framer-motion";
+import { motion, useCycle } from "motion/react";
 import { useRef } from "react";
 import styled from "styled-components";
 import { useDimensions } from "./use-dimensions";

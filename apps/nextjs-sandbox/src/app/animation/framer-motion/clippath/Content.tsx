@@ -6,7 +6,7 @@ import {
 	useScroll,
 	useSpring,
 	useTransform,
-} from "framer-motion";
+} from "motion/react";
 import { forwardRef, useRef, useState } from "react";
 
 const ScrollContainer = forwardRef(function ScrollContainer(

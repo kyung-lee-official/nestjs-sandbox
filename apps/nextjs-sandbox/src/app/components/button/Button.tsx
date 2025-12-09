@@ -1,7 +1,7 @@
 "use client";
 
 import { ButtonHTMLAttributes, ReactNode } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 export const Load = ({ size, fill }: any) => {
 	return (
