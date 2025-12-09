@@ -1,0 +1,61 @@
+{
+  "name": "medusa-backend-sandbox",
+  "version": "0.0.1",
+  "description": "A starter for Medusa projects.",
+  "author": "Medusa (https://medusajs.com)",
+  "license": "MIT",
+  "keywords": [
+    "sqlite",
+    "postgres",
+    "typescript",
+    "ecommerce",
+    "headless",
+    "medusa"
+  ],
+  "scripts": {
+    "build": "medusa build",
+    "seed": "medusa exec ./src/scripts/seed.ts",
+    "start": "medusa start",
+    "dev": "medusa develop",
+    "test:integration:http": "TEST_TYPE=integration:http NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
+    "test:integration:modules": "TEST_TYPE=integration:modules NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
+    "test:unit": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules jest --silent --runInBand --forceExit"
+  },
+  "dependencies": {
+    "@medusajs/admin-sdk": "2.12.1",
+    "@medusajs/cli": "2.12.1",
+    "@medusajs/dashboard": "^2.12.1",
+    "@medusajs/draft-order": "^2.12.1",
+    "@medusajs/framework": "2.12.1",
+    "@medusajs/icons": "^2.12.1",
+    "@medusajs/medusa": "2.12.1",
+    "@medusajs/types": "^2.12.1",
+    "@medusajs/ui": "^4.0.29",
+    "@react-email/components": "^1.0.1",
+    "cors": "^2.8.5",
+    "resend": "^6.5.2",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.8",
+    "@medusajs/test-utils": "2.12.1",
+    "@swc/core": "1.15.3",
+    "@swc/jest": "^0.2.39",
+    "@types/cors": "^2.8.19",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.10.2",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "jest": "^30.2.0",
+    "prop-types": "^15.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.7",
+    "yalc": "^1.0.0-pre.53"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
