@@ -16,10 +16,17 @@ export async function setRegionCookie(region: string) {
 }
 
 /* server action to set customer cookie */
+/* setCustomerCookie is used for operations performed by admin on behalf of a customer */
 export async function setCustomerCookie(customerId: string) {
   const { cookies } = await import("next/headers");
   const cookieStore = await cookies();
   cookieStore.set("medusaCustomer", customerId, cookieOptions);
+}
+/* setCustomerFPTokenCookie is used for operations performed by the customer themselves (first-person) */
+export async function setCustomerFPTokenCookie(token: string) {
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  cookieStore.set("medusaCustomerFPToken", token, cookieOptions);
 }
 
 /* server action to set sales channel cookie */
