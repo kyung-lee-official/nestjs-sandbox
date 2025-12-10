@@ -12,11 +12,7 @@ const Block = ({
   children?: ReactNode;
 }) => {
   return (
-    <div
-      className="flex flex-col p-6 gap-3
-			bg-white/50
-			rounded-lg"
-    >
+    <div className="flex flex-col gap-3 rounded-lg bg-white/50 p-6">
       <h1 className="text-xl">{title}</h1>
       {children}
       <div className="flex flex-col">
@@ -34,16 +30,7 @@ const Block = ({
 
 export default function Home() {
   return (
-    <main
-      className="grid
-			grid-cols-1
-			sm:grid-cols-2
-			md:grid-cols-3
-			lg:grid-cols-4
-			xl:grid-cols-5
-			min-h-svh p-10 gap-6
-			bg-gradient-to-br from-cyan-500/60 to-purple-500/60"
-    >
+    <main className="grid min-h-svh grid-cols-1 gap-6 bg-gradient-to-br from-cyan-500/60 to-purple-500/60 p-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       <Block
         title="Home"
         list={[
@@ -256,10 +243,6 @@ export default function Home() {
           {
             link: "/data-fetching/axios",
             text: "axios & qs",
-          },
-          {
-            link: "/data-fetching/axios-error-handling-for-medusa",
-            text: "axios error handling for medusa",
           },
           {
             link: "/data-fetching/tanstack-query",

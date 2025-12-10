@@ -1,3 +1,5 @@
+"use client";
+
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { getNonExistentEndpoint, getUserById } from "./api";
