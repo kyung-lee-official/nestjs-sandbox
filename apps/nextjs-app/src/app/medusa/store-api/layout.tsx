@@ -1,9 +1,21 @@
+import dayjs from "dayjs";
+import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
-import { ReactNode } from "react";
-import { CookieKey } from "../actions";
+import type { ReactNode } from "react";
+import { CookieKey } from "../cookie-keys";
 
 type LayoutProps = {
   children: ReactNode;
+};
+
+type DecodedToken = {
+  actor_id: string;
+  actor_type: string;
+  app_metadata: Record<string, any>;
+  auth_identity_id: string;
+  iat: number;
+  exp: number;
+  user_metadata: Record<string, any>;
 };
 
 const layout = async (props: LayoutProps) => {
@@ -12,14 +24,37 @@ const layout = async (props: LayoutProps) => {
   /* read cookies - access any cookie by name */
   const cookieStore = await cookies();
   /* default to "us" if undefined */
-  const regionId = cookieStore.get(CookieKey.REGION)?.value;
-  const salesChannelId = cookieStore.get(CookieKey.SALES_CHANNEL)?.value;
-  const customerId = cookieStore.get(CookieKey.CUSTOMER_FP_TOKEN)?.value;
+  const customerFPToken = cookieStore.get(CookieKey.CUSTOMER_FP_TOKEN)?.value;
 
-  /* you can also get all cookies */
-  // const allCookies = cookieStore.getAll();
+  if (!customerFPToken) {
+    return null;
+  }
+  /* decode token with base64 */
+  const decoded = jwtDecode(customerFPToken) as DecodedToken;
 
-  return <div>{children}</div>;
+  return (
+    <div>
+      <div className="border-b border-dashed p-4">
+        <div className="wrap-anywhere">
+          Signed in customer: {customerFPToken}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <div className="border px-1">actor_id: {decoded.actor_id}</div>
+          <div className="border px-1">actor_type: {decoded.actor_type}</div>
+          <div className="border px-1">
+            auth_identity_id: {decoded.auth_identity_id}
+          </div>
+          <div className="border px-1">
+            iat: {dayjs(decoded.iat * 1000).format("YYYY-MM-DD HH:mm:ss")}
+          </div>
+          <div className="border px-1">
+            exp: {dayjs(decoded.exp * 1000).format("YYYY-MM-DD HH:mm:ss")}
+          </div>
+        </div>
+      </div>
+      {children}
+    </div>
+  );
 };
 
 export default layout;

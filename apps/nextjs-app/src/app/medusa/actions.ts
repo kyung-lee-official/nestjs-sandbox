@@ -1,18 +1,13 @@
 "use server";
 
+import { CookieKey } from "./cookie-keys";
+
 const cookieOptions = {
   httpOnly: false,
   secure: process.env.NODE_ENV === "production",
   sameSite: "lax" as const,
   maxAge: 60 * 60 * 24 * 30 /* 30 days */,
   path: "/",
-};
-
-export const CookieKey = {
-  REGION: "medusaRegion",
-  SALES_CHANNEL: "medusaSalesChannel",
-  CUSTOMER: "medusaCustomer",
-  CUSTOMER_FP_TOKEN: "medusaCustomerFPToken",
 };
 
 /* server action to set the region cookie */

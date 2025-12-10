@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { CookieKey } from "@/app/medusa/actions";
+import { CookieKey } from "@/app/medusa/cookie-keys";
 import { Content } from "./Content";
 
 const Page = async () => {

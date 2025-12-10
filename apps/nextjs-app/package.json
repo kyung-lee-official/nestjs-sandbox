@@ -49,6 +49,7 @@
     "dayjs": "^1.11.13",
     "exceljs": "^4.4.0",
     "install": "^0.13.0",
+    "jwt-decode": "^4.0.0",
     "leva": "^0.10.0",
     "lottie-react": "^2.4.1",
     "mathjs": "^14.4.0",
