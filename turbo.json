@@ -5,15 +5,15 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "dist/**", "build/**"]
+      "outputs": [".next/**", "dist/**", "build/**", ".medusa/**"]
     },
     "dev": {
       "cache": false,
       "persistent": true
     },
-	"start": {
-	  "cache": false
-	},
+    "start": {
+      "cache": false
+    },
     "db:generate": {
       "cache": true,
       "persistent": true
