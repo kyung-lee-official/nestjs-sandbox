@@ -6,7 +6,13 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**/*.{ts}", "!.git", "!。turbo", "!node_modules", "bun.lock"]
+    "includes": [
+      "**/*.{ts,tsx,js,jsx,json}",
+      "!.git",
+      "!。turbo",
+      "!node_modules",
+      "bun.lock"
+    ]
   },
   "formatter": {
     "enabled": true,

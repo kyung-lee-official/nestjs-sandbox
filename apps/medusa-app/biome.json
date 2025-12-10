@@ -7,7 +7,13 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["!.log", "!.medusa", "!.turbo", "!node_modules"]
+    "includes": [
+      "**/*.{ts,js,json}",
+      "!.log",
+      "!.medusa",
+      "!.turbo",
+      "!node_modules"
+    ]
   },
   "formatter": {
     "enabled": true,

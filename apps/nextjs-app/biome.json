@@ -7,7 +7,12 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["!.next", "!.turbo", "!node_modules"]
+    "includes": [
+      "**/*.{ts,tsx,js,jsx,json}",
+      "!.next",
+      "!.turbo",
+      "!node_modules"
+    ]
   },
   "formatter": {
     "enabled": true,
