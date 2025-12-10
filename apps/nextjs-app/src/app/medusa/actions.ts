@@ -8,11 +8,18 @@ const cookieOptions = {
   path: "/",
 };
 
+export const CookieKey = {
+  REGION: "medusaRegion",
+  SALES_CHANNEL: "medusaSalesChannel",
+  CUSTOMER: "medusaCustomer",
+  CUSTOMER_FP_TOKEN: "medusaCustomerFPToken",
+};
+
 /* server action to set the region cookie */
 export async function setRegionCookie(region: string) {
   const { cookies } = await import("next/headers");
   const cookieStore = await cookies();
-  cookieStore.set("medusaRegion", region, cookieOptions);
+  cookieStore.set(CookieKey.REGION, region, cookieOptions);
 }
 
 /* server action to set customer cookie */
@@ -20,18 +27,18 @@ export async function setRegionCookie(region: string) {
 export async function setCustomerCookie(customerId: string) {
   const { cookies } = await import("next/headers");
   const cookieStore = await cookies();
-  cookieStore.set("medusaCustomer", customerId, cookieOptions);
+  cookieStore.set(CookieKey.CUSTOMER, customerId, cookieOptions);
 }
 /* setCustomerFPTokenCookie is used for operations performed by the customer themselves (first-person) */
 export async function setCustomerFPTokenCookie(token: string) {
   const { cookies } = await import("next/headers");
   const cookieStore = await cookies();
-  cookieStore.set("medusaCustomerFPToken", token, cookieOptions);
+  cookieStore.set(CookieKey.CUSTOMER_FP_TOKEN, token, cookieOptions);
 }
 
 /* server action to set sales channel cookie */
 export async function setSalesChannelCookie(salesChannelId: string) {
   const { cookies } = await import("next/headers");
   const cookieStore = await cookies();
-  cookieStore.set("medusaSalesChannel", salesChannelId, cookieOptions);
+  cookieStore.set(CookieKey.SALES_CHANNEL, salesChannelId, cookieOptions);
 }
