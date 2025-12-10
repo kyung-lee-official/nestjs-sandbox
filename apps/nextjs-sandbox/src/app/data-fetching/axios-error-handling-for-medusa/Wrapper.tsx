@@ -5,9 +5,9 @@ import { queryClient } from "../tanstack-query/queryClient";
 import Content from "./Content";
 
 export const Wrapper = () => {
-	return (
-		<QueryClientProvider client={queryClient}>
-			<Content />
-		</QueryClientProvider>
-	);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Content />
+    </QueryClientProvider>
+  );
 };

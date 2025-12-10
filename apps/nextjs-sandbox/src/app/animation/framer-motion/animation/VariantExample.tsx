@@ -36,44 +36,44 @@ const StyledMotionDiv = styled(motion.div)`
 `;
 
 const sidebar = {
-	open: (height = 1000) => ({
-		clipPath: `circle(${height * 2 + 200}px at 40px 40px)`,
-		transition: {
-			type: "spring",
-			stiffness: 20,
-			restDelta: 2,
-		},
-	}),
-	closed: {
-		clipPath: "circle(30px at 40px 40px)",
-		transition: {
-			delay: 0.5,
-			type: "spring",
-			stiffness: 400,
-			damping: 40,
-		},
-	},
+  open: (height = 1000) => ({
+    clipPath: `circle(${height * 2 + 200}px at 40px 40px)`,
+    transition: {
+      type: "spring",
+      stiffness: 20,
+      restDelta: 2,
+    },
+  }),
+  closed: {
+    clipPath: "circle(30px at 40px 40px)",
+    transition: {
+      delay: 0.5,
+      type: "spring",
+      stiffness: 400,
+      damping: 40,
+    },
+  },
 };
 
 export const VarientExample = () => {
-	const [isOpen, toggleOpen] = useCycle(false, true);
-	const containerRef = useRef(null);
-	const { height } = useDimensions(containerRef);
+  const [isOpen, toggleOpen] = useCycle(false, true);
+  const containerRef = useRef(null);
+  const { height } = useDimensions(containerRef);
 
-	return (
-		<StyledContainer>
-			<StyledPositionedContainer>
-				<StyledNav
-					initial={false}
-					animate={isOpen ? "open" : "closed"}
-					custom={height}
-					ref={containerRef}
-				>
-					{/* <StyledMotionDiv variants={sidebar} /> */}
-					<VariantNavigation />
-					<VariantMenuToggle toggle={() => toggleOpen()} />
-				</StyledNav>
-			</StyledPositionedContainer>
-		</StyledContainer>
-	);
+  return (
+    <StyledContainer>
+      <StyledPositionedContainer>
+        <StyledNav
+          initial={false}
+          animate={isOpen ? "open" : "closed"}
+          custom={height}
+          ref={containerRef}
+        >
+          {/* <StyledMotionDiv variants={sidebar} /> */}
+          <VariantNavigation />
+          <VariantMenuToggle toggle={() => toggleOpen()} />
+        </StyledNav>
+      </StyledPositionedContainer>
+    </StyledContainer>
+  );
 };

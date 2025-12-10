@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export const testerSchema = z.object({
-	first_name: z.string().min(2).max(100),
-	last_name: z.string().min(2).max(100),
-	email: z.string().email(),
-	avatar_url: z.string().url().optional(),
+  first_name: z.string().min(2).max(100),
+  last_name: z.string().min(2).max(100),
+  email: z.string().email(),
+  avatar_url: z.string().url().optional(),
 });

@@ -1,16 +1,16 @@
+import { Injectable } from "@nestjs/common";
 import {
-	WebSocketGateway,
-	SubscribeMessage,
-	MessageBody,
 	ConnectedSocket,
-	OnGatewayConnection,
-	OnGatewayDisconnect,
-	OnGatewayInit,
+	MessageBody,
+	type OnGatewayConnection,
+	type OnGatewayDisconnect,
+	type OnGatewayInit,
+	SubscribeMessage,
+	WebSocketGateway,
 	WebSocketServer,
 } from "@nestjs/websockets";
-import { ChatService, MsgBody } from "./websockets.service";
-import { Server, Socket } from "socket.io";
-import { Injectable } from "@nestjs/common";
+import type { Server, Socket } from "socket.io";
+import type { ChatService, MsgBody } from "./websockets.service";
 
 /* without specifying the port, it will use the default app port set in main.ts */
 @Injectable()

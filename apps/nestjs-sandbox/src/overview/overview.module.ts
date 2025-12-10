@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
-import { OverviewService } from "./overview.service";
 import { OverviewController } from "./overview.controller";
+import { OverviewService } from "./overview.service";
 
 @Module({
-	controllers: [OverviewController],
-	providers: [OverviewService],
+  controllers: [OverviewController],
+  providers: [OverviewService],
 })
 export class OverviewModule {}

@@ -1,22 +1,22 @@
 import {
-	Controller,
-	Get,
-	Post,
 	Body,
-	Patch,
-	Param,
+	Controller,
 	Delete,
+	Get,
+	Param,
+	Patch,
+	Post,
 	UsePipes,
 } from "@nestjs/common";
-import { MembersService } from "./members.service";
-import { CreateMemberDto, createMemberSchema } from "./dto/create-member.dto";
 import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { type CreateMemberDto, createMemberSchema } from "./dto/create-member.dto";
+import type { UpdateMemberDto } from "./dto/update-member.dto";
+import type { MembersService } from "./members.service";
+import { CreateMemberPipe } from "./pipes/create-member.pipe";
 import {
 	createMemberBodyOptions,
 	createMemberOperationOptions,
 } from "./swagger/create-member.swagger";
-import { UpdateMemberDto } from "./dto/update-member.dto";
-import { CreateMemberPipe } from "./pipes/create-member.pipe";
 import { findMembersOperationOptions } from "./swagger/find-members.swagger";
 
 @ApiTags("Members")

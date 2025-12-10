@@ -1,29 +1,29 @@
-import { useState, useEffect, RefObject } from "react";
+import { type RefObject, useEffect, useState } from "react";
 
 const useResizeObserver = (ref: RefObject<HTMLDivElement>) => {
-	const [size, setSize] = useState({ width: 0, height: 0 });
+  const [size, setSize] = useState({ width: 0, height: 0 });
 
-	useEffect(() => {
-		const observer = new ResizeObserver((entries) => {
-			const entry = entries[0];
-			setSize({
-				width: entry!.contentRect.width,
-				height: entry!.contentRect.height,
-			});
-		});
+  useEffect(() => {
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      setSize({
+        width: entry!.contentRect.width,
+        height: entry!.contentRect.height,
+      });
+    });
 
-		if (ref.current) {
-			observer.observe(ref.current);
-		}
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
 
-		return () => {
-			if (ref.current) {
-				observer.unobserve(ref.current);
-			}
-		};
-	}, [ref]);
+    return () => {
+      if (ref.current) {
+        observer.unobserve(ref.current);
+      }
+    };
+  }, [ref]);
 
-	return size;
+  return size;
 };
 
 export default useResizeObserver;

@@ -1,228 +1,222 @@
+import { useMutation } from "@tanstack/react-query";
 import {
-	Dispatch,
-	ImgHTMLAttributes,
-	SetStateAction,
-	useRef,
-	useState,
+  type Dispatch,
+  type ImgHTMLAttributes,
+  type SetStateAction,
+  useRef,
+  useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { ConfirmDialog } from "@/app/styles/modal/confirm-dialog/confirm-dialog/ConfirmDialog";
+import { getFileBlob } from "./api";
 import {
-	DeleteIcon,
-	DownloadIcon,
-	ItemLoading,
-	PreviewIcon,
-	UnknownFileTypeIcon,
+  DeleteIcon,
+  DownloadIcon,
+  ItemLoading,
+  PreviewIcon,
+  UnknownFileTypeIcon,
 } from "./file-to-preview/Icons";
 import { Square } from "./Square";
 import { isImageType, isVideoType } from "./types";
-import { useMutation } from "@tanstack/react-query";
-import { getFileBlob } from "./api";
-import { ConfirmDialog } from "@/app/styles/modal/confirm-dialog/confirm-dialog/ConfirmDialog";
 
 type FileProps = {
-	name: string;
-	question: string;
-	/* the function to call when the delete operation is confirmed in the dialog */
-	onDelete: Function;
+  name: string;
+  question: string;
+  /* the function to call when the delete operation is confirmed in the dialog */
+  onDelete: Function;
 };
 
 const ThumbnailMask = (props: {
-	name: string;
-	question: string;
-	setIsZoomOut: Dispatch<SetStateAction<boolean>>;
-	onDelete: Function;
+  name: string;
+  question: string;
+  setIsZoomOut: Dispatch<SetStateAction<boolean>>;
+  onDelete: Function;
 }) => {
-	const { name, question, setIsZoomOut, onDelete } = props;
-	const filetype = name.split(".").pop() as string;
+  const { name, question, setIsZoomOut, onDelete } = props;
+  const filetype = name.split(".").pop() as string;
 
-	const [showDelete, setShowDelete] = useState(false);
-	const [showThumbnailMask, setShowThumbnailMask] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+  const [showThumbnailMask, setShowThumbnailMask] = useState(false);
 
-	const downloadMutation = useMutation({
-		mutationFn: async () => {
-			const blob = await getFileBlob(name);
-			/* download the file */
-			const url = URL.createObjectURL(blob);
-			const a = document.createElement("a");
-			a.href = url;
-			a.download = name;
-			a.click();
-			URL.revokeObjectURL(url); /* free up memory */
-		},
-	});
+  const downloadMutation = useMutation({
+    mutationFn: async () => {
+      const blob = await getFileBlob(name);
+      /* download the file */
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = name;
+      a.click();
+      URL.revokeObjectURL(url); /* free up memory */
+    },
+  });
 
-	return (
-		<div
-			className="absolute top-0 right-0 bottom-0 left-0"
-			onMouseOver={() => {
-				setShowThumbnailMask(true);
-			}}
-			onMouseOut={() => {
-				setShowThumbnailMask(false);
-			}}
-		>
-			{showThumbnailMask && (
-				<div
-					className="absolute top-0 right-0 bottom-0 left-0
+  return (
+    <div
+      className="absolute top-0 right-0 bottom-0 left-0"
+      onMouseOver={() => {
+        setShowThumbnailMask(true);
+      }}
+      onMouseOut={() => {
+        setShowThumbnailMask(false);
+      }}
+    >
+      {showThumbnailMask && (
+        <div
+          className="absolute top-0 right-0 bottom-0 left-0
 					flex justify-center items-center gap-4
 					bg-black/50"
-				>
-					{isImageType(filetype) || isVideoType(filetype) ? (
-						/* image or video file type */
-						<button
-							onClick={() => {
-								setIsZoomOut(true);
-							}}
-						>
-							<PreviewIcon size={16} />
-						</button>
-					) : (
-						/* unknown file type */
-						<button
-							onClick={() => {
-								downloadMutation.mutate();
-							}}
-						>
-							<DownloadIcon size={16} />
-						</button>
-					)}
-					<button
-						onClick={() => {
-							setShowDelete(true);
-						}}
-					>
-						<DeleteIcon size={16} />
-					</button>
-				</div>
-			)}
-			<ConfirmDialog
-				show={showDelete}
-				setShow={setShowDelete}
-				question={question}
-				onOk={() => {
-					setShowDelete(false);
-					onDelete();
-				}}
-			/>
-		</div>
-	);
+        >
+          {isImageType(filetype) || isVideoType(filetype) ? (
+            /* image or video file type */
+            <button
+              onClick={() => {
+                setIsZoomOut(true);
+              }}
+            >
+              <PreviewIcon size={16} />
+            </button>
+          ) : (
+            /* unknown file type */
+            <button
+              onClick={() => {
+                downloadMutation.mutate();
+              }}
+            >
+              <DownloadIcon size={16} />
+            </button>
+          )}
+          <button
+            onClick={() => {
+              setShowDelete(true);
+            }}
+          >
+            <DeleteIcon size={16} />
+          </button>
+        </div>
+      )}
+      <ConfirmDialog
+        show={showDelete}
+        setShow={setShowDelete}
+        question={question}
+        onOk={() => {
+          setShowDelete(false);
+          onDelete();
+        }}
+      />
+    </div>
+  );
 };
 
 export const Item = (
-	props: ImgHTMLAttributes<HTMLImageElement> &
-		FileProps & { isLoading: boolean }
+  props: ImgHTMLAttributes<HTMLImageElement> &
+    FileProps & { isLoading: boolean },
 ) => {
-	const {
-		isLoading,
-		src,
-		/* width of the image without zoom */ width,
-		name,
-		question,
-		onDelete,
-	} = props;
-	const filetype = name.split(".").pop() as string;
+  const {
+    isLoading,
+    src,
+    /* width of the image without zoom */ width,
+    name,
+    question,
+    onDelete,
+  } = props;
+  const filetype = name.split(".").pop() as string;
 
-	const imageRef = useRef<HTMLImageElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
 
-	const [isZoomOut, setIsZoomOut] = useState(false);
+  const [isZoomOut, setIsZoomOut] = useState(false);
 
-	if (isLoading) {
-		return (
-			<div>
-				<Square>
-					<ItemLoading />
-				</Square>
-				<div
-					title={name}
-					className="text-white/50 text-sm
+  if (isLoading) {
+    return (
+      <div>
+        <Square>
+          <ItemLoading />
+        </Square>
+        <div
+          title={name}
+          className="text-white/50 text-sm
 					overflow-hidden whitespace-nowrap text-ellipsis
 					cursor-default"
-				>
-					{name}
-				</div>
-			</div>
-		);
-	}
+        >
+          {name}
+        </div>
+      </div>
+    );
+  }
 
-	return (
-		<div>
-			<Square>
-				{isImageType(filetype) ? (
-					<img ref={imageRef} src={src} width={width} alt={name} />
-				) : isVideoType(filetype) ? (
-					<video
-						src={src}
-						autoPlay
-						loop
-						muted
-						className={"w-full h-full"}
-					/>
-				) : (
-					/* unknown file type */
-					<div
-						className="relative
+  return (
+    <div>
+      <Square>
+        {isImageType(filetype) ? (
+          <img ref={imageRef} src={src} width={width} alt={name} />
+        ) : isVideoType(filetype) ? (
+          <video src={src} autoPlay loop muted className={"w-full h-full"} />
+        ) : (
+          /* unknown file type */
+          <div
+            className="relative
 						flex justify-center items-center w-28 h-28 gap-2
 						bg-white/50"
-					>
-						<div
-							className="flex justify-center items-center w-full h-full
+          >
+            <div
+              className="flex justify-center items-center w-full h-full
 							bg-black/50"
-						>
-							<UnknownFileTypeIcon title={name} size={100} />
-						</div>
-					</div>
-				)}
-				<ThumbnailMask
-					name={name}
-					question={question}
-					setIsZoomOut={setIsZoomOut}
-					onDelete={onDelete}
-				/>
-				{isZoomOut &&
-					createPortal(
-						<div
-							className="fixed top-0 right-0 bottom-0 left-0
+            >
+              <UnknownFileTypeIcon title={name} size={100} />
+            </div>
+          </div>
+        )}
+        <ThumbnailMask
+          name={name}
+          question={question}
+          setIsZoomOut={setIsZoomOut}
+          onDelete={onDelete}
+        />
+        {isZoomOut &&
+          createPortal(
+            <div
+              className="fixed top-0 right-0 bottom-0 left-0
 							flex justify-center items-center
 							bg-black/50
 							z-10"
-							onClick={() => {
-								setIsZoomOut(false);
-							}}
-						>
-							<div
-								className="flex justify-center items-center w-fit max-w-[95%] h-[90svh]
+              onClick={() => {
+                setIsZoomOut(false);
+              }}
+            >
+              <div
+                className="flex justify-center items-center w-fit max-w-[95%] h-[90svh]
 								overflow-auto hide-scrollbar"
-							>
-								{isImageType(filetype) ? (
-									<img
-										onClick={(e) => {
-											e.stopPropagation();
-										}}
-										src={src}
-										alt={name}
-									/>
-								) : (
-									<video
-										onClick={(e) => {
-											e.stopPropagation();
-										}}
-										src={src}
-										controls
-									/>
-								)}
-							</div>
-						</div>,
-						document.body
-					)}
-			</Square>
-			<div
-				title={name}
-				className="text-white/50 text-sm
+              >
+                {isImageType(filetype) ? (
+                  <img
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    src={src}
+                    alt={name}
+                  />
+                ) : (
+                  <video
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    src={src}
+                    controls
+                  />
+                )}
+              </div>
+            </div>,
+            document.body,
+          )}
+      </Square>
+      <div
+        title={name}
+        className="text-white/50 text-sm
 				overflow-hidden whitespace-nowrap text-ellipsis
 				cursor-default"
-			>
-				{name}
-			</div>
-		</div>
-	);
+      >
+        {name}
+      </div>
+    </div>
+  );
 };

@@ -1,7 +1,8 @@
 "use client";
 
-import anime, { AnimeTimelineInstance } from "animejs";
-import React, { MutableRefObject, useRef } from "react";
+import anime, { type AnimeTimelineInstance } from "animejs";
+import type React from "react";
+import { type MutableRefObject, useRef } from "react";
 import styled from "styled-components";
 
 const StyledPage = styled.div`
@@ -30,30 +31,29 @@ const StyledTitle = styled.h1`
 `;
 
 const Content: React.FC<any> = () => {
-	const animeRef: MutableRefObject<AnimeTimelineInstance | null> =
-		useRef(null);
-	const start = () => {
-		animeRef.current = anime.timeline({
-			autoplay: false,
-		});
-		animeRef.current.add({
-			targets: ".target",
-			duration: 5000,
-			translateX: 250,
-		});
-		console.log(animeRef.current);
-	};
+  const animeRef: MutableRefObject<AnimeTimelineInstance | null> = useRef(null);
+  const start = () => {
+    animeRef.current = anime.timeline({
+      autoplay: false,
+    });
+    animeRef.current.add({
+      targets: ".target",
+      duration: 5000,
+      translateX: 250,
+    });
+    console.log(animeRef.current);
+  };
 
-	return (
-		<StyledPage>
-			<StyledTitle>Stroke Dashoffset</StyledTitle>
+  return (
+    <StyledPage>
+      <StyledTitle>Stroke Dashoffset</StyledTitle>
 
-			<StyledContainer>
-				<StyledDiv className="target" />
-			</StyledContainer>
-			<button onClick={start}>Start</button>
-		</StyledPage>
-	);
+      <StyledContainer>
+        <StyledDiv className="target" />
+      </StyledContainer>
+      <button onClick={start}>Start</button>
+    </StyledPage>
+  );
 };
 
 export default Content;

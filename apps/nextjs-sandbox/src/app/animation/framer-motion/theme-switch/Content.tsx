@@ -21,27 +21,27 @@ const StyledContainer = styled.div`
 `;
 
 const Content = () => {
-	const [dark, setDark] = useState<boolean>(true);
-	const [isBlocked, setIsBlocked] = useState<boolean>(false);
+  const [dark, setDark] = useState<boolean>(true);
+  const [isBlocked, setIsBlocked] = useState<boolean>(false);
 
-	function themeSwitch() {
-		if (!isBlocked) {
-			setDark(!dark);
-			setIsBlocked(true);
-			setTimeout(() => {
-				setIsBlocked(false);
-			}, 500);
-		}
-	}
+  function themeSwitch() {
+    if (!isBlocked) {
+      setDark(!dark);
+      setIsBlocked(true);
+      setTimeout(() => {
+        setIsBlocked(false);
+      }, 500);
+    }
+  }
 
-	return (
-		<StyledPage>
-			<StyledContainer onClick={themeSwitch}>
-				<ThemeSwitch isDark={dark} />
-			</StyledContainer>
-			<div style={{ color: "white" }}>dark: {JSON.stringify(dark)}</div>
-		</StyledPage>
-	);
+  return (
+    <StyledPage>
+      <StyledContainer onClick={themeSwitch}>
+        <ThemeSwitch isDark={dark} />
+      </StyledContainer>
+      <div style={{ color: "white" }}>dark: {JSON.stringify(dark)}</div>
+    </StyledPage>
+  );
 };
 
 export default Content;

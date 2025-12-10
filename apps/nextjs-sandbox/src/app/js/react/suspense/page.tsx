@@ -1,5 +1,5 @@
-import Content from "./Content";
 import { Suspense } from "react";
+import Content from "./Content";
 
 const Page = async () => {
   return (

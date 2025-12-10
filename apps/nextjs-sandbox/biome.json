@@ -7,7 +7,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": false
+    "includes": ["!.next", "!.turbo", "!node_modules"]
   },
   "formatter": {
     "enabled": true,

@@ -33,13 +33,13 @@ const StyledContainer = styled.div`
 `;
 
 const Content = () => {
-	return (
-		<StyledContainer>
-			<div className="">
-				<h1 className="">Pure CSS Gradient Background Animation</h1>
-			</div>
-		</StyledContainer>
-	);
+  return (
+    <StyledContainer>
+      <div className="">
+        <h1 className="">Pure CSS Gradient Background Animation</h1>
+      </div>
+    </StyledContainer>
+  );
 };
 
 export default Content;

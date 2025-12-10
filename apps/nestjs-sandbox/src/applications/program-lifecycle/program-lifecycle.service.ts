@@ -4,7 +4,7 @@ import {
   type OnModuleDestroy,
   type OnModuleInit,
 } from "@nestjs/common";
-import { PrismaService } from "@/recipes/prisma/prisma.service";
+import type { PrismaService } from "@/recipes/prisma/prisma.service";
 import { YourTimeConsumingProgram } from "./your-time-consuming-program";
 
 @Injectable()

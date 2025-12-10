@@ -1,10 +1,10 @@
 import { MedusaError } from "@medusajs/framework/utils";
 
 export async function GET() {
-	throw new MedusaError(MedusaError.Types.NOT_ALLOWED, "operation not allowed");
+  throw new MedusaError(MedusaError.Types.NOT_ALLOWED, "operation not allowed");
 }
 
 const returnedError = {
-	type: "not_allowed",
-	message: "operation not allowed",
+  type: "not_allowed",
+  message: "operation not allowed",
 };

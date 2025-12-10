@@ -1,11 +1,11 @@
 import { PayPalWrapper } from "./PayPalWrapper";
 
 type PayPalLayoutProps = {
-	children: React.ReactNode;
+  children: React.ReactNode;
 };
 
 export default async function PayPalLayout(props: PayPalLayoutProps) {
-	const { children } = props;
+  const { children } = props;
 
-	return <PayPalWrapper>{children}</PayPalWrapper>;
+  return <PayPalWrapper>{children}</PayPalWrapper>;
 }

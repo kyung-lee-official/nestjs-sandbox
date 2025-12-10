@@ -1,25 +1,26 @@
+import { Injectable, Logger } from "@nestjs/common";
 import {
+	ConnectedSocket,
+	MessageBody,
+	type OnGatewayConnection,
+	type OnGatewayDisconnect,
+	type OnGatewayInit,
+	SubscribeMessage,
 	WebSocketGateway,
 	WebSocketServer,
-	OnGatewayInit,
-	OnGatewayConnection,
-	OnGatewayDisconnect,
-	SubscribeMessage,
-	MessageBody,
-	ConnectedSocket,
 } from "@nestjs/websockets";
-import { Logger, Injectable } from "@nestjs/common";
-import { Server, Socket } from "socket.io";
+import type { Server, Socket } from "socket.io";
 import {
 	RedisProgressStatusSchema,
-	Task,
-	TaskProgressData,
-	TaskProgressEmittedData,
+	type Task,
+	type TaskProgressData,
+	type TaskProgressEmittedData,
 } from "./types";
 import {
 	UploadXlsxIncomingEvents,
 	UploadXlsxOutgoingEvents,
 } from "./websocket-events.enum";
+
 import dayjs = require("dayjs");
 
 /* When NestJS app starts up */

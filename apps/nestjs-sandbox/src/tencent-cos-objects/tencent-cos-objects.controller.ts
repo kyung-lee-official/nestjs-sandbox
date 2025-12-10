@@ -1,20 +1,20 @@
 import {
-	Controller,
-	Get,
-	Post,
 	Body,
-	Patch,
-	Param,
+	Controller,
 	Delete,
-	UseInterceptors,
-	UploadedFile,
+	Get,
+	Param,
+	Patch,
+	Post,
 	Put,
+	UploadedFile,
+	UseInterceptors,
 } from "@nestjs/common";
-import { TencentCosObjectsService } from "./tencent-cos-objects.service";
-import { UpdateTencentCosObjectDto } from "./dto/update-tencent-cos-object.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
-import * as COS from "cos-nodejs-sdk-v5";
-import { CredentialData } from "qcloud-cos-sts";
+import type * as COS from "cos-nodejs-sdk-v5";
+import type { CredentialData } from "qcloud-cos-sts";
+import type { UpdateTencentCosObjectDto } from "./dto/update-tencent-cos-object.dto";
+import type { TencentCosObjectsService } from "./tencent-cos-objects.service";
 
 @Controller("tencent-cos-objects")
 export class TencentCosObjectsController {

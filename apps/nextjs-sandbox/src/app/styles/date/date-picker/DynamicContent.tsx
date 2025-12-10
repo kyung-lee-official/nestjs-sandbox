@@ -2,7 +2,7 @@
 import dynamic from "next/dynamic";
 
 const DynamicContent = dynamic(() => import("./Content"), {
-	ssr: false,
+  ssr: false,
 });
 
 export default DynamicContent;

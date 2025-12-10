@@ -1,7 +1,7 @@
 import { Wrapper } from "./Wrapper";
 
 const Page = () => {
-	return <Wrapper />;
+  return <Wrapper />;
 };
 
 export default Page;

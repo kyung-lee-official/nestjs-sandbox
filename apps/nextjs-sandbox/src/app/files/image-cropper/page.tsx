@@ -1,7 +1,7 @@
 import ContentWrapper from "./ContentWrapper";
 
 const Page = () => {
-	return <ContentWrapper />;
+  return <ContentWrapper />;
 };
 
 export default Page;

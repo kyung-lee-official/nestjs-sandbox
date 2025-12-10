@@ -1,6 +1,6 @@
-import { ApiOperationOptions } from "@nestjs/swagger";
+import type { ApiOperationOptions } from "@nestjs/swagger";
 
 export const findRolesOperationOptions: ApiOperationOptions = {
-	summary: "Find roles",
-	description: "Find roles",
+  summary: "Find roles",
+  description: "Find roles",
 };

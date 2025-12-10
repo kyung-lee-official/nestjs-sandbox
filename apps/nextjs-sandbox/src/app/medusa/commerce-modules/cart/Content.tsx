@@ -1,5 +1,5 @@
 "use client";
 
 export const Content = () => {
-	return <div>Nothing here</div>;
+  return <div>Nothing here</div>;
 };

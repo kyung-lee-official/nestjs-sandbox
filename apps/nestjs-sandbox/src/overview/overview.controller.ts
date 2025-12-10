@@ -1,25 +1,25 @@
 import {
-	Controller,
-	Get,
-	Post,
 	Body,
-	Patch,
-	Param,
+	Controller,
 	Delete,
-	UseInterceptors,
+	Get,
+	Param,
+	Patch,
+	Post,
+	Query,
 	Req,
 	UseGuards,
-	Query,
+	UseInterceptors,
 	UsePipes,
 } from "@nestjs/common";
-import { OverviewService } from "./overview.service";
-import { TestInterceptor } from "./interceptors/test.interceptor";
 import { ApiBody, ApiOperation, ApiParam, ApiQuery } from "@nestjs/swagger";
+import { type TestPipeDto, testPipeSchema } from "./dto/test-pipe.dto";
 import { TestGuard } from "./guards/test.guard";
+import { TestInterceptor } from "./interceptors/test.interceptor";
+import type { OverviewService } from "./overview.service";
+import { MethodPipe } from "./pipes/method.pipe";
 import { ParamPipe } from "./pipes/param.pipe";
 import { QueryPipe } from "./pipes/query.pipe";
-import { MethodPipe } from "./pipes/method.pipe";
-import { TestPipeDto, testPipeSchema } from "./dto/test-pipe.dto";
 import { ZodValidationPipe } from "./pipes/zod-validation.pipe";
 
 @Controller("overview")
@@ -52,7 +52,7 @@ Check the console log and the returned data.
 
 ## Order
 
-The \@UsePipes() decorator applies a controller-scoped/method-scoped pipe to the controller/method.
+The @UsePipes() decorator applies a controller-scoped/method-scoped pipe to the controller/method.
 
 This case is a method-scoped pipe. A method-scoped pipe executes for body, query, and param in order.
 

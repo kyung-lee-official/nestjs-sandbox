@@ -1,7 +1,7 @@
 import { BasicAuthenticationFlow } from "./BasicAuthenticationFlow";
 
 const Page = () => {
-	return <BasicAuthenticationFlow />;
+  return <BasicAuthenticationFlow />;
 };
 
 export default Page;

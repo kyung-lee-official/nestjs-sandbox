@@ -1,13 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
 import {
-  useReactTable,
-  getCoreRowModel,
-  flexRender,
+  type ColumnDef,
   createColumnHelper,
-  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
 } from "@tanstack/react-table";
+import { useMemo } from "react";
 
 type Person = {
   id: number;

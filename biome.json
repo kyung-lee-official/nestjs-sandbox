@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": false
+    "includes": ["**/*.{ts}", "!.git", "!。turbo", "!node_modules", "bun.lock"]
   },
   "formatter": {
     "enabled": true,

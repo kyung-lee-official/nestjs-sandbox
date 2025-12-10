@@ -1,27 +1,27 @@
 import {
-	Controller,
-	Get,
-	Post,
 	Body,
-	Patch,
-	Param,
+	Controller,
 	Delete,
+	Get,
+	Param,
+	Patch,
+	Post,
 	UsePipes,
 } from "@nestjs/common";
-import { AuthneticationService } from "./authnetication.service";
-import { SignUpDto, signUpSchema } from "./dto/signup.dto";
-import { ApiTags, ApiOperation, ApiBody } from "@nestjs/swagger";
-import {
-	signUpBodyOptions,
-	signUpOperationOptions,
-} from "./swagger/signup.swagger";
+import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import type { AuthneticationService } from "./authnetication.service";
+import { type SignInDto, signInSchema } from "./dto/signin.dto";
+import { type SignUpDto, signUpSchema } from "./dto/signup.dto";
+import { SignInPipe } from "./pipes/signin.pipe";
 import { SignUpPipe } from "./pipes/signup.pipe";
 import {
 	signInBodyOptions,
 	signInOperationOptions,
 } from "./swagger/signin.swagger";
-import { SignInPipe } from "./pipes/signin.pipe";
-import { SignInDto, signInSchema } from "./dto/signin.dto";
+import {
+	signUpBodyOptions,
+	signUpOperationOptions,
+} from "./swagger/signup.swagger";
 
 @Controller("authnetication")
 export class AuthneticationController {

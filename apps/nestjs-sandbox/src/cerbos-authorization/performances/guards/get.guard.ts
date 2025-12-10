@@ -6,7 +6,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
-import { PrismaService } from "@/recipes/prisma/prisma.service";
+import type { PrismaService } from "@/recipes/prisma/prisma.service";
 import { getCerbosPrincipal } from "@/utils/data";
 
 const cerbos = new Cerbos(process.env.CERBOS as string, { tls: false });
@@ -37,11 +37,13 @@ export class GetCerbosGuard implements CanActivate {
     const actions = ["get"];
 
     /* resource */
-    const performanceIds = await this.prismaService.client.performance.findMany({
-      select: {
-        id: true,
+    const performanceIds = await this.prismaService.client.performance.findMany(
+      {
+        select: {
+          id: true,
+        },
       },
-    });
+    );
     const resources: ResourceCheck[] = performanceIds.map((performanceId) => ({
       resource: {
         kind: "internal:roles",

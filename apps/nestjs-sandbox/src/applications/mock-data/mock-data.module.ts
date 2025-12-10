@@ -3,8 +3,8 @@ import { MockDataController } from "./mock-data.controller";
 import { MockDataService } from "./mock-data.service";
 
 @Module({
-	imports: [],
-	controllers: [MockDataController],
-	providers: [MockDataService],
+  imports: [],
+  controllers: [MockDataController],
+  providers: [MockDataService],
 })
 export class MockDataModule {}

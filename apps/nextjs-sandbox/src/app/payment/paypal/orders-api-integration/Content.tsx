@@ -4,19 +4,17 @@ import { AccessToken } from "./AccessToken";
 import { CreateOrder } from "./create-order/CreateOrder";
 
 type ContentProps = {
-	paypalAccessToken?: string;
+  paypalAccessToken?: string;
 };
 
 export const Content = ({ paypalAccessToken }: ContentProps) => {
-	return (
-		<div className="p-6 space-y-6">
-			<h1 className="text-2xl font-bold">
-				PayPal Orders API Integration
-			</h1>
+  return (
+    <div className="p-6 space-y-6">
+      <h1 className="text-2xl font-bold">PayPal Orders API Integration</h1>
 
-			<AccessToken paypalAccessToken={paypalAccessToken} />
+      <AccessToken paypalAccessToken={paypalAccessToken} />
 
-			<CreateOrder paypalAccessToken={paypalAccessToken} />
-		</div>
-	);
+      <CreateOrder paypalAccessToken={paypalAccessToken} />
+    </div>
+  );
 };

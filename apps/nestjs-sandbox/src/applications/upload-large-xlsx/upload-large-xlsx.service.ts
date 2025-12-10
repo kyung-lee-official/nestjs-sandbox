@@ -1,16 +1,16 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
+import type { UploadLargeXlsxTask } from "@repo/database";
 import * as ExcelJS from "exceljs";
-import { Response } from "express";
-import { PrismaService } from "../../recipes/prisma/prisma.service";
-import { BullQueueService } from "./services/bull-queue.service";
-import { RedisStorageService } from "./services/redis-storage.service";
+import type { Response } from "express";
+import type { PrismaService } from "../../recipes/prisma/prisma.service";
+import type { BullQueueService } from "./services/bull-queue.service";
+import type { RedisStorageService } from "./services/redis-storage.service";
 import {
   ActiveStatusesSchema,
-  ProcessFileJobData,
+  type ProcessFileJobData,
   ProcessFileJobDataSchema,
   TerminalStatusesSchema,
 } from "./types";
-import { UploadLargeXlsxTask } from "@repo/database";
 
 @Injectable()
 export class UploadLargeXlsxService {
@@ -90,29 +90,30 @@ export class UploadLargeXlsxService {
   }
 
   async getTaskById(taskId: number): Promise<UploadLargeXlsxTask | null> {
-    const task = await this.prismaService.client.uploadLargeXlsxTask.findUnique({
-      where: { id: taskId },
-      include: {
-        data: true,
-        errors: true,
-        _count: {
-          select: {
-            data: true,
-            errors: true,
+    const task = await this.prismaService.client.uploadLargeXlsxTask.findUnique(
+      {
+        where: { id: taskId },
+        include: {
+          data: true,
+          errors: true,
+          _count: {
+            select: {
+              data: true,
+              errors: true,
+            },
           },
         },
       },
-    });
+    );
     return task;
   }
 
   async deleteDataByTaskId(taskId: number) {
     /* Delete all data entries for this task */
-    const deletedData = await this.prismaService.client.uploadLargeXlsxData.deleteMany(
-      {
+    const deletedData =
+      await this.prismaService.client.uploadLargeXlsxData.deleteMany({
         where: { taskId },
-      },
-    );
+      });
 
     /* Delete all error entries for this task */
     const deletedErrors =
@@ -139,19 +140,21 @@ export class UploadLargeXlsxService {
   ): Promise<void> {
     try {
       /* First, check if task exists */
-      const task = await this.prismaService.client.uploadLargeXlsxTask.findUnique({
-        where: { id: taskId },
-      });
+      const task =
+        await this.prismaService.client.uploadLargeXlsxTask.findUnique({
+          where: { id: taskId },
+        });
 
       if (!task) {
         throw new BadRequestException(`Task with ID ${taskId} not found`);
       }
 
       /* Get all validation errors for this task */
-      const errors = await this.prismaService.client.uploadLargeXlsxError.findMany({
-        where: { taskId },
-        orderBy: { rowNumber: "asc" },
-      });
+      const errors =
+        await this.prismaService.client.uploadLargeXlsxError.findMany({
+          where: { taskId },
+          orderBy: { rowNumber: "asc" },
+        });
 
       if (errors.length === 0) {
         throw new BadRequestException(

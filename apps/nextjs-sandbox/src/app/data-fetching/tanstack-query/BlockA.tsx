@@ -1,6 +1,6 @@
 import { QueryClientProvider, useQuery } from "@tanstack/react-query";
-import { queryClient } from "./queryClient";
 import { fetchTodo } from "./api";
+import { queryClient } from "./queryClient";
 
 const Todo = () => {
   const { isPending, data, error } = useQuery({

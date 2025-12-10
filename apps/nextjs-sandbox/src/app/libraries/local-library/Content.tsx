@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+
 // import { MockType } from "../../../../node_modules/cool-pkg-sandbox/src";
 
 const Content = () => {

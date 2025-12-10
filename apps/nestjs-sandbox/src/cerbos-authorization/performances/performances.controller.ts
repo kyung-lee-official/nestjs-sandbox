@@ -13,12 +13,12 @@ import {
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtGuard } from "../authnetication/guards/jwt.guard";
 import {
-  CreatePerformanceDto,
+  type CreatePerformanceDto,
   createPerformanceSchema,
 } from "./dto/create-performance.dto";
 import { DeleteCerbosGuard } from "./guards/delete.guard";
 import { GetCerbosGuard } from "./guards/get.guard";
-import { PerformancesService } from "./performances.service";
+import type { PerformancesService } from "./performances.service";
 import { CreatePerformancePipe } from "./pipes/create-performance.pipe";
 import {
   createPerformanceBodyOptions,

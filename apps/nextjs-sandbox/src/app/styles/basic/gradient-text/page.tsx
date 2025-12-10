@@ -1,6 +1,6 @@
 import Content from "./Content";
 
 const Page = () => {
-	return <Content />;
+  return <Content />;
 };
 export default Page;

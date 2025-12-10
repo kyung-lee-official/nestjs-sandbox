@@ -1,45 +1,49 @@
-import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import { BullModule } from "@nestjs/bullmq";
+import {
+  type MiddlewareConsumer,
+  Module,
+  type NestModule,
+} from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { ApplicationsModule } from "./applications/applications.module";
+import { AssessmentsModule } from "./cerbos-authorization/assessments/assessments.module";
+import { AuthneticationModule } from "./cerbos-authorization/authnetication/authnetication.module";
+import { MembersModule } from "./cerbos-authorization/members/members.module";
+import { PerformancesModule } from "./cerbos-authorization/performances/performances.module";
+import { RolesModule } from "./cerbos-authorization/roles/roles.module";
+import { TestMiddleware } from "./overview/middleware/test.middleware";
 import { OverviewModule } from "./overview/overview.module";
+import { PrismaModule } from "./recipes/prisma/prisma.module";
 import { TechniquesModule } from "./techniques/techniques.module";
 import { TencentCosObjectsModule } from "./tencent-cos-objects/tencent-cos-objects.module";
-import { TestMiddleware } from "./overview/middleware/test.middleware";
-import { PrismaModule } from "./recipes/prisma/prisma.module";
 import { WebsocketsModule } from "./websockets/websockets.module";
-import { MembersModule } from "./cerbos-authorization/members/members.module";
-import { AuthneticationModule } from "./cerbos-authorization/authnetication/authnetication.module";
-import { RolesModule } from "./cerbos-authorization/roles/roles.module";
-import { PerformancesModule } from "./cerbos-authorization/performances/performances.module";
-import { AssessmentsModule } from "./cerbos-authorization/assessments/assessments.module";
-import { ApplicationsModule } from "./applications/applications.module";
-import { BullModule } from "@nestjs/bullmq";
 
 @Module({
-	imports: [
-		OverviewModule,
-		TechniquesModule,
-		TencentCosObjectsModule,
-		PrismaModule,
-		WebsocketsModule,
-		MembersModule,
-		AuthneticationModule,
-		RolesModule,
-		PerformancesModule,
-		AssessmentsModule,
-		ApplicationsModule,
-		BullModule.forRoot({
-			connection: {
-				host: process.env.REDIS_HOST,
-				port: Number(process.env.REDIS_PORT),
-			},
-		}),
-	],
-	controllers: [AppController],
-	providers: [AppService],
+  imports: [
+    OverviewModule,
+    TechniquesModule,
+    TencentCosObjectsModule,
+    PrismaModule,
+    WebsocketsModule,
+    MembersModule,
+    AuthneticationModule,
+    RolesModule,
+    PerformancesModule,
+    AssessmentsModule,
+    ApplicationsModule,
+    BullModule.forRoot({
+      connection: {
+        host: process.env.REDIS_HOST,
+        port: Number(process.env.REDIS_PORT),
+      },
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule implements NestModule {
-	configure(consumer: MiddlewareConsumer) {
-		consumer.apply(TestMiddleware).forRoutes("*");
-	}
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(TestMiddleware).forRoutes("*");
+  }
 }

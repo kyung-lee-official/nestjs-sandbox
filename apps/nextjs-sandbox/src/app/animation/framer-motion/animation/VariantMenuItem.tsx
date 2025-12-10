@@ -27,34 +27,34 @@ const StyledTextPlaceholder = styled.div`
 `;
 
 const variants = {
-	open: {
-		y: 0,
-		opacity: 1,
-		transition: {
-			y: { stiffness: 1000, velocity: -100 },
-		},
-	},
-	closed: {
-		y: 50,
-		opacity: 0,
-		transition: {
-			y: { stiffness: 1000 },
-		},
-	},
+  open: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      y: { stiffness: 1000, velocity: -100 },
+    },
+  },
+  closed: {
+    y: 50,
+    opacity: 0,
+    transition: {
+      y: { stiffness: 1000 },
+    },
+  },
 };
 
 const colors = ["#FF008C", "#D309E1", "#9C1AFF", "#7700FF", "#4400FF"];
 
 export const VariantMenuItem = ({ i }: any) => {
-	const style = { border: `2px solid ${colors[i]}` };
-	return (
-		<StyledLi
-			variants={variants}
-			whileHover={{ scale: 1.1 }}
-			whileTap={{ scale: 0.95 }}
-		>
-			<StyledIconPlaceholder style={style} />
-			<StyledTextPlaceholder style={style} />
-		</StyledLi>
-	);
+  const style = { border: `2px solid ${colors[i]}` };
+  return (
+    <StyledLi
+      variants={variants}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      <StyledIconPlaceholder style={style} />
+      <StyledTextPlaceholder style={style} />
+    </StyledLi>
+  );
 };

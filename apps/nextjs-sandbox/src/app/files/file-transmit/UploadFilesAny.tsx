@@ -1,6 +1,6 @@
 import axios from "axios";
 import Link from "next/link";
-import { ChangeEvent, useRef, useState } from "react";
+import { type ChangeEvent, useRef, useState } from "react";
 
 export const UploadFilesAny = () => {
   const inputRef = useRef<HTMLInputElement>(null);

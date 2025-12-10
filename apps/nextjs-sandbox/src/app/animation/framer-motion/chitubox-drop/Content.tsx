@@ -93,8 +93,8 @@ class Spring {
   }
 
   update() {
-    let x = this.height - (this.svgHeight - this.waterLevel);
-    let acceleration = -k * x - dampen * this.velocity;
+    const x = this.height - (this.svgHeight - this.waterLevel);
+    const acceleration = -k * x - dampen * this.velocity;
     this.velocity += acceleration;
     this.height += this.velocity;
     if (this.height > this.svgHeight) {
@@ -103,7 +103,7 @@ class Spring {
   }
 }
 
-let waterSprings: Spring[] = [];
+const waterSprings: Spring[] = [];
 for (let i = 0; i < waterSpringsLength; i++) {
   waterSprings[i] = new Spring(
     svgHeight - waterLevel,
@@ -176,8 +176,8 @@ const Content = () => {
         .map((point) => point.join(","))
         .join(" ")} ${svgWidth},${svgHeight}`,
     );
-    let ldelta = new Array(waterSprings.length);
-    let rdelta = new Array(waterSprings.length);
+    const ldelta = new Array(waterSprings.length);
+    const rdelta = new Array(waterSprings.length);
     for (let i = 0; i < waterSprings.length; i++) {
       if (i > 0) {
         ldelta[i] =

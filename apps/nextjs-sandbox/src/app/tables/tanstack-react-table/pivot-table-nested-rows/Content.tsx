@@ -1,12 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useMemo, useState } from "react";
 
 // Type definitions
 interface Employee {
@@ -138,7 +138,7 @@ export function Content() {
     >();
 
     rawData.forEach((item) => {
-      let currentKeys: string[] = [];
+      const currentKeys: string[] = [];
       groupByProps.forEach((prop, index) => {
         currentKeys.push(item[prop]);
         const key = currentKeys.join("|");

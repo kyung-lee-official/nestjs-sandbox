@@ -1,11 +1,11 @@
 import { Module } from "@nestjs/common";
-import { ResendService } from "./resend.service";
-import { ResendController } from "./resend.controller";
 import { ApiTags } from "@nestjs/swagger";
+import { ResendController } from "./resend.controller";
+import { ResendService } from "./resend.service";
 
 @ApiTags("resend")
 @Module({
-	controllers: [ResendController],
-	providers: [ResendService],
+  controllers: [ResendController],
+  providers: [ResendService],
 })
 export class ResendModule {}

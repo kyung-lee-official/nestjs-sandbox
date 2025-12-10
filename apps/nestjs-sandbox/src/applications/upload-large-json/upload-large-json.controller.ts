@@ -1,16 +1,16 @@
 import {
 	Controller,
-	Get,
-	Post,
-	Param,
 	Delete,
+	Get,
+	Param,
 	ParseIntPipe,
-	UseInterceptors,
+	Post,
 	UploadedFile,
+	UseInterceptors,
 } from "@nestjs/common";
-import { UploadLargeJsonService } from "./upload-large-json.service";
-import { ApiTags } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { ApiTags } from "@nestjs/swagger";
+import type { UploadLargeJsonService } from "./upload-large-json.service";
 
 @ApiTags("Upload Large Json")
 @Controller("applications/upload-large-json")

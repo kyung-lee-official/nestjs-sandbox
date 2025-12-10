@@ -1,5 +1,5 @@
-import * as React from "react";
 import { motion } from "motion/react";
+import * as React from "react";
 import styled from "styled-components";
 import { VariantMenuItem } from "./VariantMenuItem";
 
@@ -13,20 +13,20 @@ const StyledUl = styled(motion.ul)`
 `;
 
 const variants = {
-	open: {
-		transition: { staggerChildren: 0.07, delayChildren: 0.2 },
-	},
-	closed: {
-		transition: { staggerChildren: 0.05, staggerDirection: -1 },
-	},
+  open: {
+    transition: { staggerChildren: 0.07, delayChildren: 0.2 },
+  },
+  closed: {
+    transition: { staggerChildren: 0.05, staggerDirection: -1 },
+  },
 };
 
 export const VariantNavigation = () => (
-	<StyledUl variants={variants}>
-		{itemIds.map((i) => (
-			<VariantMenuItem i={i} key={i} />
-		))}
-	</StyledUl>
+  <StyledUl variants={variants}>
+    {itemIds.map((i) => (
+      <VariantMenuItem i={i} key={i} />
+    ))}
+  </StyledUl>
 );
 
 const itemIds = [0, 1, 2, 3, 4];

@@ -7,17 +7,17 @@ import Spring6 from "./Spring6";
 import Spring7 from "./Spring7";
 
 const Page = () => {
-	return (
-		<div className="flex flex-col items-center min-h-svh p-4 gap-8">
-			<Spring1 />
-			<Spring2 />
-			<Spring3 />
-			<Spring4 />
-			<Spring5 />
-			<Spring6 />
-			<Spring7 />
-		</div>
-	);
+  return (
+    <div className="flex flex-col items-center min-h-svh p-4 gap-8">
+      <Spring1 />
+      <Spring2 />
+      <Spring3 />
+      <Spring4 />
+      <Spring5 />
+      <Spring6 />
+      <Spring7 />
+    </div>
+  );
 };
 
 export default Page;

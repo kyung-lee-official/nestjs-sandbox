@@ -1,7 +1,7 @@
 import { ContentWithTanStackProvider } from "./ContentWithTanStackProvider";
 
 const Page = () => {
-	return <ContentWithTanStackProvider />;
+  return <ContentWithTanStackProvider />;
 };
 
 export default Page;

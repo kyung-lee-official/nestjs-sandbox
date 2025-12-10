@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useMemo, useState, useRef, useCallback } from "react";
 import {
-  useReactTable,
-  getCoreRowModel,
-  flexRender,
+  type ColumnDef, // Import ColumnDef for explicit typing
   createColumnHelper,
-  ColumnDef, // Import ColumnDef for explicit typing
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { makeData, Product } from "../data"; // Import your data and type
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import { makeData, type Product } from "../data"; // Import your data and type
 
 // Use createColumnHelper for type-safe column definitions
 const columnHelper = createColumnHelper<Product>();

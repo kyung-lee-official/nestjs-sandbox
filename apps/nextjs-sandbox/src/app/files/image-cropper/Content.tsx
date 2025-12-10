@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import COS from "cos-js-sdk-v5";
 import axios from "axios";
+import COS from "cos-js-sdk-v5";
 import { add, log, multiply } from "mathjs";
 import { useAnimate } from "motion/react";
+import React, { useEffect, useRef, useState } from "react";
+
 const { NEXT_PUBLIC_BUCKET, NEXT_PUBLIC_REGION } = process.env;
 
 const Content = () => {

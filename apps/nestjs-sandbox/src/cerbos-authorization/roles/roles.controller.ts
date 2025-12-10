@@ -1,28 +1,28 @@
 import {
-	Controller,
-	Get,
-	Post,
 	Body,
-	Patch,
-	Param,
+	Controller,
 	Delete,
+	Get,
+	Param,
+	Patch,
+	Post,
 	UsePipes,
 } from "@nestjs/common";
-import { RolesService } from "./roles.service";
-import { CreateRoleDto, createRoleSchema } from "./dto/create-role.dto";
 import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { type CreateRoleDto, createRoleSchema } from "./dto/create-role.dto";
+import { type UpdateRoleDto, updateRoleSchema } from "./dto/update-role.dto";
 import { CreateRolePipe } from "./pipes/create-role.pipe";
+import { UpdateRolePipe } from "./pipes/update-role.pipe";
+import type { RolesService } from "./roles.service";
 import {
-	createRoleOperationOptions,
 	createRoleBodyOptions,
+	createRoleOperationOptions,
 } from "./swagger/create-role.swagger";
 import { findRolesOperationOptions } from "./swagger/find-roles.swagger";
-import { UpdateRoleDto, updateRoleSchema } from "./dto/update-role.dto";
 import {
 	updateRoleBodyOptions,
 	updateRoleOperationOptions,
 } from "./swagger/update-role.swagger";
-import { UpdateRolePipe } from "./pipes/update-role.pipe";
 
 @ApiTags("Roles")
 @Controller("roles")

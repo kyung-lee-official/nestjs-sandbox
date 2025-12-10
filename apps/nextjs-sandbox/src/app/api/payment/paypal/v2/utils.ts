@@ -7,29 +7,34 @@
  * @returns PayPal API base URL (production or sandbox)
  */
 export function getPayPalBaseURL(): string {
-	const isProduction = process.env.PAYPAL_ENV === 'production' || process.env.PAYPAL_ENV === 'live';
-	
-	return isProduction 
-		? 'https://api-m.paypal.com'        // Production
-		: 'https://api-m.sandbox.paypal.com'; // Sandbox (default)
+  const isProduction =
+    process.env.PAYPAL_ENV === "production" ||
+    process.env.PAYPAL_ENV === "live";
+
+  return isProduction
+    ? "https://api-m.paypal.com" // Production
+    : "https://api-m.sandbox.paypal.com"; // Sandbox (default)
 }
 
 /**
  * Environment configuration for PayPal integration
  */
 export const PayPalConfig = {
-	/**
-	 * Get PayPal API base URL
-	 */
-	getBaseURL: getPayPalBaseURL,
-	
-	/**
-	 * Check if running in production mode
-	 */
-	isProduction: () => process.env.PAYPAL_ENV === 'production' || process.env.PAYPAL_ENV === 'live',
-	
-	/**
-	 * Get environment name for logging/debugging
-	 */
-	getEnvironment: () => PayPalConfig.isProduction() ? 'production' : 'sandbox'
+  /**
+   * Get PayPal API base URL
+   */
+  getBaseURL: getPayPalBaseURL,
+
+  /**
+   * Check if running in production mode
+   */
+  isProduction: () =>
+    process.env.PAYPAL_ENV === "production" ||
+    process.env.PAYPAL_ENV === "live",
+
+  /**
+   * Get environment name for logging/debugging
+   */
+  getEnvironment: () =>
+    PayPalConfig.isProduction() ? "production" : "sandbox",
 } as const;

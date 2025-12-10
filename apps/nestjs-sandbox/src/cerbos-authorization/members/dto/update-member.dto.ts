@@ -1,4 +1,4 @@
-import { z } from "zod";
+import type { z } from "zod";
 import { createMemberSchema } from "./create-member.dto";
 
 export const updateMemberSchema = createMemberSchema.partial();

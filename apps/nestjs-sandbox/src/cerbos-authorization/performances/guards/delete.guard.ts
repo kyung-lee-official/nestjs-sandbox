@@ -7,7 +7,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
-import { PrismaService } from "@/recipes/prisma/prisma.service";
+import type { PrismaService } from "@/recipes/prisma/prisma.service";
 import { getCerbosPrincipal } from "@/utils/data";
 
 const cerbos = new Cerbos(process.env.CERBOS as string, { tls: false });
