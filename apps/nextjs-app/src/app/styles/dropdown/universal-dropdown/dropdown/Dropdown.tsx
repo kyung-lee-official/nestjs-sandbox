@@ -146,10 +146,11 @@ export const Dropdown = (props: DropdownProps) => {
     <div ref={dropdownRef} className="relative w-full">
       <div className={controlClassName} onClick={() => setIsOpen(!isOpen)}>
         {multiple && Array.isArray(selected) && selected.length > 0 ? (
-          selected.map((item, i) => (
-            <div key={i} className={selectedItemClassName(item)}>
+          selected.map((item) => (
+            <div key={item} className={selectedItemClassName(item)}>
               <span>{getLabel(item)}</span>
               <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleRemove(item);

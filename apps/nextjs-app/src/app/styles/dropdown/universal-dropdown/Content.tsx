@@ -46,11 +46,8 @@ export const Content = () => {
     .map((option) => option.id) as string[];
 
   return (
-    <div
-      className="flex gap-10 h-svh
-			bg-black/90"
-    >
-      <div className="w-[500px] p-4 space-y-4">
+    <div className="flex h-svh gap-10 bg-black/90">
+      <div className="w-[500px] space-y-4 p-4">
         {/* String Dropdown - Single Select */}
         <Dropdown
           mode="regular"
@@ -74,17 +71,16 @@ export const Content = () => {
           }}
           optionWrapperClassName={(option, { selected, hovered }) => {
             return `px-2 py-1 
-						${hovered ? "bg-neutral-700" : ""}}
-						cursor-pointer truncate`;
+			${hovered ? "bg-neutral-700" : ""}}
+			cursor-pointer truncate`;
           }}
           renderOption={(option, { selected, hovered }) => {
             const found = stringOptions.find((obj) => obj === option);
             return (
               <div
-                className={`flex items-center px-2 gap-2 ${
+                className={`flex items-center gap-2 px-2 ${
                   selected ? "text-blue-500" : ""
-                } ${hovered ? "bg-neutral-700" : ""}
-								rounded truncate`}
+                } ${hovered ? "bg-neutral-700" : ""}rounded truncate`}
               >
                 <span>{found}</span>
               </div>
@@ -127,16 +123,15 @@ export const Content = () => {
           }}
           getSearchString={(option) => {
             const found = objectOptions.find((obj) => obj.id === option);
-            return found ? found.name + " " + found.email : "";
+            return found ? `${found.name} ${found.email}` : "";
           }}
           renderOption={(option, { selected, hovered }) => {
             const found = objectOptions.find((obj) => obj.id === option);
             return (
               <div
-                className={`flex items-center px-2 gap-2 ${
+                className={`flex items-center gap-2 px-2 ${
                   selected ? "text-blue-500" : ""
-                } ${hovered ? "bg-neutral-700" : ""}
-								rounded truncate`}
+                } ${hovered ? "bg-neutral-700" : ""}rounded truncate`}
               >
                 <span>{found?.name}</span>
                 <span className="text-neutral-400">{found?.email}</span>
@@ -168,7 +163,7 @@ export const Content = () => {
       </div>
       {/* Preview hovered item */}
       {hovered && (
-        <div className="mt-2 p-2 bg-neutral-400 rounded">
+        <div className="mt-2 rounded bg-neutral-400 p-2">
           Hovered: {JSON.stringify(hovered)}
         </div>
       )}
