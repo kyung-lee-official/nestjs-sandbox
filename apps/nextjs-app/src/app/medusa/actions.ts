@@ -24,11 +24,11 @@ export async function setCustomerCookie(customerId: string) {
   const cookieStore = await cookies();
   cookieStore.set(CookieKey.CUSTOMER, customerId, cookieOptions);
 }
-/* setCustomerFPTokenCookie is used for operations performed by the customer themselves (first-person) */
-export async function setCustomerFPTokenCookie(token: string) {
+/* setCustomerTokenCookie is used for operations performed by the customer themselves (first-person) */
+export async function setCustomerTokenCookie(token: string) {
   const { cookies } = await import("next/headers");
   const cookieStore = await cookies();
-  cookieStore.set(CookieKey.CUSTOMER_FP_TOKEN, token, cookieOptions);
+  cookieStore.set(CookieKey.CUSTOMER_TOKEN, token, cookieOptions);
 }
 
 /* server action to set sales channel cookie */
