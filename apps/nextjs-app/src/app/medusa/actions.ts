@@ -30,6 +30,11 @@ export async function setCustomerTokenCookie(token: string) {
   const cookieStore = await cookies();
   cookieStore.set(CookieKey.CUSTOMER_TOKEN, token, cookieOptions);
 }
+export async function getCustomerTokenCookie() {
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  return cookieStore.get(CookieKey.CUSTOMER_TOKEN)?.value;
+}
 
 /* server action to set sales channel cookie */
 export async function setSalesChannelCookie(salesChannelId: string) {
