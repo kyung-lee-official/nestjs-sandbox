@@ -3,6 +3,7 @@ import {
   type ConfigModule,
   defineMiddlewares,
   errorHandler,
+  logger,
   type MedusaNextFunction,
   type MedusaRequest,
   type MedusaResponse,
@@ -17,6 +18,9 @@ const originalErrorHandler = errorHandler();
 export default defineMiddlewares({
   routes: [
     {
+      /**
+       * astrisk matcher to apply to all store api routes, including non-existent ones
+       */
       matcher: "*",
       middlewares: [
         (req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) => {
@@ -25,10 +29,7 @@ export default defineMiddlewares({
            * here you can use req.originalUrl to access the request URL, req.url or req.path won't work
            * for example, /store/customers/me
            */
-          //   console.log(
-          //     "URL >>>>>>>>>>>>>>>>>>>>>>>>> ",
-          //     req.originalUrl,
-          //   );
+        //   logger.info(`URL >>>>>>>>>>>>>>>>>>>>>>>>> ${req.originalUrl}`);
           return cors({
             origin: parseCorsOrigins(configModule.projectConfig.http.storeCors),
             credentials: true,
