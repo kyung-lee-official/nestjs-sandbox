@@ -29,7 +29,10 @@
         "useSortedClasses": "warn"
       },
       "a11y": {
-        "noSvgWithoutTitle": "off"
+        "noSvgWithoutTitle": "off",
+        "useKeyWithClickEvents": "warn",
+        "useKeyWithMouseEvents": "warn",
+		"noStaticElementInteractions": "warn"
       }
     }
   },
