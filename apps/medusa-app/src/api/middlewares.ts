@@ -19,7 +19,7 @@ export default defineMiddlewares({
   routes: [
     {
       /**
-       * astrisk matcher to apply to all store api routes, including non-existent ones
+       * astrisk matcher to apply to all routes, including non-existent ones
        */
       matcher: "*",
       middlewares: [
