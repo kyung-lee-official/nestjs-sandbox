@@ -2,7 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { setCustomerFPTokenCookie } from "../../actions";
+import { setCustomerTokenCookie } from "../../actions";
 import { authenticateCustomer } from "./api";
 
 type FormData = {
@@ -28,8 +28,7 @@ export const Content = () => {
     },
     onSuccess: async (data) => {
       /* set cookie */
-      console.log(data);
-      await setCustomerFPTokenCookie(data.token);
+      await setCustomerTokenCookie(data.token);
     },
     onError: (error) => {
       console.error("Authentication failed:", error);

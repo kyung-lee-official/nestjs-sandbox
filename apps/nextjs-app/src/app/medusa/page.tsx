@@ -103,6 +103,10 @@ export default function Page() {
             link: "medusa/store-api/auth",
             text: "Auth",
           },
+          {
+            link: "medusa/store-api/cart",
+            text: "Cart",
+          },
         ]}
       />
       <Block

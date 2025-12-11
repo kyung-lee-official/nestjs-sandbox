@@ -1,6 +1,6 @@
 export const CookieKey = {
-  REGION: "medusaRegion",
-  SALES_CHANNEL: "medusaSalesChannel",
-  CUSTOMER: "medusaCustomer",
-  CUSTOMER_FP_TOKEN: "medusaCustomerFPToken",
+  REGION: "medusa_admin_region",
+  SALES_CHANNEL: "medusa_admin_sales_channel",
+  CUSTOMER: "medusa_admin_customer",
+  CUSTOMER_TOKEN: "medusa_cus_token",
 };

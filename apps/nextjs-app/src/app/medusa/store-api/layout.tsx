@@ -24,10 +24,10 @@ const layout = async (props: LayoutProps) => {
   /* read cookies - access any cookie by name */
   const cookieStore = await cookies();
   /* default to "us" if undefined */
-  const customerFPToken = cookieStore.get(CookieKey.CUSTOMER_FP_TOKEN)?.value;
+  const customerFPToken = cookieStore.get(CookieKey.CUSTOMER_TOKEN)?.value;
 
   if (!customerFPToken) {
-    return null;
+    return <div>{children}</div>
   }
   /* decode token with base64 */
   const decoded = jwtDecode(customerFPToken) as DecodedToken;
