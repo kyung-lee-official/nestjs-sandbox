@@ -21,8 +21,6 @@ export default defineMiddlewares({
       middlewares: [
         (req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) => {
           const configModule: ConfigModule = req.scope.resolve("configModule");
-          console.log("mdw >>>>>>>>>>>>>>>>>>>>>>>>> ", req.url);
-
           return cors({
             origin: parseCorsOrigins(configModule.projectConfig.http.storeCors),
             credentials: true,

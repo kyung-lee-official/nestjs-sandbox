@@ -14,12 +14,12 @@ export const CartBasicInfo = (props: CartBasicInfoProps) => {
   const { cart, customerAddresses, regionId, salesChannelId, customerId } =
     props;
   return (
-    <div className="my-4 p-4 border bg-neutral-100 rounded">
+    <div className="my-4 rounded border bg-neutral-100 p-4">
       <div>
         <strong>Cart ID:</strong>{" "}
         <Link
           href={`/medusa/commerce-modules/cart/${cart.id}`}
-          className="underline decoration-dotted cursor-pointer"
+          className="cursor-pointer underline decoration-dotted"
         >
           {cart.id}
         </Link>

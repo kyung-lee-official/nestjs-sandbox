@@ -61,8 +61,8 @@ export const Cart = (props: CartProps) => {
   return (
     <div className="relative h-4">
       <button
-        className="absolute right-0
-				underline decoration-dotted cursor-pointer"
+        type="button"
+        className="absolute right-0 cursor-pointer underline decoration-dotted"
         onClick={openModal}
       >
         Cart
@@ -72,8 +72,7 @@ export const Cart = (props: CartProps) => {
       {isModalOpen &&
         createPortal(
           <div
-            className="fixed inset-0 flex items-center justify-center z-50
-						bg-black/80 bg-opacity-50"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 bg-opacity-50"
             onClick={closeModal}
           >
             <div
@@ -81,11 +80,12 @@ export const Cart = (props: CartProps) => {
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Shopping Cart</h2>
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="font-semibold text-xl">Shopping Cart</h2>
                 <button
+                  type="button"
                   onClick={closeModal}
-                  className="text-gray-500 hover:text-gray-700 text-xl font-bold"
+                  className="font-bold text-gray-500 text-xl hover:text-gray-700"
                 >
                   ×
                 </button>

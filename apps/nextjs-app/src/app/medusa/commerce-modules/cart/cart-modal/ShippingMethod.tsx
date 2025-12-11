@@ -115,7 +115,7 @@ export const ShippingMethod = (props: ShippingMethodProps) => {
   /* Don't render if no shipping address is selected */
   if (!hasShippingAddress) {
     return (
-      <div className="text-sm text-gray-400">
+      <div className="text-gray-400 text-sm">
         Please select a shipping address first
       </div>
     );
@@ -124,14 +124,14 @@ export const ShippingMethod = (props: ShippingMethodProps) => {
   /* Show loading state while cart is loading */
   if (cartQuery.isLoading) {
     return (
-      <div className="text-sm text-gray-400">Loading cart information...</div>
+      <div className="text-gray-400 text-sm">Loading cart information...</div>
     );
   }
 
   /* Show error state if cart query fails */
   if (cartQuery.isError) {
     return (
-      <div className="text-sm text-red-400">
+      <div className="text-red-400 text-sm">
         Failed to load cart information. Please try again.
       </div>
     );
@@ -140,14 +140,14 @@ export const ShippingMethod = (props: ShippingMethodProps) => {
   /* Show loading state while shipping options are loading */
   if (shippingOptionsQuery.isLoading) {
     return (
-      <div className="text-sm text-gray-400">Loading shipping options...</div>
+      <div className="text-gray-400 text-sm">Loading shipping options...</div>
     );
   }
 
   /* Show error state if shipping options query fails */
   if (shippingOptionsQuery.isError) {
     return (
-      <div className="text-sm text-red-400">
+      <div className="text-red-400 text-sm">
         Failed to load shipping options. Please try again.
       </div>
     );
@@ -168,14 +168,14 @@ export const ShippingMethod = (props: ShippingMethodProps) => {
     <div>
       {/* Loading indicator for method update */}
       {(isPending || linkMethodMutation.isPending) && (
-        <div className="text-sm text-blue-400 mb-2">
+        <div className="mb-2 text-blue-400 text-sm">
           Updating shipping method...
         </div>
       )}
 
       {/* Error display for method update */}
       {linkMethodMutation.isError && (
-        <div className="text-sm text-red-400 mb-2">
+        <div className="mb-2 text-red-400 text-sm">
           Failed to update shipping method. Please try again.
         </div>
       )}
@@ -193,7 +193,8 @@ export const ShippingMethod = (props: ShippingMethodProps) => {
           }
           return (
             <div className="text-white">
-              {found.name} - ${(found.price_incl_tax / 100).toFixed(2)}
+              {found.name} - $
+              {(found.calculated_price.calculated_amount / 100).toFixed(2)}
             </div>
           );
         }}
@@ -206,14 +207,16 @@ export const ShippingMethod = (props: ShippingMethodProps) => {
           const found = shippingOptions.find((opt: any) => opt.id === option);
           return (
             <div
-              className={`flex items-center justify-between px-2 gap-2 ${
+              className={`flex items-center justify-between gap-2 px-2 ${
                 selected ? "text-blue-500" : ""
-              } ${hovered ? "bg-neutral-700" : ""}
-								rounded truncate`}
+              } ${hovered ? "bg-neutral-700" : ""}rounded truncate`}
             >
               <span className="flex-1">{found?.name || option}</span>
               <span className="text-sm">
-                ${found ? (found.price_incl_tax / 100).toFixed(2) : "N/A"}
+                $
+                {found
+                  ? (found.calculated_price.calculated_amount / 100).toFixed(2)
+                  : "N/A"}
               </span>
             </div>
           );
