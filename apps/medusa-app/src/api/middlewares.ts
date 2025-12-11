@@ -21,6 +21,14 @@ export default defineMiddlewares({
       middlewares: [
         (req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) => {
           const configModule: ConfigModule = req.scope.resolve("configModule");
+          /**
+           * here you can use req.originalUrl to access the request URL, req.url or req.path won't work
+           * for example, /store/customers/me
+           */
+          //   console.log(
+          //     "URL >>>>>>>>>>>>>>>>>>>>>>>>> ",
+          //     req.originalUrl,
+          //   );
           return cors({
             origin: parseCorsOrigins(configModule.projectConfig.http.storeCors),
             credentials: true,
