@@ -10,7 +10,7 @@ import {
 } from "@medusajs/framework";
 import { MedusaError, parseCorsOrigins } from "@medusajs/framework/utils";
 import cors from "cors";
-import type { HttpError } from "./test-errors/errors/src";
+import { HttpError } from "./test-errors/errors/src";
 import { MedusaErrorTypes } from "./test-errors/medusa-errors/medusa-error-types";
 
 const originalErrorHandler = errorHandler();
@@ -29,7 +29,14 @@ export default defineMiddlewares({
            * here you can use req.originalUrl to access the request URL, req.url or req.path won't work
            * for example, /store/customers/me
            */
-        //   logger.info(`URL >>>>>>>>>>>>>>>>>>>>>>>>> ${req.originalUrl}`);
+          //   logger.info(`URL >>>>>>>>>>>>>>>>>>>>>>>>> ${req.originalUrl}`);
+
+          /**
+           * throwing HttpErrors from middleware will be handled by the errorHandler below
+           * uncomment the following lines to test
+           */
+          //   throw new HttpError("AUTH.FORBIDDEN");
+
           return cors({
             origin: parseCorsOrigins(configModule.projectConfig.http.storeCors),
             credentials: true,
@@ -65,6 +72,7 @@ export default defineMiddlewares({
       ],
     },
   ],
+
   errorHandler: (
     error: HttpError | MedusaError,
     req: MedusaRequest,
