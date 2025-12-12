@@ -33,6 +33,8 @@
       "devDependencies": {
         "@biomejs/biome": "2.3.8",
         "@medusajs/test-utils": "2.12.1",
+        "@repo/schema": "workspace:*",
+        "@repo/types": "workspace:*",
         "@swc/core": "1.15.3",
         "@swc/jest": "^0.2.39",
         "@types/cors": "^2.8.19",
@@ -215,6 +217,7 @@
       "name": "@repo/schema",
       "version": "0.0.0",
       "dependencies": {
+        "@types/node": "^25.0.1",
         "zod": "^4.1.13",
       },
       "devDependencies": {
@@ -5159,6 +5162,8 @@
     "@redocly/ajv/json-schema-traverse": ["json-schema-traverse@1.0.0", "", {}, "sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug=="],
 
     "@redocly/openapi-core/minimatch": ["minimatch@5.1.6", "", { "dependencies": { "brace-expansion": "^2.0.1" } }, "sha512-lKwV/1brpG6mBUFHtb7NUmtABCb2WZZmm2wNiOA5hAb8VdCS4B3dtMWyvcoViccwAW/COERjXLt0zP1zXUN26g=="],
+
+    "@repo/schema/@types/node": ["@types/node@25.0.1", "", { "dependencies": { "undici-types": "~7.16.0" } }, "sha512-czWPzKIAXucn9PtsttxmumiQ9N0ok9FrBwgRWrwmVLlp86BrMExzvXRLFYRJ+Ex3g6yqj+KuaxfX1JTgV2lpfg=="],
 
     "@rushstack/node-core-library/ajv": ["ajv@8.13.0", "", { "dependencies": { "fast-deep-equal": "^3.1.3", "json-schema-traverse": "^1.0.0", "require-from-string": "^2.0.2", "uri-js": "^4.4.1" } }, "sha512-PRA911Blj99jR5RMeTunVbNXMF6Lp4vZXnk5GQjcnUWUTsrXtekg/pnmFFI2u/I36Y/2bITGS30GZCXei6uNkA=="],
 
