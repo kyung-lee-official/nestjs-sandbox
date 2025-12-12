@@ -10,7 +10,8 @@ import {
 } from "@medusajs/framework";
 import { MedusaError, parseCorsOrigins } from "@medusajs/framework/utils";
 import cors from "cors";
-import { HttpError } from "./test-errors/errors/src";
+import { authenticateJwt } from "@/utils/middleware/authenticate-middleware";
+import type { HttpError } from "./test-errors/errors/src";
 import { MedusaErrorTypes } from "./test-errors/medusa-errors/medusa-error-types";
 
 const originalErrorHandler = errorHandler();
@@ -42,6 +43,16 @@ export default defineMiddlewares({
             credentials: true,
           })(req, res, next);
         },
+      ],
+    },
+    {
+      matcher: "/store/customers*",
+      middlewares: [
+        (req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) => {
+          // some custom logic, remember to call next() to proceed to the next middleware
+          return next();
+        },
+        authenticateJwt("customer", ["bearer"]),
       ],
     },
     {
