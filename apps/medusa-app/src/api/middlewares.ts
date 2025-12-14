@@ -9,10 +9,9 @@ import {
   type MedusaResponse,
 } from "@medusajs/framework";
 import { MedusaError, parseCorsOrigins } from "@medusajs/framework/utils";
+import { type HttpError, MedusaErrorTypes } from "@repo/types";
 import cors from "cors";
 import { authenticateJwt } from "@/utils/middleware/authenticate-middleware";
-import type { HttpError } from "./test-errors/errors/src";
-import { MedusaErrorTypes } from "./test-errors/medusa-errors/medusa-error-types";
 
 const originalErrorHandler = errorHandler();
 

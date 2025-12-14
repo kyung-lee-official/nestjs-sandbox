@@ -40,7 +40,6 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@repo/schema": "workspace:*",
     "@repo/types": "workspace:*",
     "@biomejs/biome": "2.3.8",
     "@medusajs/test-utils": "2.12.1",
