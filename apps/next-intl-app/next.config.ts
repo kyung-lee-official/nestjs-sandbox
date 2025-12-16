@@ -14,6 +14,8 @@ const withMDX = createMDX({
   extension: /\.mdx?$/,
   options: {
     // MDX options here
+    remarkPlugins: ["remark-gfm", "remark-math"],
+    rehypePlugins: ["rehype-katex", "rehype-slug", "rehype-autolink-headings"],
   },
 });
 
