@@ -50,10 +50,7 @@ export const authenticateJwt = (
     }
 
     try {
-      const payload = jwt.verify(
-        req.headers.authorization,
-        process.env.JWT_SECRET!,
-      );
+      const payload = jwt.verify(token, process.env.JWT_SECRET!);
     } catch (error) {
       throw new HttpError("AUTH.INVALID_TOKEN");
     }
