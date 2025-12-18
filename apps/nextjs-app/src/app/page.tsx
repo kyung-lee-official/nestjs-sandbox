@@ -30,12 +30,21 @@ const Block = ({
 
 export default function Home() {
   return (
-    <main className="grid min-h-svh grid-cols-1 gap-6 bg-gradient-to-br from-cyan-500/60 to-purple-500/60 p-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+    <main className="grid min-h-svh grid-cols-1 gap-6 bg-linear-to-br from-cyan-500/60 to-purple-500/60 p-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       <Block
         title="Home"
         list={[
           { link: "/", text: "home" },
           { link: "/cors-test", text: "CORS Test" },
+        ]}
+      />
+      <Block
+        title="Security"
+        list={[
+          {
+            link: "/security/http-only-cookies",
+            text: "HTTP Only Cookies Test",
+          },
         ]}
       />
       <Block
