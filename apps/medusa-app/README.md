@@ -1,6 +1,6 @@
 # 鉴权
 
-使用单个 jwt 完成鉴权。jwt 由 medusa 签发，通过 HttpOnly Cookie 存储, SameSite 设置为 Lax
+使用单个 jwt 完成鉴权。jwt 由 medusa 签发，通过 HttpOnly Cookie 存储 (cookie key `medusa_token`), SameSite 设置为 Lax
 
 后端自定义 middleware 在请求到达 Store API/Admin API 之前验证 jwt, 将 token 从 cookie 中提取并复制到 headers.authorization 字段，向下传递
 
