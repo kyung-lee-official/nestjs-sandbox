@@ -1,10 +1,14 @@
 import { z } from "zod";
-import { AUTH_ERRORS } from "./codes/auth.js";
-import { USER_ERRORS } from "./codes/user.js";
+import { AUTH_ERRORS } from "./codes/auth";
+import { MEDUSA_ERRORS } from "./codes/medusa";
+import { SYSTEM_ERRORS } from "./codes/system";
+import { USER_ERRORS } from "./codes/user";
 
 export const ERROR_CODES = {
   ...AUTH_ERRORS,
   ...USER_ERRORS,
+  ...SYSTEM_ERRORS,
+  ...MEDUSA_ERRORS,
 } as const;
 export type ErrorCode = keyof typeof ERROR_CODES;
 export const ErrorCodeSchema = z.enum(
