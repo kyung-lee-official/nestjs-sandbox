@@ -9,7 +9,12 @@ import {
   type MedusaResponse,
 } from "@medusajs/framework";
 import { MedusaError, parseCorsOrigins } from "@medusajs/framework/utils";
-import { HttpError, MedusaErrorTypes } from "@repo/types";
+import {
+  ERROR_CODES,
+  HttpError,
+  type MedusaErrorCodes,
+  MedusaErrorTypes,
+} from "@repo/types";
 import cors from "cors";
 import { authenticateJwt } from "@/utils/middleware/authenticate-middleware";
 
@@ -103,7 +108,8 @@ export default defineMiddlewares({
   ) => {
     if (MedusaError.isMedusaError(error)) {
       const medusaError = error as MedusaError;
-      const map = MedusaErrorTypes[medusaError.type];
+      const map: Record<MedusaErrorCodes, number> =
+        MedusaErrorTypes[medusaError.type];
       res.status(Object.values(map)[0]).json({
         error: {
           code: Object.keys(map)[0],
@@ -116,7 +122,7 @@ export default defineMiddlewares({
     }
     res.status(error.status || 500).json({
       error: {
-        code: error.code || "SYSTEM_INTERNAL_ERROR",
+        code: error.code || ERROR_CODES["SYSTEM.UNKNOWN_ERROR"],
         message: error.message || "",
         details: error.details || {},
         timestamp: error.timestamp || new Date().toISOString(),
