@@ -9,7 +9,7 @@ import {
   type MedusaResponse,
 } from "@medusajs/framework";
 import { MedusaError, parseCorsOrigins } from "@medusajs/framework/utils";
-import { type HttpError, MedusaErrorTypes } from "@repo/types";
+import { HttpError, MedusaErrorTypes } from "@repo/types";
 import cors from "cors";
 import { authenticateJwt } from "@/utils/middleware/authenticate-middleware";
 
@@ -41,6 +41,18 @@ export default defineMiddlewares({
             origin: parseCorsOrigins(configModule.projectConfig.http.storeCors),
             credentials: true,
           })(req, res, next);
+        },
+      ],
+    },
+    {
+      matcher: "/auth/:actor_type/:auth_provider",
+      middlewares: [
+        (req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) => {
+          /* block this API route to exposing token in response body */
+          throw new HttpError(
+            "AUTH.FORBIDDEN",
+            "This route has been disabled for security reasons as it exposes tokens in the response body. Use 'POST /auth/sign-in/:actor_type/:auth_provider' instead.",
+          );
         },
       ],
     },
