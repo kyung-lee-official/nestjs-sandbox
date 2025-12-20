@@ -3,6 +3,10 @@ import type { NextFunction, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import { HttpError } from "@/api/test-errors/errors/src";
 
+type CookieData = {
+  medusa_token?: string;
+};
+
 type JwtContext = {
   actor_id?: string;
   actor_type?: string;
@@ -23,11 +27,12 @@ export const authenticateJwt = (
     // const authTypes = Array.isArray(authType) ? authType : [authType];
     const actorTypes = Array.isArray(actorType) ? actorType : [actorType];
 
-    if (!req.headers.authorization) {
+    // get token from cookies
+    const { medusa_token: token } = req.cookies as CookieData;
+
+    if (!token) {
       throw new HttpError("AUTH.UNAUTHORIZED");
     }
-
-    const token = req.headers.authorization.split(" ")[1];
 
     // try to extract the auth context from a JWT token
     const jwtAuthContext = jwt.decode(token || "", {
@@ -54,6 +59,9 @@ export const authenticateJwt = (
     } catch (error) {
       throw new HttpError("AUTH.INVALID_TOKEN");
     }
+
+    // set the authorization header for downstream medusa built-in 'authenticate' middleware
+    req.headers.authorization = `Bearer ${token}`;
 
     return next();
   };
