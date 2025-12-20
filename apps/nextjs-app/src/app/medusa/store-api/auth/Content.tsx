@@ -2,7 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { setCustomerTokenCookie } from "../../actions";
+import { getCustomerTokenCookie } from "../../actions";
 import { authenticateCustomer } from "./api";
 
 type FormData = {
@@ -26,10 +26,7 @@ export const Content = () => {
     mutationFn: async (data: FormData) => {
       return await authenticateCustomer(data.email, data.password);
     },
-    onSuccess: async (data) => {
-      /* set cookie */
-      await setCustomerTokenCookie(data.token);
-    },
+    onSuccess: async (data) => {},
     onError: (error) => {
       console.error("Authentication failed:", error);
     },
@@ -134,7 +131,10 @@ export const Content = () => {
                     Sign in successful!
                   </h3>
                   <div className="mt-2 text-green-700 text-sm">
-                    <p>You have been authenticated successfully.</p>
+                    <p>
+                      You have been authenticated successfully. Refresh to
+                      update token info in layout.
+                    </p>
                   </div>
                 </div>
               </div>

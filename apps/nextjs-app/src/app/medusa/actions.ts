@@ -24,12 +24,7 @@ export async function setCustomerCookie(customerId: string) {
   const cookieStore = await cookies();
   cookieStore.set(CookieKey.CUSTOMER, customerId, cookieOptions);
 }
-/* setCustomerTokenCookie is used for operations performed by the customer themselves (first-person) */
-export async function setCustomerTokenCookie(token: string) {
-  const { cookies } = await import("next/headers");
-  const cookieStore = await cookies();
-  cookieStore.set(CookieKey.CUSTOMER_TOKEN, token, cookieOptions);
-}
+/* operations performed by the customer themselves (first-person) */
 export async function getCustomerTokenCookie() {
   const { cookies } = await import("next/headers");
   const cookieStore = await cookies();

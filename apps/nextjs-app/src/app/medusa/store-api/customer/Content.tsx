@@ -1,17 +1,12 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { getCustomerTokenCookie } from "../../actions";
 import { getMe } from "./api";
 
 export const Content = () => {
   const getMeMutation = useMutation({
     mutationFn: async () => {
-      const token = await getCustomerTokenCookie();
-      if (!token) {
-        throw new Error("No customer token cookie found");
-      }
-      return await getMe(token);
+      return await getMe();
     },
     onSuccess: async (data) => {
       console.log("Me data:", data);
