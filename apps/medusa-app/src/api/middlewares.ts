@@ -11,12 +11,13 @@ import {
 import { MedusaError, parseCorsOrigins } from "@medusajs/framework/utils";
 import {
   ERROR_CODES,
-  HttpError,
+  type HttpError,
   type MedusaErrorCodes,
   MedusaErrorTypes,
 } from "@repo/types";
 import cors from "cors";
 import { authenticateJwt } from "@/utils/middleware/authenticate-middleware";
+import { medusaAuthBlocker } from "@/utils/middleware/medusa-auth-blocker";
 
 const originalErrorHandler = errorHandler();
 
@@ -50,16 +51,12 @@ export default defineMiddlewares({
       ],
     },
     {
-      matcher: "/auth/:actor_type/:auth_provider",
-      middlewares: [
-        (req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) => {
-          /* block this API route to exposing token in response body */
-          throw new HttpError(
-            "AUTH.FORBIDDEN",
-            "This route has been disabled for security reasons as it exposes tokens in the response body. Use 'POST /auth/sign-in/:actor_type/:auth_provider' instead.",
-          );
-        },
-      ],
+      /**
+       * Don't use regex matcher here as medusa doesn't parse it correctly like `app.use` in ExpressJS.
+       * Instead, check for the pattern inside the middleware
+       */
+      matcher: "/auth",
+      middlewares: [medusaAuthBlocker],
     },
     {
       matcher: "/store/customers*",
