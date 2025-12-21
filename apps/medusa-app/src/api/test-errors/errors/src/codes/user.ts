@@ -1,5 +1,0 @@
-export const USER_ERRORS = {
-  "USER.NOT_FOUND": 404,
-  "USER.ALREADY_EXISTS": 409,
-  "USER.EMAIL_TAKEN": 409,
-} as const;
