@@ -1,0 +1,3 @@
+export const CUSTOMER_ERRORS = {
+  "CUSTOMER.MISSING_CUSTOMER_DATA": 400,
+} as const;
