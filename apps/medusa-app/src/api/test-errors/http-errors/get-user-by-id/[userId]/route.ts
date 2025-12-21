@@ -1,5 +1,5 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework";
-import { HttpError } from "../../../errors/src";
+import { HttpError } from "@repo/types";
 
 const mockDb = {
   users: [

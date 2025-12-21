@@ -5,8 +5,8 @@ import {
 } from "@medusajs/framework/utils";
 import type { NextFunction, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
-import { HttpError } from "@/api/test-errors/errors/src";
 import { setCookieTokenString } from "../auth/set-cookie-token-string";
+import { HttpError } from "@repo/types";
 
 interface CookieData {
   medusa_token?: string;
