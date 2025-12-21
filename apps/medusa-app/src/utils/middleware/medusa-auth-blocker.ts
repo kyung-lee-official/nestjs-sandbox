@@ -9,6 +9,10 @@ export const medusaAuthBlocker: RequestHandler = (
 ) => {
   const medusaAuthPattern = /^\/auth\/([^\/]+)\/([^\/]+)\/?$/;
   if (medusaAuthPattern.test(req.originalUrl)) {
+    /* allow user authentication routes, otherwise admin dashboard auth will be blocked */
+    if (req.originalUrl === "/auth/user/emailpass") {
+      return next();
+    }
     /* block this API route to exposing token in response body */
     throw new HttpError(
       "AUTH.FORBIDDEN",
