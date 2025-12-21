@@ -43,6 +43,22 @@ module.exports = defineConfig({
       resolve: "@medusajs/medusa/event-bus-local",
     },
     {
+      resolve: "@medusajs/medusa/payment",
+      options: {
+        providers: [
+          {
+            // if module provider is in a plugin, use `plugin-name/providers/paypal-payment`
+            resolve: "./src/modules/paypal-payment",
+            id: "paypal-payment",
+            options: {
+              // provider options...
+              apiKey: "...",
+            },
+          },
+        ],
+      },
+    },
+    {
       resolve: "./src/modules/tester",
     },
   ],
