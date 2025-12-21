@@ -3,10 +3,10 @@ import {
   ContainerRegistrationKeys,
   generateJwtToken,
 } from "@medusajs/framework/utils";
+import { HttpError } from "@repo/types";
 import type { NextFunction, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import { setCookieTokenString } from "../auth/set-cookie-token-string";
-import { HttpError } from "@repo/types";
 
 interface CookieData {
   medusa_token?: string;
