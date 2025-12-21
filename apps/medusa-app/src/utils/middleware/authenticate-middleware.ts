@@ -1,19 +1,26 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework";
+import {
+  ContainerRegistrationKeys,
+  generateJwtToken,
+} from "@medusajs/framework/utils";
 import type { NextFunction, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import { HttpError } from "@/api/test-errors/errors/src";
+import { setCookieTokenString } from "../auth/set-cookie-token-string";
 
-type CookieData = {
+interface CookieData {
   medusa_token?: string;
-};
+}
 
-type JwtContext = {
+interface JwtContext {
   actor_id?: string;
   actor_type?: string;
   auth_identity_id?: string;
+  app_metadata?: Record<string, unknown>;
+  user_metadata?: Record<string, unknown>;
   iat?: number;
   exp?: number;
-};
+}
 
 export const authenticateJwt = (
   actorType: string | string[],
@@ -43,11 +50,25 @@ export const authenticateJwt = (
       throw new HttpError("AUTH.UNAUTHORIZED");
     }
 
+    if (!jwtAuthContext.actor_id) {
+      throw new HttpError(
+        "AUTH.ACTOR_ID_MISSING",
+        "actor_id is missing in the token payload",
+      );
+    }
+
     if (
       !jwtAuthContext.actor_type ||
       !actorTypes.includes(jwtAuthContext.actor_type)
     ) {
       throw new HttpError("AUTH.ACTOR_TYPE_MISMATCH");
+    }
+
+    if (!jwtAuthContext.auth_identity_id) {
+      throw new HttpError(
+        "AUTH.AUTH_IDENTITY_ID_MISSING",
+        "auth_identity_id is missing in the token payload",
+      );
     }
 
     if (jwtAuthContext.exp && Date.now() >= jwtAuthContext.exp * 1000) {
@@ -58,6 +79,32 @@ export const authenticateJwt = (
       const payload = jwt.verify(token, process.env.JWT_SECRET!);
     } catch (error) {
       throw new HttpError("AUTH.INVALID_TOKEN");
+    }
+
+    const { http } = req.scope.resolve(
+      ContainerRegistrationKeys.CONFIG_MODULE,
+    ).projectConfig;
+
+    // refresh token if it's close to expiration (within 1 hour)
+    const oneHourInSeconds = 3600;
+    if (
+      jwtAuthContext.exp &&
+      jwtAuthContext.exp - Date.now() / 1000 < oneHourInSeconds
+    ) {
+      const newToken = generateJwtToken(
+        {
+          actor_id: jwtAuthContext.actor_id,
+          actor_type: jwtAuthContext.actor_type,
+          auth_identity_id: jwtAuthContext.auth_identity_id,
+          app_metadata: jwtAuthContext.app_metadata,
+          user_metadata: jwtAuthContext.user_metadata,
+        },
+        {
+          secret: http.jwtSecret,
+          expiresIn: http.jwtExpiresIn,
+        },
+      );
+      res.setHeader("Set-Cookie", [setCookieTokenString(newToken)]);
     }
 
     // set the authorization header for downstream medusa built-in 'authenticate' middleware

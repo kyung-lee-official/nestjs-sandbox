@@ -8,23 +8,7 @@ import type { AuthenticationInput } from "@medusajs/types/dist/auth/common/provi
 import type { IAuthModuleService } from "@medusajs/types/dist/auth/service";
 import { HttpError } from "@repo/types";
 import { generateJwtTokenForAuthIdentity } from "@/utils/auth/generate-jwt-token";
-
-const convertToSeconds = (timeString: string): number => {
-  const unit = timeString.slice(-1);
-  const value = parseInt(timeString.slice(0, -1), 10);
-  switch (unit) {
-    case "s":
-      return value;
-    case "m":
-      return value * 60;
-    case "h":
-      return value * 3600;
-    case "d":
-      return value * 86400;
-    default:
-      return parseInt(timeString, 10); // fallback for plain numbers
-  }
-};
+import { setCookieTokenString } from "@/utils/auth/set-cookie-token-string";
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const { actor_type, auth_provider } = req.params;
@@ -69,11 +53,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
 
     return res
       .status(200)
-      .setHeader("Set-Cookie", [
-        `medusa_token=${token}; HttpOnly;${process.env.NODE_ENV === "production" ? "Secure;" : ""} Path=/; Max-Age=${convertToSeconds(
-          process.env.JWT_EXPIRES_IN || "3600",
-        )}; SameSite=Lax`,
-      ])
+      .setHeader("Set-Cookie", [setCookieTokenString(token)])
       .json({
         message: "Signed in successfully, token set in http-only cookie.",
       });
