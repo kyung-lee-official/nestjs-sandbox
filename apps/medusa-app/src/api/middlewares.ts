@@ -68,6 +68,26 @@ export default defineMiddlewares({
         authenticateJwt("customer", ["bearer"]),
       ],
     },
+    {
+      matcher: "/store/gift-cards/{:idOrCode}/redeem",
+      middlewares: [authenticateJwt("customer", ["bearer"])],
+    },
+    {
+      matcher: "/store/orders*",
+      middlewares: [authenticateJwt("customer", ["bearer"])],
+    },
+    {
+      matcher: "/store/payment-collections*",
+      middlewares: [authenticateJwt("customer", ["bearer"])],
+    },
+    {
+      matcher: "/store/payment-collections*",
+      middlewares: [authenticateJwt("customer", ["bearer"])],
+    },
+    {
+      matcher: "/store/store-credit-accounts*",
+      middlewares: [authenticateJwt("customer", ["bearer"])],
+    },
     /* custom routes middlewares */
     {
       method: ["POST"],
