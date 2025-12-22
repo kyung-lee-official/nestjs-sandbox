@@ -16,7 +16,7 @@ import {
   MedusaErrorTypes,
 } from "@repo/types";
 import cors from "cors";
-import { authenticateJwt } from "@/utils/middleware/authenticate-middleware";
+import { authenticateCookieJwt } from "@/utils/middleware/authenticate-cookie-jwt";
 import { medusaAuthBlocker } from "@/utils/middleware/medusa-auth-blocker";
 
 const originalErrorHandler = errorHandler();
@@ -65,9 +65,10 @@ export default defineMiddlewares({
           // some custom logic, remember to call next() to proceed to the next middleware
           return next();
         },
-        authenticateJwt("customer", ["bearer"]),
+        authenticateCookieJwt("customer", ["bearer"]),
       ],
     },
+    /* custom routes middlewares */
     {
       method: ["POST"],
       matcher: "/commerce-modules/customer/create-customer",
