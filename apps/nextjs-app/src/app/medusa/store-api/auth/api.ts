@@ -13,3 +13,10 @@ export async function authenticateCustomer(email: string, password: string) {
   );
   return res.data;
 }
+
+export async function signOutCustomer() {
+  const res = await api.delete(`/auth/sign-out`, {
+    withCredentials: true,
+  });
+  return res.data;
+}

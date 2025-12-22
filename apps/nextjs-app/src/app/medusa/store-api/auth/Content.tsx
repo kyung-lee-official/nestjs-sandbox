@@ -2,8 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { getCustomerTokenCookie } from "../../actions";
-import { authenticateCustomer } from "./api";
+import { authenticateCustomer, signOutCustomer } from "./api";
 
 type FormData = {
   email: string;
@@ -32,18 +31,25 @@ export const Content = () => {
     },
   });
 
+  const signOutMutation = useMutation({
+    mutationFn: async () => {
+      return await signOutCustomer();
+    },
+    onSuccess: async () => {
+      console.log("Signed out successfully");
+    },
+  });
+
   const onSubmit = (data: FormData) => {
     authenticateCustomerMutation.mutate(data);
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-gray-50">
       <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow">
-        <div>
-          <h2 className="mt-6 text-center font-extrabold text-3xl text-gray-900">
-            Sign in to your account
-          </h2>
-        </div>
+        <h2 className="mt-6 text-center font-extrabold text-3xl text-gray-900">
+          Sign in to your account
+        </h2>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="-space-y-px rounded-md shadow-sm">
             <div>
@@ -141,6 +147,18 @@ export const Content = () => {
             </div>
           )}
         </form>
+      </div>
+      <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow">
+        <h2 className="mt-6 text-center font-extrabold text-3xl text-gray-900">
+          Sign out
+        </h2>
+        <button
+          type="button"
+          className="group relative flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 font-medium text-sm text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+          onClick={() => signOutMutation.mutate()}
+        >
+          Sign out
+        </button>
       </div>
     </div>
   );
