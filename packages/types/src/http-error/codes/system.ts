@@ -1,3 +1,4 @@
 export const SYSTEM_ERRORS = {
+  "SYSTEM.MISCONFIGURED": 500,
   "SYSTEM.UNKNOWN_ERROR": 500,
 } as const;
