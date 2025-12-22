@@ -22,7 +22,7 @@ interface JwtContext {
   exp?: number;
 }
 
-export const authenticateCookieJwt = (
+export const authenticateJwt = (
   actorType: string | string[],
   authType: "bearer" | ["bearer"] = "bearer",
   options: { allowUnregistered?: boolean } = {},
