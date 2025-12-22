@@ -25,7 +25,6 @@ interface JwtContext {
 export const authenticateJwt = (
   actorType: string | string[],
   authType: "bearer" | ["bearer"] = "bearer",
-  options: { allowUnregistered?: boolean } = {},
 ): RequestHandler => {
   const authenticateMiddleware = async (
     req: MedusaRequest,
@@ -35,13 +34,37 @@ export const authenticateJwt = (
     // const authTypes = Array.isArray(authType) ? authType : [authType];
     const actorTypes = Array.isArray(actorType) ? actorType : [actorType];
 
-    // get token from cookies
-    const { medusa_token: token } = req.cookies as CookieData;
+    if (!process.env.JWT_SECRET) {
+      throw new HttpError("SYSTEM.MISCONFIGURED", "JWT_SECRET is not set");
+    }
 
+    // special case for customer registration endpoint
+    if (/^\/store\/customers$/.test(req.originalUrl) && req.method === "POST") {
+      const [tokenType, tokenValue] =
+        req.headers.authorization?.split(" ") || [];
+      if (!tokenValue) {
+        throw new HttpError("AUTH.UNAUTHORIZED", "Missing registration token");
+      }
+      const payload = jwt.verify(
+        tokenValue,
+        process.env.JWT_SECRET,
+      ) as JwtContext;
+      if (!payload) {
+        throw new HttpError("AUTH.UNAUTHORIZED", "Invalid registration token");
+      }
+      // if only the registration token is generated, but customer not registered yet, token will not include an actor_id,
+      // so we only check for actor_type here
+      if (payload.actor_type !== "customer") {
+        throw new HttpError("AUTH.ACTOR_TYPE_MISMATCH");
+      }
+      return next();
+    }
+
+    const { medusa_token } = req.cookies as CookieData;
+    const token = medusa_token;
     if (!token) {
       throw new HttpError("AUTH.UNAUTHORIZED");
     }
-
     // try to extract the auth context from a JWT token
     const jwtAuthContext = jwt.decode(token || "", {
       json: true,
@@ -49,16 +72,6 @@ export const authenticateJwt = (
 
     if (!jwtAuthContext) {
       throw new HttpError("AUTH.UNAUTHORIZED");
-    }
-
-    // If the entity is authenticated, but there is no registered actor yet, we can continue (eg. in the case of a user invite) if allow unregistered is set
-    if (!jwtAuthContext.actor_id) {
-      if (!options.allowUnregistered) {
-        throw new HttpError(
-          "AUTH.ACTOR_ID_MISSING",
-          "actor_id is missing in the token payload",
-        );
-      }
     }
 
     // We also don't want to allow creating eg. a customer with a token created for a `user` provider.
@@ -81,8 +94,13 @@ export const authenticateJwt = (
     }
 
     try {
-      const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    } catch (error) {
+      const secret = process.env.JWT_SECRET;
+      if (!secret) {
+        // If JWT_SECRET is not set, token validation will fail
+        throw new HttpError("AUTH.INVALID_TOKEN", "JWT_SECRET is not set");
+      }
+      const _payload = jwt.verify(token, secret);
+    } catch (_error) {
       throw new HttpError("AUTH.INVALID_TOKEN");
     }
 
