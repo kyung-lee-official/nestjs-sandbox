@@ -25,6 +25,7 @@ interface JwtContext {
 export const authenticateJwt = (
   actorType: string | string[],
   authType: "bearer" | ["bearer"] = "bearer",
+  options: { allowUnregistered?: boolean } = {},
 ): RequestHandler => {
   const authenticateMiddleware = async (
     req: MedusaRequest,
@@ -50,16 +51,20 @@ export const authenticateJwt = (
       throw new HttpError("AUTH.UNAUTHORIZED");
     }
 
+    // If the entity is authenticated, but there is no registered actor yet, we can continue (eg. in the case of a user invite) if allow unregistered is set
     if (!jwtAuthContext.actor_id) {
-      throw new HttpError(
-        "AUTH.ACTOR_ID_MISSING",
-        "actor_id is missing in the token payload",
-      );
+      if (!options.allowUnregistered) {
+        throw new HttpError(
+          "AUTH.ACTOR_ID_MISSING",
+          "actor_id is missing in the token payload",
+        );
+      }
     }
 
+    // We also don't want to allow creating eg. a customer with a token created for a `user` provider.
     if (
       !jwtAuthContext.actor_type ||
-      !actorTypes.includes(jwtAuthContext.actor_type)
+      !isActorTypePermitted(actorTypes, jwtAuthContext.actor_type)
     ) {
       throw new HttpError("AUTH.ACTOR_TYPE_MISMATCH");
     }
@@ -114,4 +119,11 @@ export const authenticateJwt = (
   };
 
   return authenticateMiddleware as unknown as RequestHandler;
+};
+
+const isActorTypePermitted = (
+  actorTypes: string | string[],
+  currentActorType: string,
+) => {
+  return actorTypes.includes("*") || actorTypes.includes(currentActorType);
 };
