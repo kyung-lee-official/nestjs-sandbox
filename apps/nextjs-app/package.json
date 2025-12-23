@@ -1,5 +1,5 @@
 {
-  "name": "nextjs-app",
+  "name": "next-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start -p 4000",
     "lint": "next lint",
-    "gen:types": "openapi-typescript http://localhost:3001/api/pokemon.json --output src/app/type-sharing/ts-rest/types.ts"
+    "gen:types": "openapi-typescript http://localhost:3001/api/pokemon.json --output src/app/type-sharing/ts-rest/types.ts",
+    "medusa:next": "next dev -p 4000"
   },
   "dependencies": {
     "@casl/ability": "^6.7.3",
