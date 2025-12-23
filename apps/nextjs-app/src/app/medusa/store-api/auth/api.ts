@@ -1,7 +1,7 @@
-import { api } from "../../axios-error-handling-for-medusa/axios-client";
+import api from "../../axios-error-handling-for-medusa/axios-client";
 
 export async function authenticateCustomer(email: string, password: string) {
-  const res = await api.post(
+  const data = await api.post(
     `/auth/sign-in/customer/emailpass`,
     {
       email,
@@ -11,12 +11,12 @@ export async function authenticateCustomer(email: string, password: string) {
       withCredentials: true,
     },
   );
-  return res.data;
+  return data;
 }
 
 export async function signOutCustomer() {
-  const res = await api.delete(`/auth/sign-out`, {
+  const data = await api.del(`/auth/sign-out`, {
     withCredentials: true,
   });
-  return res.data;
+  return data;
 }
