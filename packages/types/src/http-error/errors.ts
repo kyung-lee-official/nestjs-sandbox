@@ -20,7 +20,7 @@ export const ErrorCodeSchema = z.enum(
 );
 export const ERROR_CODE_TO_STATUS = ERROR_CODES;
 
-export const ApiErrorResponseSchema = z.object({
+export const HttpErrorResponseSchema = z.object({
   error: z.object({
     code: ErrorCodeSchema,
     message: z.string().optional(),
@@ -28,4 +28,4 @@ export const ApiErrorResponseSchema = z.object({
     timestamp: z.string(),
   }),
 });
-export type ApiErrorResponse = z.infer<typeof ApiErrorResponseSchema>;
+export type HttpErrorResponse = z.infer<typeof HttpErrorResponseSchema>;

@@ -1,8 +1,8 @@
 // packages/errors/src/index.ts
 import {
-  type ApiErrorResponse,
   ERROR_CODE_TO_STATUS,
   type ErrorCode,
+  type HttpErrorResponse,
 } from "./errors.js";
 
 export class HttpError extends Error {
@@ -30,7 +30,7 @@ export class HttpError extends Error {
   }
 
   // Convert to JSON response (for Express, Fastify, etc.)
-  toJSON(): ApiErrorResponse {
+  toJSON(): HttpErrorResponse {
     return {
       error: {
         code: this.code,

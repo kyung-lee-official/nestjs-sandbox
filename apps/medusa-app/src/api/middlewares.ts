@@ -12,6 +12,7 @@ import { MedusaError, parseCorsOrigins } from "@medusajs/framework/utils";
 import {
   ERROR_CODES,
   type HttpError,
+  type HttpErrorResponse,
   type MedusaErrorCodes,
   MedusaErrorTypes,
 } from "@repo/types";
@@ -121,7 +122,7 @@ export default defineMiddlewares({
   errorHandler: (
     error: HttpError | MedusaError,
     req: MedusaRequest,
-    res: MedusaResponse,
+    res: MedusaResponse<HttpErrorResponse>,
     next: MedusaNextFunction,
   ) => {
     if (MedusaError.isMedusaError(error)) {
@@ -130,7 +131,7 @@ export default defineMiddlewares({
         MedusaErrorTypes[medusaError.type];
       res.status(Object.values(map)[0]).json({
         error: {
-          code: Object.keys(map)[0],
+          code: Object.keys(map)[0] as keyof typeof ERROR_CODES,
           message: medusaError.message,
           details: {},
           timestamp: new Date().toISOString(),
