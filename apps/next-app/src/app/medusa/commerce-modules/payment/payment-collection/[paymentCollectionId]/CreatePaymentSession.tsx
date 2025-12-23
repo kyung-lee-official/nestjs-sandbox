@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createPaymentSession, PaymentQK } from "../../../payment/api";
+import { createPaymentSession, PaymentQK } from "../../api";
 
 type CreatePaymentSessionProps = {
   paymentCollectionId: string;

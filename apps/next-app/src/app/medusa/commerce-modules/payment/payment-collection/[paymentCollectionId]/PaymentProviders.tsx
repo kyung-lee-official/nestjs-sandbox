@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import type { Dispatch, SetStateAction } from "react";
 import { Dropdown } from "@/app/styles/dropdown/universal-dropdown/dropdown/Dropdown";
-import { getPaymentProvidersByRegionId, PaymentQK } from "../../../payment/api";
+import { getPaymentProvidersByRegionId, PaymentQK } from "../../api";
 
 type PaymentProvidersProps = {
   cartRegionId: string;

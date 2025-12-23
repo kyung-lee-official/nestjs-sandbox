@@ -3,7 +3,7 @@ import {
   authorizePaymentSession,
   getPaymentSessionByPaymentCollectionId,
   PaymentQK,
-} from "../../../payment/api";
+} from "../../api";
 import { Payment } from "./Payment";
 
 type PaymentSessionProps = {

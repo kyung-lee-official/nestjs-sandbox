@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getPaymentById, PaymentQK } from "../../../payment/api";
+import { getPaymentById, PaymentQK } from "../../api";
 
 type PaymentProps = {
   paymentId: string;

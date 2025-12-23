@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { getPaymentCollectionById, PaymentQK } from "../../../payment/api";
+import { getPaymentCollectionById, PaymentQK } from "../../api";
 import { Cart } from "./Cart";
 import { CreatePaymentSession } from "./CreatePaymentSession";
 import { PaymentProviders } from "./PaymentProviders";
