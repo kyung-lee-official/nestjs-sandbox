@@ -20,6 +20,7 @@
     },
     "typecheck": {
       "dependsOn": ["^build"]
-    }
+    },
+    "medusa:next": {}
   }
 }
