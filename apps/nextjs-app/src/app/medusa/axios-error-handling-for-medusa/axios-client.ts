@@ -1,67 +1,132 @@
-import axios from "axios";
-import z from "zod";
+import type { HttpErrorResponse } from "@repo/types";
+import axios, {
+  type AxiosError,
+  type AxiosRequestConfig,
+  type InternalAxiosRequestConfig,
+} from "axios";
 
-enum ErrorType {
-  BUSINESS = "BUSINESS",
-  SYSTEM = "SYSTEM",
+interface CustomRequestConfig extends AxiosRequestConfig {
+  skipInterceptor?: boolean;
+  bearerToken?: string; // for registerCustomer and resetPassword APIs
 }
 
-const NormalizedErrorSchema = z.object({
-  code: z.string(), // Error code, e.g., "PRODUCT_NOT_FOUND"
-  message: z.string(), // Human-readable message
-  details: z.any().optional(), // optional, framework-specific details (e.g. Zod errors)
-  timestamp: z.iso.datetime(), // ISO timestamp of when the error occurred
-});
-export type NormalizedError = z.infer<typeof NormalizedErrorSchema>;
-
-export const api = axios.create({
+const instance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL,
-  headers: {
-    "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
-  },
+  withCredentials: true,
 });
 
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const status = error.response?.status;
+instance.interceptors.request.use(
+  async (config: InternalAxiosRequestConfig & CustomRequestConfig) => {
+    config.headers["x-publishable-api-key"] =
+      process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY;
 
-    // Non-existent endpoint
+    if (config.bearerToken) {
+      config.headers.Authorization = `Bearer ${config.bearerToken}`;
+    }
+
+    return config;
+  },
+);
+
+instance.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError<HttpErrorResponse>) => {
+    const status = error.response?.status;
+    const errorData = error.response?.data?.error;
+    const errorCode = errorData?.code;
+    const skipInterceptor =
+      (error.config as CustomRequestConfig)?.skipInterceptor ?? false;
+
     if (
       status === 404 &&
       error.response?.headers["content-type"] === "text/html; charset=utf-8"
     ) {
       return Promise.reject({
-        status,
-        code: "SYSTEM.ENDPOINT_NOT_FOUND",
-        message: `The requested endpoint ${error.config.url} was not found on the server.`,
-        type: ErrorType.SYSTEM,
-        requestId: error.response?.headers["x-request-id"],
-      });
+        error: {
+          code: "SYSTEM.ENDPOINT_NOT_FOUND",
+          message: `The requested endpoint ${error.config?.url} was not found on the server.`,
+          details: {},
+          timestamp: errorData?.timestamp,
+        },
+      } as HttpErrorResponse);
     }
 
-    if (error.response?.data) {
+    if (status === 401) {
+      // TODO: sign out
       return Promise.reject({
-        status,
-        ...error.response.data.error,
-        type:
-          Math.floor(status / 100) === 4
-            ? ErrorType.BUSINESS
-            : ErrorType.SYSTEM,
-      });
+        error: {
+          code: errorCode || "AUTH.UNAUTHORIZED",
+          message: errorData?.message,
+          details: {},
+          timestamp: errorData?.timestamp,
+        },
+      } as HttpErrorResponse);
     }
 
-    // Fallback for unexpected cases (network error, 500 without body, etc.)
-    const fallback = {
-      status: error.response?.status || 0,
-      code: "UNKNOWN_ERROR",
-      message:
-        error.response?.status === 500
-          ? "Something went wrong on the server"
-          : error.message || "Network Error",
-      requestId: error.response?.headers["x-request-id"],
-    };
+    if (errorData) {
+      return Promise.reject({
+        error: {
+          code: errorData.code,
+          message: errorData.message,
+          details: errorData.details,
+          timestamp: errorData.timestamp,
+        },
+      } as HttpErrorResponse);
+    }
 
-    return Promise.reject(fallback);
+    return Promise.reject({
+      data: {
+        code: "SYSTEM.UNKNOWN_ERROR",
+        message:
+          error.response?.status === 500
+            ? "Something went wrong on the server"
+            : error.message || "Network Error",
+        details: {},
+        timestamp: new Date().toISOString(),
+      },
+    });
   },
 );
+
+/**
+ * 封装 GET 请求函数
+ * @param url
+ * @param config
+ * @returns Promise<T>
+ */
+export const get = <T>(url: string, config?: CustomRequestConfig): Promise<T> =>
+  instance
+    .get<T>(url, {
+      ...config,
+    })
+    .then((res) => res.data);
+
+/** 封装 POST 请求函数
+ * @param url
+ * @param data
+ * @param config
+ * @returns Promise<T>
+ */
+export const post = <T>(
+  url: string,
+  data?: any,
+  config?: CustomRequestConfig,
+): Promise<T> => instance.post<T>(url, data, config).then((res) => res.data);
+
+/** 封装 DELETE 请求函数
+ * @param url
+ * @param config
+ * @returns Promise<T>
+ */
+export const del = async <T>(
+  url: string,
+  config?: CustomRequestConfig,
+): Promise<T> =>
+  instance
+    .delete<T>(url, {
+      ...config,
+    })
+    .then((res) => res.data);
+
+const api = { get, post, del };
+export default api;
