@@ -4,6 +4,7 @@ import axios, {
   type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
 } from "axios";
+import { useAuthStore } from "@/stores/auth";
 
 interface CustomRequestConfig extends AxiosRequestConfig {
   skipInterceptor?: boolean;
@@ -52,7 +53,9 @@ instance.interceptors.response.use(
     }
 
     if (status === 401) {
-      // TODO: sign out
+      const { signOut } = useAuthStore.getState();
+      signOut();
+
       return Promise.reject({
         error: {
           code: errorCode || "AUTH.UNAUTHORIZED",
@@ -75,7 +78,7 @@ instance.interceptors.response.use(
     }
 
     return Promise.reject({
-      data: {
+      error: {
         code: "SYSTEM.UNKNOWN_ERROR",
         message:
           error.response?.status === 500
@@ -84,7 +87,7 @@ instance.interceptors.response.use(
         details: {},
         timestamp: new Date().toISOString(),
       },
-    });
+    } as HttpErrorResponse);
   },
 );
 
