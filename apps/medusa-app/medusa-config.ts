@@ -2,6 +2,10 @@ import { defineConfig, loadEnv } from "@medusajs/framework/utils";
 
 loadEnv(process.env.NODE_ENV || "development", process.cwd());
 
+if (!process.env.MEDUSA_BACKEND_URL) {
+  throw new Error("MEDUSA_BACKEND_URL is not defined in environment variables");
+}
+
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
