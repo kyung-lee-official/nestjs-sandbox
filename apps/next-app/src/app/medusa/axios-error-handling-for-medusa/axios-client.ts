@@ -84,7 +84,7 @@ instance.interceptors.response.use(
           error.response?.status === 500
             ? "Something went wrong on the server"
             : error.message || "Network Error",
-        details: {},
+        details: { error },
         timestamp: new Date().toISOString(),
       },
     } as HttpErrorResponse);
