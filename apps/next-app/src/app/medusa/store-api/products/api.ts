@@ -1,6 +1,7 @@
+import type { StoreProductListResponse } from "@medusajs/types";
 import api from "../../axios-error-handling-for-medusa/axios-client";
 
-export async function getProduts(id: string) {
-  const data = await api.post(`/store/carts/${id}`);
+export async function getProduts() {
+  const data = await api.get<StoreProductListResponse>(`/store/products`);
   return data;
 }
