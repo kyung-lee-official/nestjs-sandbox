@@ -1,27 +1,44 @@
-import { sharpImageUrl } from "./actions";
 import type { SharpImageProps } from "./types";
 
-/**
- * Server-side Sharp image processing component
- * Usage: <SharpImage src="image.jpg" alt="desc" sharpOptions={{ resize: { width: 400 }, tint: { r: 255, g: 200, b: 100 } }} />
- */
-export async function SharpImage({
+const widths = [384, 640, 828, 1200, 1920]; // Common responsive breakpoints
+
+export function SharpImage({
   src,
   alt,
-  sharpOptions,
-  ...imgProps
+  width,
+  height,
+  quality = 80,
+  className,
+  priority = false,
+  sizes = "100vw",
 }: SharpImageProps) {
-  try {
-    const processedSrc = await sharpImageUrl(src, sharpOptions || {});
+  const baseUrl = `/api/sharp?src=${encodeURIComponent(src)}`;
+  const qualityParam = quality ? `&q=${quality}` : "";
 
-    if (!processedSrc) {
-      return <div style={{ color: "red" }}>Failed to process image</div>;
-    }
+  const webpSources = widths
+    .map((w) => `${baseUrl}&w=${w}&f=webp${qualityParam} ${w}w`)
+    .join(", ");
+  const avifSources = widths
+    .map((w) => `${baseUrl}&w=${w}&f=avif${qualityParam} ${w}w`)
+    .join(", ");
+  const fallbackSrc = `${baseUrl}&w=${widths[widths.length - 1] || 1200}${qualityParam}`;
 
-    return <img src={processedSrc} alt={alt} {...imgProps} />;
-  } catch {
-    return <div style={{ color: "red" }}>Error processing image</div>;
-  }
+  return (
+    <picture>
+      {/* AVIF (best compression) */}
+      <source srcSet={avifSources} sizes={sizes} type="image/avif" />
+      {/* WebP fallback */}
+      <source srcSet={webpSources} sizes={sizes} type="image/webp" />
+      {/* Fallback to original format (e.g., JPEG) */}
+      <img
+        src={fallbackSrc}
+        alt={alt}
+        width={width}
+        height={height}
+        className={`h-auto w-full ${className || ""}`}
+        loading={priority ? "eager" : "lazy"}
+        decoding="async"
+      />
+    </picture>
+  );
 }
-
-export default SharpImage;
