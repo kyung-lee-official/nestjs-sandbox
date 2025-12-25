@@ -1,13 +1,6 @@
 "use server";
 
-import sharp from "sharp";
-
-interface SharpOptions {
-  resize?: { width?: number; height?: number };
-  tint?: { r: number; g: number; b: number };
-  format?: "webp" | "jpeg" | "png";
-  quality?: number;
-}
+import sharp, { type SharpOptions } from "sharp";
 
 export async function sharpImageUrl(
   imageUrl: string,

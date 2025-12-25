@@ -444,6 +444,10 @@ export default function Home() {
             text: "image",
           },
           {
+            link: "/styles/basic/image/sharp",
+            text: "sharp image processing",
+          },
+          {
             link: "/styles/basic/zoomable",
             text: "zoomable image or video",
           },
