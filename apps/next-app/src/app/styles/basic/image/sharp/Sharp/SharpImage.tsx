@@ -1,43 +1,42 @@
-import { SharpImage as SharpImageClient } from "./SharpImageClient";
-import { SharpImageServer } from "./SharpImageServer";
+import type sharp from "sharp";
+import { sharpImageUrl } from "../actions";
 
-interface SharpImageUnifiedProps {
+interface SharpImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
   alt: string;
-  width?: number;
-  height?: number;
-  className?: string;
-  style?: React.CSSProperties;
-  // Sharp processing options
-  resize?: { width?: number; height?: number };
-  tint?: { r: number; g: number; b: number };
-  format?: "webp" | "jpeg" | "png";
-  quality?: number;
-  // Component behavior
-  clientSide?: boolean;
+  sharpOptions?: {
+    resize?: sharp.ResizeOptions & { width?: number; height?: number };
+    tint?: sharp.RGBA;
+    blur?: number | sharp.BlurOptions;
+    sharpen?: boolean | sharp.SharpenOptions;
+    greyscale?: boolean;
+    format?: keyof sharp.FormatEnum;
+    quality?: number;
+    [key: string]: any; // Allow any other Sharp options
+  };
 }
 
 /**
- * Sharp Image Component - Replaces <img> tag with Sharp processing
- *
- * Usage:
- * - Server-side (default): <SharpImage src="..." alt="..." />
- * - Client-side: <SharpImage src="..." alt="..." clientSide />
- *
- * Features:
- * - Automatic image processing with Sharp
- * - Configurable resize, tint, format, and quality
- * - Loading states (client-side only)
- * - Error handling
+ * Server-side Sharp image processing component
+ * Usage: <SharpImage src="image.jpg" alt="desc" sharpOptions={{ resize: { width: 400 }, tint: { r: 255, g: 200, b: 100 } }} />
  */
-export function SharpImage(props: SharpImageUnifiedProps) {
-  const { clientSide = false, ...otherProps } = props;
+export async function SharpImage({
+  src,
+  alt,
+  sharpOptions,
+  ...imgProps
+}: SharpImageProps) {
+  try {
+    const processedSrc = await sharpImageUrl(src, sharpOptions || {});
 
-  if (clientSide) {
-    return <SharpImageClient {...otherProps} />;
+    if (!processedSrc) {
+      return <div style={{ color: "red" }}>Failed to process image</div>;
+    }
+
+    return <img src={processedSrc} alt={alt} {...imgProps} />;
+  } catch {
+    return <div style={{ color: "red" }}>Error processing image</div>;
   }
-
-  // TypeScript doesn't know this is a server component, so we need to cast
-  const ServerComponent = SharpImageServer as any;
-  return <ServerComponent {...otherProps} />;
 }
+
+export default SharpImage;
