@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-import { SharpImage } from "@/app/styles/basic/image/sharp/Sharp";
 import { getProduts } from "./api";
 
 const Page = async () => {
@@ -28,12 +28,11 @@ const Page = async () => {
                 {/* Product Image */}
                 <div className="relative h-48 w-full bg-gray-100">
                   {imageUrl ? (
-                    <SharpImage
-                      src={
-                        // "https://picsum.photos/200"
-                        "http://localhost:9000/static/1760956580211-winter-jacket.png"
-                      }
+                    <Image
+                      src={imageUrl}
                       alt={product.title}
+                      width={300}
+                      height={200}
                       className="max-h-48 object-cover"
                     />
                   ) : (
