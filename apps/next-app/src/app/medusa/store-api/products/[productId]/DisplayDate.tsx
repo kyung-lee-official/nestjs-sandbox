@@ -10,7 +10,7 @@ interface DisplayDateProps {
 
 export function DisplayDate({
   date,
-  format = "YYYY-MM-DD",
+  format = "YYYY-MM-DD HH:mm:ss",
   fallback = "N/A",
 }: DisplayDateProps) {
   if (!date) {
