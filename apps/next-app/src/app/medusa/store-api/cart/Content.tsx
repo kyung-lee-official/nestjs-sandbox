@@ -1,113 +1,374 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { getCart } from "./api";
+import type { StoreCart } from "@medusajs/types";
+import { useQuery } from "@tanstack/react-query";
+import { useMIdStore } from "@/stores/medusa/medusa-entity-id";
+import { createCart, getCart, QK_CART } from "./api";
 
-type FormData = {
-  cartId: string;
+const formatCurrency = (amount: number, currencyCode: string) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currencyCode.toUpperCase(),
+  }).format(amount / 100); // Assuming amount is in cents
 };
 
-export const Content = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    defaultValues: {
-      cartId: "",
-    },
-  });
-
-  const getCartMutation = useMutation({
-    mutationFn: async (cartId: string) => {
-      return await getCart(cartId);
-    },
-    onSuccess: async (data) => {
-      console.log("Cart data:", data);
-    },
-    onError: (error) => {
-      console.error("Failed to get cart:", error);
-    },
-  });
-
-  const onSubmit = (data: FormData) => {
-    getCartMutation.mutate(data.cartId);
-  };
-
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow">
-        <div>
-          <h2 className="mt-6 text-center font-extrabold text-3xl text-gray-900">
-            Get Cart by ID
-          </h2>
+const CartSummary = ({ cart }: { cart: StoreCart }) => (
+  <div className="rounded-lg bg-gray-50 p-6">
+    <h3 className="mb-4 font-semibold text-xl">Cart Summary</h3>
+    <div className="space-y-2">
+      <div className="flex justify-between">
+        <span>Subtotal:</span>
+        <span className="font-medium">
+          {formatCurrency(cart.subtotal, cart.currency_code)}
+        </span>
+      </div>
+      {cart.tax_total > 0 && (
+        <div className="flex justify-between">
+          <span>Tax:</span>
+          <span className="font-medium">
+            {formatCurrency(cart.tax_total, cart.currency_code)}
+          </span>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div>
-            <label htmlFor="cartId" className="sr-only">
-              Cart ID
-            </label>
-            <input
-              {...register("cartId", {
-                required: "Cart ID is required",
-              })}
-              type="text"
-              className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-              placeholder="Enter Cart ID"
-            />
-            {errors.cartId && (
-              <p className="mt-1 text-red-600 text-sm">
-                {errors.cartId.message}
-              </p>
+      )}
+      {cart.shipping_total > 0 && (
+        <div className="flex justify-between">
+          <span>Shipping:</span>
+          <span className="font-medium">
+            {formatCurrency(cart.shipping_total, cart.currency_code)}
+          </span>
+        </div>
+      )}
+      {cart.discount_total > 0 && (
+        <div className="flex justify-between text-green-600">
+          <span>Discount:</span>
+          <span className="font-medium">
+            -{formatCurrency(cart.discount_total, cart.currency_code)}
+          </span>
+        </div>
+      )}
+      <div className="flex justify-between border-t pt-2 font-bold text-lg">
+        <span>Total:</span>
+        <span>{formatCurrency(cart.total, cart.currency_code)}</span>
+      </div>
+    </div>
+  </div>
+);
+
+const CartItems = ({ cart }: { cart: StoreCart }) => (
+  <div className="space-y-4">
+    <h3 className="font-semibold text-xl">
+      Cart Items ({cart.items?.length || 0})
+    </h3>
+    {cart.items && cart.items.length > 0 ? (
+      <div className="space-y-4">
+        {cart.items.map((item) => (
+          <div key={item.id} className="rounded-lg border p-4">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h4 className="font-medium">{item.title}</h4>
+                {item.subtitle && (
+                  <p className="text-gray-600 text-sm">{item.subtitle}</p>
+                )}
+                {item.variant_title && (
+                  <p className="text-gray-500 text-sm">
+                    Variant: {item.variant_title}
+                  </p>
+                )}
+                {item.variant_sku && (
+                  <p className="text-gray-400 text-xs">
+                    SKU: {item.variant_sku}
+                  </p>
+                )}
+              </div>
+              <div className="text-right">
+                <p className="font-medium">
+                  {formatCurrency(item.unit_price, cart.currency_code)} ×{" "}
+                  {item.quantity}
+                </p>
+                <p className="text-gray-600 text-sm">
+                  ={" "}
+                  {formatCurrency(
+                    item.total || item.unit_price * item.quantity,
+                    cart.currency_code,
+                  )}
+                </p>
+              </div>
+            </div>
+            {item.thumbnail && (
+              <img
+                src={item.thumbnail}
+                alt={item.title}
+                className="mt-2 h-16 w-16 rounded object-cover"
+              />
             )}
           </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={getCartMutation.isPending}
-              className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 font-medium text-sm text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {getCartMutation.isPending ? "Loading..." : "Get Cart"}
-            </button>
-          </div>
-
-          {getCartMutation.isError && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="flex">
-                <div className="ml-3">
-                  <h3 className="font-medium text-red-800 text-sm">
-                    Failed to get cart
-                  </h3>
-                  <div className="mt-2 text-red-700 text-sm">
-                    <p>
-                      {getCartMutation.error instanceof Error
-                        ? getCartMutation.error.message
-                        : "An error occurred while fetching the cart"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {getCartMutation.isSuccess && (
-            <div className="rounded-md bg-green-50 p-4">
-              <div className="flex">
-                <div className="ml-3">
-                  <h3 className="font-medium text-green-800 text-sm">
-                    Cart retrieved successfully!
-                  </h3>
-                  <div className="mt-2 text-green-700 text-sm">
-                    <p>Cart data has been fetched successfully.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </form>
+        ))}
       </div>
+    ) : (
+      <p className="py-8 text-center text-gray-500">Your cart is empty</p>
+    )}
+  </div>
+);
+
+const CartAddresses = ({ cart }: { cart: StoreCart }) => (
+  <div className="grid gap-6 md:grid-cols-2">
+    <div>
+      <h3 className="mb-3 font-semibold text-lg">Shipping Address</h3>
+      {cart.shipping_address ? (
+        <div className="space-y-1 text-sm">
+          {cart.shipping_address.first_name && (
+            <p>
+              {cart.shipping_address.first_name}{" "}
+              {cart.shipping_address.last_name}
+            </p>
+          )}
+          {cart.shipping_address.company && (
+            <p>{cart.shipping_address.company}</p>
+          )}
+          {cart.shipping_address.address_1 && (
+            <p>{cart.shipping_address.address_1}</p>
+          )}
+          {cart.shipping_address.address_2 && (
+            <p>{cart.shipping_address.address_2}</p>
+          )}
+          <p>
+            {cart.shipping_address.city && `${cart.shipping_address.city}, `}
+            {cart.shipping_address.province} {cart.shipping_address.postal_code}
+          </p>
+          {cart.shipping_address.country_code && (
+            <p>{cart.shipping_address.country_code.toUpperCase()}</p>
+          )}
+          {cart.shipping_address.phone && (
+            <p>Phone: {cart.shipping_address.phone}</p>
+          )}
+        </div>
+      ) : (
+        <p className="text-gray-500">No shipping address set</p>
+      )}
+    </div>
+
+    <div>
+      <h3 className="mb-3 font-semibold text-lg">Billing Address</h3>
+      {cart.billing_address ? (
+        <div className="space-y-1 text-sm">
+          {cart.billing_address.first_name && (
+            <p>
+              {cart.billing_address.first_name} {cart.billing_address.last_name}
+            </p>
+          )}
+          {cart.billing_address.company && (
+            <p>{cart.billing_address.company}</p>
+          )}
+          {cart.billing_address.address_1 && (
+            <p>{cart.billing_address.address_1}</p>
+          )}
+          {cart.billing_address.address_2 && (
+            <p>{cart.billing_address.address_2}</p>
+          )}
+          <p>
+            {cart.billing_address.city && `${cart.billing_address.city}, `}
+            {cart.billing_address.province} {cart.billing_address.postal_code}
+          </p>
+          {cart.billing_address.country_code && (
+            <p>{cart.billing_address.country_code.toUpperCase()}</p>
+          )}
+          {cart.billing_address.phone && (
+            <p>Phone: {cart.billing_address.phone}</p>
+          )}
+        </div>
+      ) : (
+        <p className="text-gray-500">No billing address set</p>
+      )}
+    </div>
+  </div>
+);
+
+const CartInfo = ({ cart }: { cart: StoreCart }) => (
+  <div className="rounded-lg bg-blue-50 p-4">
+    <h3 className="mb-3 font-semibold text-lg">Cart Information</h3>
+    <div className="grid grid-cols-2 gap-4 text-sm">
+      <div>
+        <span className="font-medium">Cart ID:</span>
+        <p className="break-all font-mono text-xs">{cart.id}</p>
+      </div>
+      <div>
+        <span className="font-medium">Currency:</span>
+        <p>{cart.currency_code.toUpperCase()}</p>
+      </div>
+      {cart.email && (
+        <div>
+          <span className="font-medium">Email:</span>
+          <p>{cart.email}</p>
+        </div>
+      )}
+      {cart.region && (
+        <div>
+          <span className="font-medium">Region:</span>
+          <p>{cart.region.name}</p>
+        </div>
+      )}
+      <div>
+        <span className="font-medium">Created:</span>
+        <p>
+          {cart.created_at
+            ? new Date(cart.created_at).toLocaleDateString()
+            : "N/A"}
+        </p>
+      </div>
+      <div>
+        <span className="font-medium">Updated:</span>
+        <p>
+          {cart.updated_at
+            ? new Date(cart.updated_at).toLocaleDateString()
+            : "N/A"}
+        </p>
+      </div>
+    </div>
+  </div>
+);
+
+const ShippingMethods = ({ cart }: { cart: StoreCart }) => (
+  <div>
+    <h3 className="mb-3 font-semibold text-lg">Shipping Methods</h3>
+    {cart.shipping_methods && cart.shipping_methods.length > 0 ? (
+      <div className="space-y-3">
+        {cart.shipping_methods.map((method) => (
+          <div key={method.id} className="rounded border p-3">
+            <div className="flex items-start justify-between">
+              <div>
+                <h4 className="font-medium">{method.name}</h4>
+                {method.description && (
+                  <p className="text-gray-600 text-sm">{method.description}</p>
+                )}
+              </div>
+              <p className="font-medium">
+                {formatCurrency(method.amount, cart.currency_code)}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p className="text-gray-500">No shipping methods selected</p>
+    )}
+  </div>
+);
+
+export const Content = () => {
+  const hasHydrated = useMIdStore((state) => state.hasHydrated);
+  const regionId = useMIdStore((state) => state.regionId);
+  const cartId = useMIdStore((state) => state.cartId);
+  const setCartId = useMIdStore((state) => state.setCartId);
+
+  const cartQuery = useQuery({
+    queryKey: [QK_CART.GET_CART, cartId, regionId],
+    queryFn: async () => {
+      let cart: StoreCart;
+      if (!cartId) {
+        if (!regionId) {
+          throw new Error("Region ID is required to create a cart");
+        }
+        const cartRes = await createCart(regionId);
+        cart = cartRes.cart;
+      } else {
+        const cartRes = await getCart(cartId);
+        cart = cartRes.cart;
+      }
+      setCartId(cart.id);
+      return cart;
+    },
+    enabled: hasHydrated && !!regionId,
+  });
+
+  if (!regionId) {
+    return (
+      <div className="mx-auto max-w-4xl p-6">
+        <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+          <h2 className="mb-2 font-semibold text-lg text-yellow-800">
+            Region Required
+          </h2>
+          <p className="text-yellow-700">
+            Please select a region on the region page to view cart information.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (cartQuery.isLoading) {
+    return (
+      <div className="mx-auto max-w-4xl p-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 w-1/4 rounded bg-gray-200"></div>
+          <div className="h-64 rounded bg-gray-200"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (cartQuery.isError) {
+    return (
+      <div className="mx-auto max-w-4xl p-6">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+          <h2 className="mb-2 font-semibold text-lg text-red-800">
+            Error Loading Cart
+          </h2>
+          <p className="text-red-700">
+            {cartQuery.error instanceof Error
+              ? cartQuery.error.message
+              : "Unknown error"}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const cart = cartQuery.data;
+  if (!cart) {
+    return (
+      <div className="mx-auto max-w-4xl p-6">
+        <p className="text-gray-500">No cart data available</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-4xl space-y-8 p-6">
+      <div className="border-b pb-4">
+        <h1 className="font-bold text-3xl">Shopping Cart</h1>
+        <p className="mt-2 text-gray-600">
+          Review your cart items and proceed to checkout
+        </p>
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <CartItems cart={cart} />
+          <CartAddresses cart={cart} />
+          <ShippingMethods cart={cart} />
+        </div>
+
+        <div className="space-y-6">
+          <CartSummary cart={cart} />
+          <CartInfo cart={cart} />
+        </div>
+      </div>
+
+      {cart.promotions && cart.promotions.length > 0 && (
+        <div>
+          <h3 className="mb-3 font-semibold text-lg">Applied Promotions</h3>
+          <div className="space-y-2">
+            {cart.promotions.map((promotion, index) => (
+              <div
+                key={promotion.code || index}
+                className="rounded border border-green-200 bg-green-50 p-3"
+              >
+                <p className="font-medium text-green-800">{promotion.code}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

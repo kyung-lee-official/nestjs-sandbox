@@ -115,6 +115,10 @@ export default function Page() {
             link: "medusa/store-api/products",
             text: "Products",
           },
+          {
+            link: "medusa/store-api/region",
+            text: "Region",
+          },
         ]}
       />
       <Block
