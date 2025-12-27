@@ -11,7 +11,24 @@ export async function getCart(id: string) {
   return data;
 }
 
+export async function addLineItem(
+  cartId: string,
+  variantId: string,
+  quantity: number = 1,
+) {
+  const data = await api.post<StoreCartResponse>(
+    `/store/carts/${cartId}/line-items`,
+    {
+      variant_id: variantId,
+      quantity: quantity,
+    },
+  );
+  return data;
+}
+
 export async function createCart(regionId?: string) {
-  const data = await api.post<StoreCartResponse>("/store/carts");
+  const data = await api.post<StoreCartResponse>("/store/carts", {
+    region_id: regionId,
+  });
   return data;
 }
