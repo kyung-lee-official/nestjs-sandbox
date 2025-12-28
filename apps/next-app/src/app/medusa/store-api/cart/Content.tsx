@@ -2,6 +2,7 @@
 
 import type { StoreCart } from "@medusajs/types";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import { useMIdStore } from "@/stores/medusa/medusa-entity-id";
 import { createCart, getCart, QK_CART } from "./api";
 
@@ -95,7 +96,9 @@ const CartItems = ({ cart }: { cart: StoreCart }) => (
               </div>
             </div>
             {item.thumbnail && (
-              <img
+              <Image
+                width={300}
+                height={300}
                 src={item.thumbnail}
                 alt={item.title}
                 className="mt-2 h-16 w-16 rounded object-cover"
@@ -334,6 +337,15 @@ export const Content = () => {
 
   return (
     <div className="mx-auto max-w-4xl space-y-8 p-6">
+      <details>
+        <summary className="cursor-pointer text-gray-500 text-sm">
+          Raw Cart Data (for debugging)
+        </summary>
+        <pre className="mt-2 overflow-auto rounded bg-gray-100 p-4 text-xs">
+          {JSON.stringify(cart, null, 2)}
+        </pre>
+      </details>
+
       <div className="border-b pb-4">
         <h1 className="font-bold text-3xl">Shopping Cart</h1>
         <p className="mt-2 text-gray-600">
