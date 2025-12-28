@@ -338,6 +338,10 @@ export default function Home() {
             text: "Suspense",
           },
           {
+            link: "/js/react/suspense-use-promise",
+            text: "Suspense use promise",
+          },
+          {
             link: "/js/react/useeffect-order",
             text: "useEffect order",
           },

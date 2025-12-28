@@ -32,7 +32,8 @@
         "noSvgWithoutTitle": "off",
         "useKeyWithClickEvents": "warn",
         "useKeyWithMouseEvents": "warn",
-		"noStaticElementInteractions": "warn"
+        "noStaticElementInteractions": "warn",
+        "useButtonType": "off"
       }
     }
   },
