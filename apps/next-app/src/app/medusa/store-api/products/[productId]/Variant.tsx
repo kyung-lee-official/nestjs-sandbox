@@ -190,7 +190,7 @@ export const Variant = ({ variant }: VariantProps) => {
       )}
 
       {/* Add to Cart */}
-      <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+      <div className="mt-4 rounded-lg bg-gray-50 p-3">
         <div className="flex items-center justify-between">
           <span className="font-medium text-gray-600">Add to Cart:</span>
           <AddToCartButton
