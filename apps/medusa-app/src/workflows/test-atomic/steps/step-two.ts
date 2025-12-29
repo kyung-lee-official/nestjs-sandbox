@@ -18,4 +18,7 @@ export const stepTwoStep = createStep(
     console.log("Executing Step Two");
     return new StepResponse(`Hello from step two!`);
   },
+  async () => {
+    console.log("Oops! Rolling back changes...");
+  },
 );

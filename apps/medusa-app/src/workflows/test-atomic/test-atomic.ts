@@ -1,5 +1,6 @@
 import {
   createWorkflow,
+  transform,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk";
 import { stepOneStep } from "./steps/step-one";
@@ -13,13 +14,24 @@ export const testAtomicWorkflow = createWorkflow(
     const stepTwoResult = stepTwoStep(input);
     const stepThreeResult = stepThreeStep();
 
-    return new WorkflowResponse({
-      message: "Test Atomic Workflow Completed",
-      data: {
-        stepOne: stepOneResult,
-        stepTwo: stepTwoResult,
-        stepThree: stepThreeResult,
+    const result = transform(
+      {
+        stepOneResult,
+        stepTwoResult,
+        stepThreeResult,
       },
-    });
+      (input) => {
+        return {
+          message: "Test Atomic Workflow Completed",
+          data: {
+            stepOne: input.stepOneResult,
+            stepTwo: input.stepTwoResult,
+            stepThree: input.stepThreeResult,
+          },
+        };
+      },
+    );
+
+    return new WorkflowResponse(result);
   },
 );
