@@ -7,6 +7,11 @@ import { stepOneStep } from "./steps/step-one";
 import { stepThreeStep } from "./steps/step-three";
 import { type StepTwoWorkflowInput, stepTwoStep } from "./steps/step-two";
 
+/**
+ * Medusa v2 Workflows doesn't offer strict ACID transactions for workflows.
+ * Steps provide compensating function for rollback, but they do not guarantee
+ * that all steps will be rolled back successfully in case of failure.
+ */
 export const testAtomicWorkflow = createWorkflow(
   "test-atomic-workflow",
   (input: StepTwoWorkflowInput) => {
