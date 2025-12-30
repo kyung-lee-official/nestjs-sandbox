@@ -9,6 +9,7 @@ export type Payload = {
 };
 
 // Store active SSE connections
+// connection a.k.a. stream controllers
 const activeConnections = new Set<ReadableStreamDefaultController>();
 
 function broadcastMessage(message: string) {
