@@ -8,6 +8,30 @@ export type Payload = {
   message: string;
 };
 
+// Store active SSE connections
+const activeConnections = new Set<ReadableStreamDefaultController>();
+
+function broadcastMessage(message: string) {
+  const encoder = new TextEncoder();
+  const payload = JSON.stringify({
+    id: nanoid(),
+    time: new Date().toISOString(),
+    message,
+  });
+
+  const data = encoder.encode(`data: ${payload}\n\n`);
+
+  // Send to all connected clients
+  activeConnections.forEach((controller) => {
+    try {
+      controller.enqueue(data);
+    } catch (error) {
+      // Remove broken connections
+      activeConnections.delete(controller);
+    }
+  });
+}
+
 export async function GET() {
   const encoder = new TextEncoder();
 
@@ -24,8 +48,16 @@ export async function GET() {
    * the stream requires.
    */
 
+  let streamController: ReadableStreamDefaultController;
+
   const stream = new ReadableStream({
     start(controller) {
+      // Store controller reference for use in cancel method
+      streamController = controller;
+
+      // Add this controller to active connections
+      activeConnections.add(controller);
+
       // Send an initial message
       controller.enqueue(
         encoder.encode(
@@ -36,25 +68,10 @@ export async function GET() {
           })}\n\n`,
         ),
       );
-
-      const interval = setInterval(() => {
-        const time = new Date().toISOString();
-        const payload = JSON.stringify({
-          id: nanoid(),
-          time,
-          message: "Current server time",
-        });
-        controller.enqueue(encoder.encode(`data: ${payload}\n\n`));
-      }, 2000);
-
-      // Cleanup on client disconnect
-      return () => {
-        clearInterval(interval);
-        controller.close();
-      };
     },
     cancel() {
-      // Optional: handle abrupt close
+      // Remove controller from active connections
+      activeConnections.delete(streamController);
       console.log("Client disconnected");
     },
   });
@@ -66,4 +83,25 @@ export async function GET() {
       Connection: "keep-alive",
     },
   });
+}
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { message } = body;
+
+    if (!message || typeof message !== "string") {
+      return Response.json({ error: "Message is required" }, { status: 400 });
+    }
+
+    // Broadcast the message to all connected SSE clients
+    broadcastMessage(message);
+
+    return Response.json({
+      success: true,
+      message: "Message sent to all connected clients",
+    });
+  } catch (error) {
+    return Response.json({ error: "Invalid JSON" }, { status: 400 });
+  }
 }
