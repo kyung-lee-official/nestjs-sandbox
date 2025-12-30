@@ -48,6 +48,15 @@ export default function Home() {
         ]}
       />
       <Block
+        title="Server-Sent Events"
+        list={[
+          {
+            link: "/sse/server-sent-event",
+            text: "Server-Sent Event",
+          },
+        ]}
+      />
+      <Block
         title="Animation | AnimeJS"
         list={[
           {
