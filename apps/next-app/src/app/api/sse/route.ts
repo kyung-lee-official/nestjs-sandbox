@@ -12,27 +12,6 @@ export type Payload = {
 // connection a.k.a. stream controllers
 const activeConnections = new Set<ReadableStreamDefaultController>();
 
-function broadcastMessage(message: string) {
-  const encoder = new TextEncoder();
-  const payload = JSON.stringify({
-    id: nanoid(),
-    time: new Date().toISOString(),
-    message,
-  });
-
-  const data = encoder.encode(`data: ${payload}\n\n`);
-
-  // Send to all connected clients
-  activeConnections.forEach((controller) => {
-    try {
-      controller.enqueue(data);
-    } catch (error) {
-      // Remove broken connections
-      activeConnections.delete(controller);
-    }
-  });
-}
-
 export async function GET() {
   const encoder = new TextEncoder();
 
@@ -105,4 +84,25 @@ export async function POST(request: Request) {
   } catch (error) {
     return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
+}
+
+function broadcastMessage(message: string) {
+  const encoder = new TextEncoder();
+  const payload = JSON.stringify({
+    id: nanoid(),
+    time: new Date().toISOString(),
+    message,
+  });
+
+  const data = encoder.encode(`data: ${payload}\n\n`);
+
+  // Send to all connected clients
+  activeConnections.forEach((controller) => {
+    try {
+      controller.enqueue(data);
+    } catch (error) {
+      // Remove broken connections
+      activeConnections.delete(controller);
+    }
+  });
 }
