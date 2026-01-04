@@ -2,9 +2,9 @@
 
 import type { StoreCart } from "@medusajs/types";
 import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
 import { useMIdStore } from "@/stores/medusa/medusa-entity-id";
 import { createCart, getCart, QK_CART } from "./api";
+import { LineItem } from "./LineItem";
 
 const formatCurrency = (amount: number, currencyCode: string) => {
   return new Intl.NumberFormat("en-US", {
@@ -52,64 +52,6 @@ const CartSummary = ({ cart }: { cart: StoreCart }) => (
         <span>{formatCurrency(cart.total, cart.currency_code)}</span>
       </div>
     </div>
-  </div>
-);
-
-const CartItems = ({ cart }: { cart: StoreCart }) => (
-  <div className="space-y-4">
-    <h3 className="font-semibold text-xl">
-      Cart Items ({cart.items?.length || 0})
-    </h3>
-    {cart.items && cart.items.length > 0 ? (
-      <div className="space-y-4">
-        {cart.items.map((item) => (
-          <div key={item.id} className="rounded-lg border p-4">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <h4 className="font-medium">{item.title}</h4>
-                {item.subtitle && (
-                  <p className="text-gray-600 text-sm">{item.subtitle}</p>
-                )}
-                {item.variant_title && (
-                  <p className="text-gray-500 text-sm">
-                    Variant: {item.variant_title}
-                  </p>
-                )}
-                {item.variant_sku && (
-                  <p className="text-gray-400 text-xs">
-                    SKU: {item.variant_sku}
-                  </p>
-                )}
-              </div>
-              <div className="text-right">
-                <p className="font-medium">
-                  {formatCurrency(item.unit_price, cart.currency_code)} ×{" "}
-                  {item.quantity}
-                </p>
-                <p className="text-gray-600 text-sm">
-                  ={" "}
-                  {formatCurrency(
-                    item.total || item.unit_price * item.quantity,
-                    cart.currency_code,
-                  )}
-                </p>
-              </div>
-            </div>
-            {item.thumbnail && (
-              <Image
-                width={300}
-                height={300}
-                src={item.thumbnail}
-                alt={item.title}
-                className="mt-2 h-16 w-16 rounded object-cover"
-              />
-            )}
-          </div>
-        ))}
-      </div>
-    ) : (
-      <p className="py-8 text-center text-gray-500">Your cart is empty</p>
-    )}
   </div>
 );
 
@@ -355,7 +297,7 @@ export const Content = () => {
 
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <CartItems cart={cart} />
+          <LineItem cart={cart} />
           <CartAddresses cart={cart} />
           <ShippingMethods cart={cart} />
         </div>

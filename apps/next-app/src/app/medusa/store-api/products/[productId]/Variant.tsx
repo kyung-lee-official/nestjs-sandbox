@@ -177,12 +177,16 @@ export const Variant = ({ variant }: VariantProps) => {
           <div className="mt-2">
             <span className="font-bold text-green-600 text-lg">
               {variant.calculated_price.currency_code?.toUpperCase()}{" "}
-              {((variant.calculated_price.calculated_amount || 0) / 100).toFixed(2)}
+              {(
+                (variant.calculated_price.calculated_amount || 0) / 100
+              ).toFixed(2)}
             </span>
             {variant.calculated_price.original_amount !==
               variant.calculated_price.calculated_amount && (
               <span className="ml-2 text-gray-500 line-through">
-                {((variant.calculated_price.original_amount || 0) / 100).toFixed(2)}
+                {(
+                  (variant.calculated_price.original_amount || 0) / 100
+                ).toFixed(2)}
               </span>
             )}
           </div>

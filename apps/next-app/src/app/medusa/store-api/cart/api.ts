@@ -32,3 +32,35 @@ export async function createCart(regionId?: string) {
   });
   return data;
 }
+
+export async function updateACart(
+  cartId: string,
+  updates: Partial<StoreCartResponse>,
+) {
+  const data = await api.post<StoreCartResponse>(
+    `/store/carts/${cartId}`,
+    updates,
+  );
+  return data;
+}
+
+export async function updateLineItem(
+  cartId: string,
+  lineItemId: string,
+  quantity: number,
+) {
+  const data = await api.post<StoreCartResponse>(
+    `/store/carts/${cartId}/line-items/${lineItemId}`,
+    {
+      quantity: quantity,
+    },
+  );
+  return data;
+}
+
+export async function removeLineItem(cartId: string, lineItemId: string) {
+  const data = await api.del<StoreCartResponse>(
+    `/store/carts/${cartId}/line-items/${lineItemId}`,
+  );
+  return data;
+}
