@@ -4,7 +4,7 @@ import type { StoreCart } from "@medusajs/types";
 import { useQuery } from "@tanstack/react-query";
 import { useMIdStore } from "@/stores/medusa/medusa-entity-id";
 import { createCart, getCart, QK_CART } from "./api";
-import { CartAddresses } from "./CartAddress";
+import { CartAddresses } from "./cart-address/CartAddress";
 import { LineItem } from "./LineItem";
 
 const formatCurrency = (amount: number, currencyCode: string) => {
