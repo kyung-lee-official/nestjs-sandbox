@@ -20,12 +20,10 @@ export const ErrorCodeSchema = z.enum(
 );
 export const ERROR_CODE_TO_STATUS = ERROR_CODES;
 
-export const HttpErrorResponseSchema = z.object({
-  error: z.object({
-    code: ErrorCodeSchema,
-    message: z.string().optional(),
-    details: z.any().optional(),
-    timestamp: z.string(),
-  }),
+export const HttpErrorDataSchema = z.object({
+  code: ErrorCodeSchema,
+  message: z.string().optional(),
+  details: z.any().optional(),
+  timestamp: z.string(),
 });
-export type HttpErrorResponse = z.infer<typeof HttpErrorResponseSchema>;
+export type HttpErrorData = z.infer<typeof HttpErrorDataSchema>;

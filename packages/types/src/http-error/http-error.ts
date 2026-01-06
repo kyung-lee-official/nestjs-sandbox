@@ -2,7 +2,7 @@
 import {
   ERROR_CODE_TO_STATUS,
   type ErrorCode,
-  type HttpErrorResponse,
+  type HttpErrorData,
 } from "./errors.js";
 
 export class HttpError extends Error {
@@ -30,14 +30,12 @@ export class HttpError extends Error {
   }
 
   // Convert to JSON response (for Express, Fastify, etc.)
-  toJSON(): HttpErrorResponse {
+  toJSON(): HttpErrorData {
     return {
-      error: {
-        code: this.code,
-        message: this.message !== this.code ? this.message : undefined,
-        details: this.details,
-        timestamp: this.timestamp,
-      },
+      code: this.code,
+      message: this.message !== this.code ? this.message : undefined,
+      details: this.details,
+      timestamp: this.timestamp,
     };
   }
 }
