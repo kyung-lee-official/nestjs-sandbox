@@ -39,9 +39,9 @@
       },
       "a11y": {
         "noSvgWithoutTitle": "off",
-        "useKeyWithClickEvents": "warn",
         "useKeyWithMouseEvents": "warn",
-        "noStaticElementInteractions": "warn",
+        "useKeyWithClickEvents": "off",
+        "noStaticElementInteractions": "off",
         "useButtonType": "off"
       },
       "style": {
