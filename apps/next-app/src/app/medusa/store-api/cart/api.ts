@@ -64,3 +64,16 @@ export async function removeLineItem(cartId: string, lineItemId: string) {
   );
   return data;
 }
+
+export async function updateCartShippingMethod(
+  cartId: string,
+  optionId: string,
+) {
+  const data = await api.post<StoreCartResponse>(
+    `/store/carts/${cartId}/shipping-methods`,
+    {
+      option_id: optionId,
+    },
+  );
+  return data;
+}
