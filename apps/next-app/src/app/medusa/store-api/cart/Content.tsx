@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMIdStore } from "@/stores/medusa/medusa-entity-id";
 import { createCart, getCart, QK_CART } from "./api";
 import { CartAddresses } from "./cart-address/CartAddress";
+import { CartShipping } from "./cart-shipping/CartShipping";
 import { LineItem } from "./LineItem";
 
 const formatCurrency = (amount: number, currencyCode: string) => {
@@ -100,32 +101,7 @@ const CartInfo = ({ cart }: { cart: StoreCart }) => (
   </div>
 );
 
-const ShippingMethods = ({ cart }: { cart: StoreCart }) => (
-  <div>
-    <h3 className="mb-3 font-semibold text-lg">Shipping Methods</h3>
-    {cart.shipping_methods && cart.shipping_methods.length > 0 ? (
-      <div className="space-y-3">
-        {cart.shipping_methods.map((method) => (
-          <div key={method.id} className="rounded border p-3">
-            <div className="flex items-start justify-between">
-              <div>
-                <h4 className="font-medium">{method.name}</h4>
-                {method.description && (
-                  <p className="text-gray-600 text-sm">{method.description}</p>
-                )}
-              </div>
-              <p className="font-medium">
-                {formatCurrency(method.amount, cart.currency_code)}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-    ) : (
-      <p className="text-gray-500">No shipping methods selected</p>
-    )}
-  </div>
-);
+
 
 export const Content = () => {
   const hasHydrated = useMIdStore((state) => state.hasHydrated);
@@ -227,7 +203,7 @@ export const Content = () => {
         <div className="space-y-6 lg:col-span-2">
           <LineItem cart={cart} />
           <CartAddresses cart={cart} />
-          <ShippingMethods cart={cart} />
+          <CartShipping cart={cart} />
         </div>
 
         <div className="space-y-6">
