@@ -2,110 +2,35 @@
 
 import type { StoreCart } from "@medusajs/types";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useMIdStore } from "@/stores/medusa/medusa-entity-id";
+import { createPaymentCollection } from "../payment/api";
 import { createCart, getCart, QK_CART } from "./api";
 import { CartAddresses } from "./cart-address/CartAddress";
+import { CartInfo } from "./cart-info/CartInfo";
 import { CartShipping } from "./cart-shipping/CartShipping";
+import { CartSummary } from "./cart-summary/CartSummary";
 import { LineItem } from "./LineItem";
 
-const formatCurrency = (amount: number, currencyCode: string) => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currencyCode.toUpperCase(),
-  }).format(amount / 100); // Assuming amount is in cents
-};
-
-const CartSummary = ({ cart }: { cart: StoreCart }) => (
-  <div className="rounded-lg bg-gray-50 p-6">
-    <h3 className="mb-4 font-semibold text-xl">Cart Summary</h3>
-    <div className="space-y-2">
-      <div className="flex justify-between">
-        <span>Subtotal:</span>
-        <span className="font-medium">
-          {formatCurrency(cart.subtotal, cart.currency_code)}
-        </span>
-      </div>
-      {cart.tax_total > 0 && (
-        <div className="flex justify-between">
-          <span>Tax:</span>
-          <span className="font-medium">
-            {formatCurrency(cart.tax_total, cart.currency_code)}
-          </span>
-        </div>
-      )}
-      {cart.shipping_total > 0 && (
-        <div className="flex justify-between">
-          <span>Shipping:</span>
-          <span className="font-medium">
-            {formatCurrency(cart.shipping_total, cart.currency_code)}
-          </span>
-        </div>
-      )}
-      {cart.discount_total > 0 && (
-        <div className="flex justify-between text-green-600">
-          <span>Discount:</span>
-          <span className="font-medium">
-            -{formatCurrency(cart.discount_total, cart.currency_code)}
-          </span>
-        </div>
-      )}
-      <div className="flex justify-between border-t pt-2 font-bold text-lg">
-        <span>Total:</span>
-        <span>{formatCurrency(cart.total, cart.currency_code)}</span>
-      </div>
-    </div>
-  </div>
-);
-
-const CartInfo = ({ cart }: { cart: StoreCart }) => (
-  <div className="rounded-lg bg-blue-50 p-4">
-    <h3 className="mb-3 font-semibold text-lg">Cart Information</h3>
-    <div className="grid grid-cols-2 gap-4 text-sm">
-      <div>
-        <span className="font-medium">Cart ID:</span>
-        <p className="break-all font-mono text-xs">{cart.id}</p>
-      </div>
-      <div>
-        <span className="font-medium">Currency:</span>
-        <p>{cart.currency_code.toUpperCase()}</p>
-      </div>
-      {cart.email && (
-        <div>
-          <span className="font-medium">Email:</span>
-          <p>{cart.email}</p>
-        </div>
-      )}
-      {cart.region && (
-        <div>
-          <span className="font-medium">Region:</span>
-          <p>{cart.region.name}</p>
-        </div>
-      )}
-      <div>
-        <span className="font-medium">Created:</span>
-        <p>
-          {cart.created_at
-            ? new Date(cart.created_at).toLocaleDateString()
-            : "N/A"}
-        </p>
-      </div>
-      <div>
-        <span className="font-medium">Updated:</span>
-        <p>
-          {cart.updated_at
-            ? new Date(cart.updated_at).toLocaleDateString()
-            : "N/A"}
-        </p>
-      </div>
-    </div>
-  </div>
-);
-
 export const Content = () => {
+  const router = useRouter();
   const hasHydrated = useMIdStore((state) => state.hasHydrated);
   const regionId = useMIdStore((state) => state.regionId);
   const cartId = useMIdStore((state) => state.cartId);
   const setCartId = useMIdStore((state) => state.setCartId);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+
+  const handleCheckout = async () => {
+    try {
+      setIsCheckingOut(true);
+      const paymentCollection = await createPaymentCollection(cartId!);
+      router.push("/medusa/store-api/payment");
+    } catch (error) {
+      console.error("Failed to create payment collection:", error);
+      setIsCheckingOut(false);
+    }
+  };
 
   const cartQuery = useQuery({
     queryKey: [QK_CART.GET_CART, cartId, regionId],
@@ -205,7 +130,7 @@ export const Content = () => {
         </div>
 
         <div className="space-y-6">
-          <CartSummary cart={cart} />
+          <CartSummary cart={cart} onCheckout={handleCheckout} />
           <CartInfo cart={cart} />
         </div>
       </div>
