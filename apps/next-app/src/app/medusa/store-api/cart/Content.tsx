@@ -101,8 +101,6 @@ const CartInfo = ({ cart }: { cart: StoreCart }) => (
   </div>
 );
 
-
-
 export const Content = () => {
   const hasHydrated = useMIdStore((state) => state.hasHydrated);
   const regionId = useMIdStore((state) => state.regionId);
