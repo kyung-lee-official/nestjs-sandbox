@@ -12,7 +12,7 @@ import { MedusaError, parseCorsOrigins } from "@medusajs/framework/utils";
 import {
   ERROR_CODES,
   type HttpError,
-  type HttpErrorResponse,
+  type HttpErrorData,
   type MedusaErrorCodes,
   MedusaErrorTypes,
 } from "@repo/types";
@@ -122,7 +122,7 @@ export default defineMiddlewares({
   errorHandler: (
     error: HttpError | MedusaError,
     req: MedusaRequest,
-    res: MedusaResponse<HttpErrorResponse>,
+    res: MedusaResponse<HttpErrorData>,
     next: MedusaNextFunction,
   ) => {
     if (MedusaError.isMedusaError(error)) {
@@ -130,22 +130,18 @@ export default defineMiddlewares({
       const map: Record<MedusaErrorCodes, number> =
         MedusaErrorTypes[medusaError.type];
       res.status(Object.values(map)[0]).json({
-        error: {
-          code: Object.keys(map)[0] as keyof typeof ERROR_CODES,
-          message: medusaError.message,
-          details: {},
-          timestamp: new Date().toISOString(),
-        },
+        code: Object.keys(map)[0] as keyof typeof ERROR_CODES,
+        message: medusaError.message,
+        details: {},
+        timestamp: new Date().toISOString(),
       });
       return;
     }
     res.status(error.status || 500).json({
-      error: {
-        code: error.code || ERROR_CODES["SYSTEM.UNKNOWN_ERROR"],
-        message: error.message || "",
-        details: error.details || {},
-        timestamp: error.timestamp || new Date().toISOString(),
-      },
+      code: error.code || ERROR_CODES["SYSTEM.UNKNOWN_ERROR"],
+      message: error.message || "",
+      details: error.details || {},
+      timestamp: error.timestamp || new Date().toISOString(),
     });
     return;
   },

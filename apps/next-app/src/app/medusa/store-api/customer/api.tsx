@@ -1,11 +1,14 @@
+import { StoreCustomerAddressListResponse } from "@medusajs/types";
 import api from "../../axios-error-handling-for-medusa/axios-client";
 
 export async function getMe() {
-  const data = await api.get(`/store/customers/me`, {
-    headers: {
-      "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
-    },
-    withCredentials: true,
-  });
+  const data = await api.get(`/store/customers/me`);
+  return data;
+}
+
+export async function getMyAddresses() {
+  const data = await api.get<StoreCustomerAddressListResponse>(
+    `/store/customers/me/addresses`,
+  );
   return data;
 }

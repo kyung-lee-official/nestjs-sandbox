@@ -10,18 +10,21 @@ export type CustomerContent = SetOptional<
 type AuthState = {
   isSignedIn: boolean;
   customerInfo: CustomerContent | null;
+  hasHydrated: boolean;
 };
 
 type AuthActions = {
   setAuth: (customerInfo: CustomerContent) => void;
   updateCustomerInfo: (partial: Partial<CustomerContent>) => void;
   signOut: () => void;
+  setHasHydrated: (hasHydrated: boolean) => void;
 };
 export const useAuthStore = create<AuthState & AuthActions>()(
   persist(
     (set) => ({
       isSignedIn: false,
       customerInfo: null,
+      hasHydrated: false,
       setAuth: (customerInfo: CustomerContent) =>
         set({
           isSignedIn: true,
@@ -38,6 +41,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           isSignedIn: false,
           customerInfo: null,
         }),
+      setHasHydrated: (hasHydrated: boolean) => set({ hasHydrated }),
     }),
     {
       name: "medusa-auth-storage", // name of the item in the storage
