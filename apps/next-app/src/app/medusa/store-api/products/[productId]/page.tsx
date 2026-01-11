@@ -21,7 +21,7 @@ const Page = async (props: PageProps) => {
         <summary className="mb-4 cursor-pointer text-blue-600 hover:underline">
           Raw Data (for debugging)
         </summary>
-        <pre className="max-h-96 overflow-auto rounded-lg bg-gray-100 p-4 text-gray-800 text-sm">
+        <pre className="overflow-auto rounded-lg bg-gray-100 p-4 text-gray-800 text-sm">
           {JSON.stringify(product, null, 2)}
         </pre>
       </details>
