@@ -1,6 +1,6 @@
 export const formatCurrency = (amount: number, currencyCode: string) => {
   // Handle null/undefined amounts
-  if (amount == null || isNaN(amount)) {
+  if (amount == null || Number.isNaN(amount)) {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: currencyCode.toUpperCase(),

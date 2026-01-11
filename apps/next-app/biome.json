@@ -42,7 +42,8 @@
         "useKeyWithMouseEvents": "warn",
         "useKeyWithClickEvents": "off",
         "noStaticElementInteractions": "off",
-        "useButtonType": "off"
+        "useButtonType": "off",
+        "noLabelWithoutControl": "off"
       },
       "style": {
         "useImportType": "off"
