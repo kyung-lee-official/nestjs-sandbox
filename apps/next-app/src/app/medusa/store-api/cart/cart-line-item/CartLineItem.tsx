@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useState } from "react";
 import { useMIdStore } from "@/stores/medusa/medusa-entity-id";
-import { QK_CART, removeLineItem, updateLineItem } from "./api";
+import { QK_CART, removeLineItem, updateLineItem } from "../api";
 
 const formatCurrency = (amount: number, currencyCode: string) => {
   return new Intl.NumberFormat("en-US", {
@@ -14,7 +14,7 @@ const formatCurrency = (amount: number, currencyCode: string) => {
   }).format(amount / 100); // Assuming amount is in cents
 };
 
-export const LineItem = ({ cart }: { cart: StoreCart }) => {
+export const CartLineItem = ({ cart }: { cart: StoreCart }) => {
   const queryClient = useQueryClient();
   const cartId = useMIdStore((state) => state.cartId);
   const regionId = useMIdStore((state) => state.regionId);
