@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { formatCurrency } from "@/utils/currency";
 import { getProduts } from "./api";
 
 const Page = async () => {
@@ -78,10 +79,7 @@ const Page = async () => {
                   <div className="mt-4 flex items-center justify-between">
                     {amount !== undefined && amount !== null ? (
                       <div className="font-bold text-gray-900 text-xl">
-                        {new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          currency: currencyCode,
-                        }).format(amount / 100)}
+                        {formatCurrency(amount, currencyCode)}
                       </div>
                     ) : (
                       <div className="text-gray-500 text-sm">

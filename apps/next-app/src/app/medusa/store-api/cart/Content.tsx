@@ -9,9 +9,10 @@ import { createPaymentCollection } from "../payment/api";
 import { createCart, getCart, QK_CART } from "./api";
 import { CartAddresses } from "./cart-address/CartAddress";
 import { CartInfo } from "./cart-info/CartInfo";
+import { CartLineItem } from "./cart-line-item/CartLineItem";
+import CartPromotions from "./cart-promotions/CartPromotions";
 import { CartShipping } from "./cart-shipping/CartShipping";
 import { CartSummary } from "./cart-summary/CartSummary";
-import { LineItem } from "./LineItem";
 
 export const Content = () => {
   const router = useRouter();
@@ -25,7 +26,7 @@ export const Content = () => {
     try {
       setIsCheckingOut(true);
       const paymentCollection = await createPaymentCollection(cartId!);
-      router.push("/medusa/store-api/payment");
+      router.push(`/medusa/store-api/cart/cart-checkout/${cartId}`);
     } catch (error) {
       console.error("Failed to create payment collection:", error);
       setIsCheckingOut(false);
@@ -124,7 +125,7 @@ export const Content = () => {
 
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <LineItem cart={cart} />
+          <CartLineItem cart={cart} />
           <CartAddresses cart={cart} />
           <CartShipping cart={cart} />
         </div>
@@ -135,21 +136,10 @@ export const Content = () => {
         </div>
       </div>
 
-      {cart.promotions && cart.promotions.length > 0 && (
-        <div>
-          <h3 className="mb-3 font-semibold text-lg">Applied Promotions</h3>
-          <div className="space-y-2">
-            {cart.promotions.map((promotion, index) => (
-              <div
-                key={promotion.code || index}
-                className="rounded border border-green-200 bg-green-50 p-3"
-              >
-                <p className="font-medium text-green-800">{promotion.code}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <CartPromotions
+        cart={{ cart }}
+        onCartUpdate={() => cartQuery.refetch()}
+      />
     </div>
   );
 };

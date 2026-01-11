@@ -1,5 +1,6 @@
 import type { StoreCart } from "@medusajs/types";
 import { useEffect, useState } from "react";
+import { formatCurrency } from "@/utils/currency";
 import { getShippingOptions } from "../../shipping-option/api";
 import { updateCartShippingMethod } from "../api";
 
@@ -48,13 +49,6 @@ export const CartShipping = ({ cart }: { cart: StoreCart }) => {
     } catch (error) {
       console.error("Failed to update shipping method:", error);
     }
-  };
-
-  const formatCurrency = (amount: number, currencyCode: string) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: currencyCode.toUpperCase(),
-    }).format(amount / 100); // Assuming amount is in cents
   };
 
   // Don't show selector if no shipping address

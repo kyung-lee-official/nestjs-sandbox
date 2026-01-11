@@ -5,14 +5,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useState } from "react";
 import { useMIdStore } from "@/stores/medusa/medusa-entity-id";
+import { formatCurrency } from "@/utils/currency";
 import { QK_CART, removeLineItem, updateLineItem } from "../api";
-
-const formatCurrency = (amount: number, currencyCode: string) => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currencyCode.toUpperCase(),
-  }).format(amount / 100); // Assuming amount is in cents
-};
 
 export const CartLineItem = ({ cart }: { cart: StoreCart }) => {
   const queryClient = useQueryClient();
