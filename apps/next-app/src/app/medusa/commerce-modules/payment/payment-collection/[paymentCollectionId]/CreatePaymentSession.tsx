@@ -34,10 +34,7 @@ export const CreatePaymentSession = (props: CreatePaymentSessionProps) => {
 
   return (
     <button
-      className="px-4 py-2
-			text-white bg-blue-500
-			cursor-pointer
-			rounded"
+      className="cursor-pointer rounded bg-blue-500 px-4 py-2 text-white"
       onClick={() => {
         createPaymentSessionMutation.mutate();
       }}

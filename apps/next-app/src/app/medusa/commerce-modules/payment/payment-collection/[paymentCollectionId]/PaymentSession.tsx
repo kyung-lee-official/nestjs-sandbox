@@ -56,10 +56,7 @@ export const PaymentSession = (props: PaymentSessionProps) => {
   return (
     <div>
       {getPaymentSessionByPaymentCollectionIdQuery.data ? (
-        <div
-          className="space-y-2 p-2
-					border rounded"
-        >
+        <div className="space-y-2 rounded border p-2">
           <h1>Payment Session:</h1>
           <div>ID: {getPaymentSessionByPaymentCollectionIdQuery.data.id}</div>
           <div>
@@ -71,9 +68,7 @@ export const PaymentSession = (props: PaymentSessionProps) => {
             {getPaymentSessionByPaymentCollectionIdQuery.data.payment?.id}
           </div>
           <button
-            className="text-white p-2
-						bg-blue-500
-						rounded cursor-pointer"
+            className="cursor-pointer rounded bg-blue-500 p-2 text-white"
             onClick={() => authorizePaymentSessionMutation.mutate()}
           >
             Authorize Payment Session
