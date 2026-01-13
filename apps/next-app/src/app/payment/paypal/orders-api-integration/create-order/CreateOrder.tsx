@@ -1,18 +1,18 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { createPayPalOrder, PayPalOrderResponse } from "../api";
 import { Form, type OrderFormData } from "./Form";
 
 type CreateOrderProps = {
-  paypalAccessToken?: string;
+  paypalAccessToken: string;
 };
 
 export const CreateOrder = ({ paypalAccessToken }: CreateOrderProps) => {
   const router = useRouter();
-  const [orderData, setOrderData] = useState<any>(null);
+  const [orderData, setOrderData] = useState<PayPalOrderResponse | null>(null);
 
   const createOrderMutation = useMutation({
     mutationFn: async (formData: OrderFormData) => {
@@ -47,19 +47,15 @@ export const CreateOrder = ({ paypalAccessToken }: CreateOrderProps) => {
         },
       };
 
-      const res = await axios.post(
-        "/api/payment/paypal/v2/create-order",
-        orderPayload,
-      );
-      return res.data;
+      const data = await createPayPalOrder(paypalAccessToken, orderPayload);
+      return data;
     },
     onSuccess: (data) => {
-      console.log("PayPal order created successfully:", data);
       setOrderData(data);
       /* redirect the user to the PayPal approval link */
       if (data.links) {
         const approvalLink = data.links.find(
-          (link: any) => link.rel === "payer-action",
+          (link) => link.rel === "payer-action",
         );
         if (approvalLink) {
           router.push(approvalLink.href);
@@ -79,11 +75,11 @@ export const CreateOrder = ({ paypalAccessToken }: CreateOrderProps) => {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Order Creation</h2>
+      <h2 className="font-semibold text-xl">Order Creation</h2>
 
       {!hasAccessToken && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded p-4">
-          <h3 className="font-semibold text-yellow-800 mb-2">
+        <div className="rounded border border-yellow-200 bg-yellow-50 p-4">
+          <h3 className="mb-2 font-semibold text-yellow-800">
             Access Token Required
           </h3>
           <p className="text-sm text-yellow-700">
@@ -108,11 +104,11 @@ export const CreateOrder = ({ paypalAccessToken }: CreateOrderProps) => {
       )}
 
       {orderData && (
-        <div className="bg-green-50 border border-green-200 rounded p-4">
-          <h3 className="font-semibold text-green-800 mb-2">
+        <div className="rounded border border-green-200 bg-green-50 p-4">
+          <h3 className="mb-2 font-semibold text-green-800">
             Order Created Successfully:
           </h3>
-          <div className="space-y-2 text-sm text-green-700">
+          <div className="space-y-2 text-green-700 text-sm">
             <div>
               <strong>Order ID:</strong>{" "}
               <span className="font-mono">{orderData.id}</span>
@@ -129,9 +125,9 @@ export const CreateOrder = ({ paypalAccessToken }: CreateOrderProps) => {
               <div>
                 <strong>Actions:</strong>
                 <div className="mt-1 space-y-1">
-                  {orderData.links.map((link: any, index: number) => (
-                    <div key={index} className="text-xs">
-                      <span className="font-mono bg-gray-100 px-1 rounded">
+                  {orderData.links.map((link) => (
+                    <div key={link.href} className="text-xs">
+                      <span className="rounded bg-gray-100 px-1 font-mono">
                         {link.rel}
                       </span>
                       :{" "}
@@ -139,7 +135,7 @@ export const CreateOrder = ({ paypalAccessToken }: CreateOrderProps) => {
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 underline break-all"
+                        className="break-all text-blue-600 underline"
                       >
                         {link.href}
                       </a>

@@ -20,9 +20,9 @@ export const Content = ({ orderId }: ContentProps) => {
 
   if (orderQuery.isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-blue-600 border-b-2"></div>
           <p className="text-gray-600">Loading order details...</p>
         </div>
       </div>
@@ -31,12 +31,12 @@ export const Content = ({ orderId }: ContentProps) => {
 
   if (orderQuery.isError) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="w-full max-w-md rounded-lg bg-white p-8 text-center shadow-lg">
           <div className="mb-6">
-            <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
               <svg
-                className="w-8 h-8 text-red-600"
+                className="h-8 w-8 text-red-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -50,16 +50,16 @@ export const Content = ({ orderId }: ContentProps) => {
               </svg>
             </div>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          <h1 className="mb-4 font-bold text-2xl text-gray-900">
             Error Loading Order
           </h1>
-          <p className="text-gray-600 mb-6">
+          <p className="mb-6 text-gray-600">
             Unable to load order details. Please check the order ID and try
             again.
           </p>
           <button
             onClick={() => orderQuery.refetch()}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="w-full rounded-lg bg-blue-600 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-700"
           >
             Try Again
           </button>
@@ -71,23 +71,23 @@ export const Content = ({ orderId }: ContentProps) => {
   const order = orderQuery.data;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="min-h-screen bg-gray-50 px-4 py-8">
+      <div className="mx-auto max-w-4xl">
+        <div className="overflow-hidden rounded-lg bg-white shadow-lg">
           {/* Header */}
-          <div className="bg-blue-600 text-white px-6 py-4">
-            <h1 className="text-2xl font-bold">PayPal Order Details</h1>
+          <div className="bg-blue-600 px-6 py-4 text-white">
+            <h1 className="font-bold text-2xl">PayPal Order Details</h1>
             <p className="text-blue-100">Order ID: {orderId}</p>
           </div>
 
           {/* Order Information */}
-          <div className="p-6 space-y-6">
+          <div className="space-y-6 p-6">
             {/* Status and Intent */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 mb-2">Status</h3>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="rounded-lg bg-gray-50 p-4">
+                <h3 className="mb-2 font-semibold text-gray-900">Status</h3>
                 <span
-                  className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                  className={`inline-block rounded-full px-3 py-1 font-medium text-sm ${
                     order?.status === "COMPLETED"
                       ? "bg-green-100 text-green-800"
                       : order?.status === "APPROVED"
@@ -100,17 +100,17 @@ export const Content = ({ orderId }: ContentProps) => {
                   {order?.status || "Unknown"}
                 </span>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 mb-2">Intent</h3>
+              <div className="rounded-lg bg-gray-50 p-4">
+                <h3 className="mb-2 font-semibold text-gray-900">Intent</h3>
                 <span className="text-gray-700">{order?.intent || "N/A"}</span>
               </div>
             </div>
 
             {/* Capture Payment Section - Only show for APPROVED orders with AUTHORIZE intent */}
             {order?.status === "APPROVED" && order?.intent === "AUTHORIZE" && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+              <div className="rounded-lg border border-green-200 bg-green-50 p-6">
                 <div className="mb-4">
-                  <h3 className="font-semibold text-green-900 mb-2">
+                  <h3 className="mb-2 font-semibold text-green-900">
                     Payment Authorized
                   </h3>
                   <p className="text-green-700 text-sm">
@@ -125,26 +125,29 @@ export const Content = ({ orderId }: ContentProps) => {
             {/* Purchase Units */}
             {order?.purchase_units && (
               <div>
-                <h3 className="font-semibold text-gray-900 mb-4">
+                <h3 className="mb-4 font-semibold text-gray-900">
                   Purchase Units
                 </h3>
-                {order.purchase_units.map((unit: any, index: number) => (
-                  <div key={index} className="border rounded-lg p-4 mb-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {order.purchase_units.map((unit) => (
+                  <div
+                    key={unit.reference_id}
+                    className="mb-4 rounded-lg border p-4"
+                  >
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                       <div>
-                        <h4 className="font-medium text-gray-900 mb-2">
+                        <h4 className="mb-2 font-medium text-gray-900">
                           Amount
                         </h4>
-                        <p className="text-2xl font-bold text-gray-900">
+                        <p className="font-bold text-2xl text-gray-900">
                           {unit.amount?.currency_code} {unit.amount?.value}
                         </p>
                       </div>
                       {unit.reference_id && (
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-2">
+                          <h4 className="mb-2 font-medium text-gray-900">
                             Reference ID
                           </h4>
-                          <p className="text-gray-700 font-mono text-sm">
+                          <p className="font-mono text-gray-700 text-sm">
                             {unit.reference_id}
                           </p>
                         </div>
@@ -158,45 +161,47 @@ export const Content = ({ orderId }: ContentProps) => {
             {/* Links/Actions */}
             {order?.links && (
               <div>
-                <h3 className="font-semibold text-gray-900 mb-4">
+                <h3 className="mb-4 font-semibold text-gray-900">
                   Available Actions
                 </h3>
                 <div className="space-y-2">
-                  {order.links.map((link: any, index: number) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between bg-gray-50 rounded-lg p-3"
-                    >
-                      <div>
-                        <span className="font-medium text-gray-900 capitalize">
-                          {link.rel.replace(/-/g, " ")}
-                        </span>
-                        <span className="ml-2 text-sm text-gray-500 bg-gray-200 px-2 py-1 rounded">
-                          {link.method}
-                        </span>
+                  {order.links.map((link) => {
+                    return (
+                      <div
+                        key={`${link.method}-${link.href}`}
+                        className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                      >
+                        <div>
+                          <span className="font-medium text-gray-900 capitalize">
+                            {link.rel.replace(/-/g, " ")}
+                          </span>
+                          <span className="ml-2 rounded bg-gray-200 px-2 py-1 text-gray-500 text-sm">
+                            {link.method}
+                          </span>
+                        </div>
+                        {link.rel === "payer-action" && (
+                          <a
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded-lg bg-blue-600 px-4 py-2 font-medium text-sm text-white transition-colors hover:bg-blue-700"
+                          >
+                            Pay Now
+                          </a>
+                        )}
                       </div>
-                      {link.rel === "payer-action" && (
-                        <a
-                          href={link.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                        >
-                          Pay Now
-                        </a>
-                      )}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
 
             {/* Raw Data (for debugging) */}
-            <details className="border rounded-lg">
-              <summary className="cursor-pointer p-4 bg-gray-50 font-medium text-gray-900 hover:bg-gray-100">
+            <details className="rounded-lg border">
+              <summary className="cursor-pointer bg-gray-50 p-4 font-medium text-gray-900 hover:bg-gray-100">
                 Raw Order Data (Debug)
               </summary>
-              <pre className="p-4 bg-gray-900 text-green-400 text-xs overflow-auto">
+              <pre className="overflow-auto bg-gray-900 p-4 text-green-400 text-xs">
                 {JSON.stringify(order, null, 2)}
               </pre>
             </details>

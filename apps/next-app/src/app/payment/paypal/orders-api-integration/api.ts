@@ -66,10 +66,10 @@ export interface CreateOrderRequest {
 export const createPayPalOrder = async (
   accessToken: string,
   orderData: CreateOrderRequest,
-) => {
+): Promise<PayPalOrderResponse> => {
   try {
     const response = await axios.post(
-      "https://api-m.sandbox.paypal.com/v2/checkout/orders/",
+      "/api/payment/paypal/v2/create-order",
       orderData,
       {
         headers: {

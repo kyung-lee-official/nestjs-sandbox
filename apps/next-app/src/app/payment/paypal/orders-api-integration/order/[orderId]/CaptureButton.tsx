@@ -35,15 +35,15 @@ export const CaptureButton = ({ orderId, disabled }: CaptureButtonProps) => {
     <button
       onClick={handleCapture}
       disabled={disabled || captureMutation.isPending}
-      className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
+      className={`w-full rounded-lg px-4 py-3 font-medium transition-colors ${
         disabled || captureMutation.isPending
-          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+          ? "cursor-not-allowed bg-gray-300 text-gray-500"
           : "bg-green-600 text-white hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
       }`}
     >
       {captureMutation.isPending ? (
         <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+          <div className="mr-2 h-4 w-4 animate-spin rounded-full border-white border-b-2"></div>
           Capturing...
         </div>
       ) : (

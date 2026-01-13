@@ -36,14 +36,14 @@ export const AccessToken = ({ paypalAccessToken }: AccessTokenProps) => {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Access Token Management</h2>
+      <h2 className="font-semibold text-xl">Access Token Management</h2>
 
       {paypalAccessToken && (
-        <div className="bg-blue-50 border border-blue-200 rounded p-4">
-          <h3 className="font-semibold text-blue-800 mb-2">
+        <div className="rounded border border-blue-200 bg-blue-50 p-4">
+          <h3 className="mb-2 font-semibold text-blue-800">
             Existing Access Token (from cookie):
           </h3>
-          <p className="text-sm text-blue-700 font-mono break-all">
+          <p className="break-all font-mono text-blue-700 text-sm">
             {paypalAccessToken}
           </p>
         </div>
@@ -52,7 +52,7 @@ export const AccessToken = ({ paypalAccessToken }: AccessTokenProps) => {
       <button
         onClick={() => generateTokenMutation.mutate()}
         disabled={generateTokenMutation.isPending}
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-400"
       >
         {generateTokenMutation.isPending
           ? "Generating Token..."
@@ -68,14 +68,14 @@ export const AccessToken = ({ paypalAccessToken }: AccessTokenProps) => {
       )}
 
       {accessToken && (
-        <div className="bg-green-50 border border-green-200 rounded p-4">
-          <h3 className="font-semibold text-green-800 mb-2">
+        <div className="rounded border border-green-200 bg-green-50 p-4">
+          <h3 className="mb-2 font-semibold text-green-800">
             Access Token Generated:
           </h3>
-          <p className="text-sm text-green-700 font-mono break-all">
+          <p className="break-all font-mono text-green-700 text-sm">
             {accessToken}
           </p>
-          <p className="text-xs text-green-600 mt-2">
+          <p className="mt-2 text-green-600 text-xs">
             Token expires in: {generateTokenMutation.data?.expires_in} seconds
           </p>
         </div>
