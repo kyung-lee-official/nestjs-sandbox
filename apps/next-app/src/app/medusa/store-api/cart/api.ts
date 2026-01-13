@@ -26,6 +26,16 @@ export async function addLineItem(
   return data;
 }
 
+export async function addPromotions(cartId: string, code: string) {
+  const data = await api.post<StoreCartResponse>(
+    `/store/carts/${cartId}/promotions`,
+    {
+      promo_codes: [code],
+    },
+  );
+  return data;
+}
+
 export async function createCart(regionId?: string) {
   const data = await api.post<StoreCartResponse>("/store/carts", {
     region_id: regionId,
@@ -73,6 +83,16 @@ export async function updateCartShippingMethod(
     `/store/carts/${cartId}/shipping-methods`,
     {
       option_id: optionId,
+    },
+  );
+  return data;
+}
+
+export async function removePromotions(cartId: string, code: string) {
+  const data = await api.del<StoreCartResponse>(
+    `/store/carts/${cartId}/promotions`,
+    {
+      promo_codes: [code],
     },
   );
   return data;
