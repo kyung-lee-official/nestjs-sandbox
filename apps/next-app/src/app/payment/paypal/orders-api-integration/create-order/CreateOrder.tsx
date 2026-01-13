@@ -2,8 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { createPayPalOrder, PayPalOrderResponse } from "../api";
+import { createPayPalOrder } from "../api";
 import { Form, type OrderFormData } from "./Form";
 
 type CreateOrderProps = {
@@ -12,7 +11,6 @@ type CreateOrderProps = {
 
 export const CreateOrder = ({ paypalAccessToken }: CreateOrderProps) => {
   const router = useRouter();
-  const [orderData, setOrderData] = useState<PayPalOrderResponse | null>(null);
 
   const createOrderMutation = useMutation({
     mutationFn: async (formData: OrderFormData) => {
@@ -51,7 +49,6 @@ export const CreateOrder = ({ paypalAccessToken }: CreateOrderProps) => {
       return data;
     },
     onSuccess: (data) => {
-      setOrderData(data);
       /* redirect the user to the PayPal approval link */
       if (data.links) {
         const approvalLink = data.links.find(
@@ -100,51 +97,6 @@ export const CreateOrder = ({ paypalAccessToken }: CreateOrderProps) => {
           Error:{" "}
           {createOrderMutation.error?.message ||
             "Failed to create PayPal order"}
-        </div>
-      )}
-
-      {orderData && (
-        <div className="rounded border border-green-200 bg-green-50 p-4">
-          <h3 className="mb-2 font-semibold text-green-800">
-            Order Created Successfully:
-          </h3>
-          <div className="space-y-2 text-green-700 text-sm">
-            <div>
-              <strong>Order ID:</strong>{" "}
-              <span className="font-mono">{orderData.id}</span>
-            </div>
-            <div>
-              <strong>Status:</strong>{" "}
-              <span className="font-mono">{orderData.status}</span>
-            </div>
-            <div>
-              <strong>Intent:</strong>{" "}
-              <span className="font-mono">{orderData.intent}</span>
-            </div>
-            {orderData.links && (
-              <div>
-                <strong>Actions:</strong>
-                <div className="mt-1 space-y-1">
-                  {orderData.links.map((link) => (
-                    <div key={link.href} className="text-xs">
-                      <span className="rounded bg-gray-100 px-1 font-mono">
-                        {link.rel}
-                      </span>
-                      :{" "}
-                      <a
-                        href={link.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="break-all text-blue-600 underline"
-                      >
-                        {link.href}
-                      </a>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
         </div>
       )}
     </div>
