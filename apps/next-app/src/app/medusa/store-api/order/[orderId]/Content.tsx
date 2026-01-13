@@ -236,11 +236,8 @@ const Content = ({ orderId }: ContentProps) => {
         <div className="rounded-lg border bg-white p-6 shadow-sm">
           <h2 className="mb-4 font-semibold text-xl">Order Items</h2>
           <div className="space-y-3">
-            {order.items.map((item: any, index: number) => (
-              <div
-                key={item.id || index}
-                className="rounded border bg-gray-50 p-4"
-              >
+            {order.items.map((item) => (
+              <div key={item.id} className="rounded border bg-gray-50 p-4">
                 <div className="flex justify-between">
                   <div className="flex-1">
                     <h3 className="font-medium text-gray-900">
