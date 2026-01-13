@@ -36,7 +36,7 @@ const Content = (props: { paymentCollectionId: string }) => {
   const { payment_collection } = paymentCollectionQuery.data;
 
   return (
-    <div className="flex flex-col m-6 space-y-4">
+    <div className="m-6 flex flex-col space-y-4">
       <div>
         <h1>Content for Payment Collection ID: {paymentCollectionId}</h1>
         <div>Status: {payment_collection.status}</div>
