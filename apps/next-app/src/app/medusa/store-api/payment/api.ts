@@ -33,3 +33,10 @@ export async function initializePaymentSession(
   );
   return data;
 }
+
+export async function authorizePaymentSession(paymentSessionId: string) {
+  const data = await api.post(
+    `/commerce-modules/payment/payment-session/authorize-payment-session/${paymentSessionId}`,
+  );
+  return data;
+}

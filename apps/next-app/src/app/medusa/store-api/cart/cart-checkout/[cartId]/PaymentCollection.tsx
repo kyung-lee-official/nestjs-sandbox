@@ -3,10 +3,12 @@
 import { StoreCart } from "@medusajs/types/dist/http/cart/store/entities";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useMIdStore } from "@/stores/medusa/medusa-entity-id";
 import { formatCurrency } from "@/utils/currency";
 import {
+  authorizePaymentSession,
   initializePaymentSession,
   listPaymentProviders,
 } from "../../../payment/api";
@@ -18,6 +20,7 @@ const PaymentCollection = ({ cartId }: { cartId: string }) => {
   const setCartId = useMIdStore((state) => state.setCartId);
   const [selectedProvider, setSelectedProvider] = useState<string>("");
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const cartQuery = useQuery({
     queryKey: [QK_CART.GET_CART, cartId, regionId],
@@ -60,6 +63,22 @@ const PaymentCollection = ({ cartId }: { cartId: string }) => {
     },
   });
 
+  const authorizeSessionMutation = useMutation({
+    mutationFn: (paymentSessionId: string) =>
+      authorizePaymentSession(paymentSessionId),
+    onSuccess: (data) => {
+      // Invalidate queries to get the updated cart data
+      queryClient.invalidateQueries({
+        queryKey: [QK_CART.GET_CART, cartId, regionId],
+      });
+
+      // Redirect to the order page using the order ID from the response
+      if ((data as any).order?.id) {
+        router.push(`/medusa/store-api/order/${(data as any).order.id}`);
+      }
+    },
+  });
+
   const handleProviderSelect = async () => {
     const cart = cartQuery.data;
     if (!cart?.payment_collection?.id || !selectedProvider) return;
@@ -71,6 +90,14 @@ const PaymentCollection = ({ cartId }: { cartId: string }) => {
       });
     } catch (error) {
       console.error("Failed to initialize payment session:", error);
+    }
+  };
+
+  const handleAuthorizeSession = async (paymentSessionId: string) => {
+    try {
+      await authorizeSessionMutation.mutateAsync(paymentSessionId);
+    } catch (error) {
+      console.error("Failed to authorize payment session:", error);
     }
   };
 
@@ -336,6 +363,76 @@ const PaymentCollection = ({ cartId }: { cartId: string }) => {
                       </span>
                     </div>
                   </div>
+
+                  {/* Authorization button for pp_system_default provider */}
+                  {session.provider_id === "pp_system_default" &&
+                    session.id && (
+                      <div className="mt-3 border-gray-200 border-t pt-3">
+                        <div className="flex items-center justify-between">
+                          <div className="text-gray-600 text-sm">
+                            Session ID:{" "}
+                            <span className="font-mono text-xs">
+                              {session.id}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => handleAuthorizeSession(session.id)}
+                            disabled={
+                              authorizeSessionMutation.isPending ||
+                              session.status === "authorized"
+                            }
+                            className="rounded-md bg-green-600 px-3 py-1 font-medium text-sm text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400"
+                          >
+                            {authorizeSessionMutation.isPending ? (
+                              <span className="flex items-center">
+                                <svg
+                                  className="mr-1 h-3 w-3 animate-spin"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                    fill="none"
+                                  />
+                                  <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8v8H4z"
+                                  />
+                                </svg>
+                                Authorizing...
+                              </span>
+                            ) : session.status === "authorized" ? (
+                              "Authorized"
+                            ) : (
+                              "Authorize Session"
+                            )}
+                          </button>
+                        </div>
+
+                        {/* Authorization feedback */}
+                        {authorizeSessionMutation.isError && (
+                          <div className="mt-2 rounded border border-red-200 bg-red-50 p-2">
+                            <p className="text-red-700 text-xs">
+                              Failed to authorize payment session. Please try
+                              again.
+                            </p>
+                          </div>
+                        )}
+
+                        {authorizeSessionMutation.isSuccess && (
+                          <div className="mt-2 rounded border border-green-200 bg-green-50 p-2">
+                            <p className="text-green-700 text-xs">
+                              Payment session authorized successfully!
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
                 </div>
               ),
             )}

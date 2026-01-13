@@ -1,13 +1,14 @@
 "use client";
 
 import type { StoreCart } from "@medusajs/types";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useMIdStore } from "@/stores/medusa/medusa-entity-id";
 import { createPaymentCollection } from "../payment/api";
 import { createCart, getCart, QK_CART } from "./api";
 import { CartAddresses } from "./cart-address/CartAddress";
+import { CartCreation } from "./cart-creation/CartCreation";
 import { CartInfo } from "./cart-info/CartInfo";
 import { CartLineItem } from "./cart-line-item/CartLineItem";
 import CartPromotions from "./cart-promotions/CartPromotions";
@@ -16,11 +17,29 @@ import { CartSummary } from "./cart-summary/CartSummary";
 
 export const Content = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const hasHydrated = useMIdStore((state) => state.hasHydrated);
   const regionId = useMIdStore((state) => state.regionId);
   const cartId = useMIdStore((state) => state.cartId);
   const setCartId = useMIdStore((state) => state.setCartId);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+
+  const createCartMutation = useMutation({
+    mutationFn: (regionId: string) => createCart(regionId),
+    onSuccess: (data) => {
+      setCartId(data.cart.id);
+      queryClient.invalidateQueries({ queryKey: [QK_CART.GET_CART] });
+    },
+  });
+
+  const handleCreateCart = async () => {
+    if (!regionId) return;
+    try {
+      await createCartMutation.mutateAsync(regionId);
+    } catch (error) {
+      console.error("Failed to create cart:", error);
+    }
+  };
 
   const handleCheckout = async () => {
     try {
@@ -91,6 +110,13 @@ export const Content = () => {
               ? cartQuery.error.message
               : "Unknown error"}
           </p>
+          {/* Cart Creation UI */}
+          <CartCreation
+            cartId={cartId}
+            regionId={regionId}
+            onCreateCart={handleCreateCart}
+            createCartMutation={createCartMutation}
+          />
         </div>
       </div>
     );
@@ -101,6 +127,14 @@ export const Content = () => {
     return (
       <div className="mx-auto max-w-4xl p-6">
         <p className="text-gray-500">No cart data available</p>
+
+        {/* Cart Creation UI */}
+        <CartCreation
+          cartId={cartId}
+          regionId={regionId}
+          onCreateCart={handleCreateCart}
+          createCartMutation={createCartMutation}
+        />
       </div>
     );
   }
