@@ -56,7 +56,8 @@ module.exports = defineConfig({
             id: "paypal-payment",
             options: {
               // provider options...
-              apiKey: "...",
+              clientId: process.env.PAYPAL_CLIENT_ID,
+              apiKey: process.env.PAYPAL_API_KEY,
             },
           },
         ],
