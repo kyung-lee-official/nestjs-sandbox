@@ -65,7 +65,7 @@ class PayPalTokenManager {
 
     if (!this.accessToken) {
       throw new HttpError(
-        "PAYMENT.FAILED_TO_GENERATE_ACCESS_TOKEN",
+        "PAYMENT.PAYPAL_FAILED_TO_GENERATE_ACCESS_TOKEN",
         "Failed to generate PayPal access token",
       );
     }
