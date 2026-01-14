@@ -123,7 +123,7 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
     const accountHolderId = account_holder?.data?.id as string | undefined;
     if (!accountHolderId) {
       throw new HttpError(
-        "PAYMENT.MISSING_ACCOUNT_HOLDER",
+        "PAYMENT.PAYPAL_MISSING_ACCOUNT_HOLDER",
         "Missing account holder ID.",
       );
     }
@@ -236,7 +236,7 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
   async listPaymentMethods({ context }: ListPaymentMethodsInput) {
     if (!context) {
       throw new HttpError(
-        "PAYMENT.MISSING_CONTEXT",
+        "PAYMENT.PAYPAL_MISSING_CONTEXT",
         "Payment context is required.",
       );
     }
@@ -246,7 +246,7 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
 
     if (!accountHolderId) {
       throw new HttpError(
-        "PAYMENT.MISSING_ACCOUNT_HOLDER",
+        "PAYMENT.PAYPAL_MISSING_ACCOUNT_HOLDER",
         "Missing account holder ID.",
       );
     }
@@ -301,7 +301,7 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
 
     if (!accountHolderId) {
       throw new HttpError(
-        "PAYMENT.MISSING_ACCOUNT_HOLDER",
+        "PAYMENT.PAYPAL_MISSING_ACCOUNT_HOLDER",
         "Missing account holder ID.",
       );
     }
@@ -323,7 +323,7 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
 
     if (!account_holder?.data?.id) {
       throw new HttpError(
-        "PAYMENT.MISSING_ACCOUNT_HOLDER",
+        "PAYMENT.PAYPAL_MISSING_ACCOUNT_HOLDER",
         "Missing account holder ID.",
       );
     }
@@ -347,7 +347,7 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
     // Validate context.customer
     if (!context || !context.customer) {
       throw new HttpError(
-        "PAYMENT.MISSING_CUSTOMER",
+        "PAYMENT.PAYPAL_MISSING_CUSTOMER",
         "Context must include a valid customer.",
       );
     }
@@ -365,7 +365,7 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
   static validateOptions(options: Record<any, any>) {
     if (!options.apiKey) {
       throw new HttpError(
-        "PAYMENT.MISSING_API_KEY",
+        "PAYMENT.PAYPAL_MISSING_API_KEY",
         "API key is required in the provider's options.",
       );
     }
