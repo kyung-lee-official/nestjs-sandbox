@@ -57,7 +57,7 @@ module.exports = defineConfig({
             options: {
               // provider options...
               clientId: process.env.PAYPAL_CLIENT_ID,
-              apiKey: process.env.PAYPAL_API_KEY,
+              clientSecret: process.env.PAYPAL_CLIENT_SECRET,
             },
           },
         ],
