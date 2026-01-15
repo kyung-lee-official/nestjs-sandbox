@@ -80,6 +80,9 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
   async capturePayment(
     input: CapturePaymentInput,
   ): Promise<CapturePaymentOutput> {
+    if (input.data) {
+    }
+
     const externalId = input.data?.id;
 
     // assuming you have a client that captures the payment
@@ -362,10 +365,10 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
     return response;
   }
 
-  static validateOptions(options: Record<any, any>) {
-    if (!options.apiKey) {
+  static validateOptions(options: { clientId: string; clientSecret: string }) {
+    if (!options.clientSecret) {
       throw new HttpError(
-        "PAYMENT.PAYPAL_MISSING_API_KEY",
+        "PAYMENT.PAYPAL_MISSING_CLIENT_SECRET",
         "API key is required in the provider's options.",
       );
     }
