@@ -1,8 +1,8 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { createOrderSchema, HttpError } from "@repo/types";
 import axios, { AxiosError } from "axios";
-import { getPayPalBaseURL } from "../utils/config";
-import { paypalTokenManager } from "../utils/token-manager";
+import { getPayPalBaseURL } from "@/modules/paypal-payment/config";
+import { paypalTokenManager } from "@/modules/paypal-payment/token-manager";
 
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
   /* Get order data from request body */
