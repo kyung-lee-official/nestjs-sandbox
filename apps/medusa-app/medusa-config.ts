@@ -6,13 +6,29 @@ if (!process.env.MEDUSA_BACKEND_URL) {
   throw new Error("MEDUSA_BACKEND_URL is not defined in environment variables");
 }
 
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is not defined in environment variables");
+}
+
+if (!process.env.STORE_CORS) {
+  throw new Error("STORE_CORS is not defined in environment variables");
+}
+
+if (!process.env.ADMIN_CORS) {
+  throw new Error("ADMIN_CORS is not defined in environment variables");
+}
+
+if (!process.env.AUTH_CORS) {
+  throw new Error("AUTH_CORS is not defined in environment variables");
+}
+
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
     http: {
-      storeCors: process.env.STORE_CORS!,
-      adminCors: process.env.ADMIN_CORS!,
-      authCors: process.env.AUTH_CORS!,
+      storeCors: process.env.STORE_CORS,
+      adminCors: process.env.ADMIN_CORS,
+      authCors: process.env.AUTH_CORS,
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
       /* set your desired duration here, e.g., "1h", "7d" */
