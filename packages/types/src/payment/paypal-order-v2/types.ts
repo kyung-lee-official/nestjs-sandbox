@@ -1,3 +1,6 @@
+import type z from "zod";
+import type { intentEnum } from "../..";
+
 export enum PayPalOrderQK {
   GET_ORDER_BY_ID = "get_order_by_id",
 }
@@ -44,8 +47,10 @@ interface PayPalPaymentSource {
   };
 }
 
+export type IntentType = z.infer<typeof intentEnum>;
+
 export interface CreateOrderRequest {
-  intent: "AUTHORIZE" | "CAPTURE";
+  intent: IntentType;
   purchase_units: PayPalPurchaseUnit[];
   payment_source: PayPalPaymentSource;
 }

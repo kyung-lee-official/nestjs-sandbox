@@ -41,8 +41,10 @@ export const payPalPaymentSourceSchema = z.object({
     .optional(),
 });
 
+export const intentEnum = z.enum(["CAPTURE", "AUTHORIZE"]);
+
 export const createOrderSchema = z.object({
-  intent: z.enum(["CAPTURE", "AUTHORIZE"]),
+  intent: intentEnum,
   purchase_units: z.array(payPalPurchaseUnitSchema).min(1),
   payment_source: payPalPaymentSourceSchema.optional(),
 });
