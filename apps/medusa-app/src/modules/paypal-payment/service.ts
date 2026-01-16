@@ -37,7 +37,8 @@ import {
 import { PayPalClient } from "./client";
 
 type Options = {
-  apiKey: string;
+  clientId: string;
+  clientSecret: string;
 };
 
 type InjectedDependencies = {
@@ -467,7 +468,7 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
     };
   }
 
-  static validateOptions(options: { clientId: string; clientSecret: string }) {
+  static validateOptions(options: Options) {
     if (!options.clientSecret) {
       throw new HttpError(
         "PAYMENT.PAYPAL_MISSING_CLIENT_SECRET",
