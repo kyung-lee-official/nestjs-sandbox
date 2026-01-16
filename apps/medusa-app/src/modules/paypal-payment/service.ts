@@ -316,7 +316,6 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
 
       return {
         id: response.id,
-        data: response,
       };
     } catch (error) {
       this.logger_.error("PayPal create order failed:", error);
