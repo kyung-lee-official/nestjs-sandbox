@@ -330,8 +330,7 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
         id: response.id,
         data: {
           ...response,
-          approval_url: approvalLink, // Make it easily accessible
-          session_id: response.id, // Medusa might expect this
+          approval_url: approvalLink,
         },
       };
     } catch (error) {
