@@ -1,5 +1,6 @@
 "use client";
 
+import { CreateOrderRequest } from "@repo/types";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { createPayPalOrder } from "../api";
@@ -14,7 +15,7 @@ export const CreateOrder = ({ paypalAccessToken }: CreateOrderProps) => {
 
   const createOrderMutation = useMutation({
     mutationFn: async (formData: OrderFormData) => {
-      const orderPayload = {
+      const orderPayload: CreateOrderRequest = {
         intent: formData.intent,
         purchase_units: [
           {
