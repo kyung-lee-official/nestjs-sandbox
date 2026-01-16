@@ -34,9 +34,7 @@ import {
   HttpError,
   type IntentType,
 } from "@repo/types";
-import axios from "axios";
-import { PayPalConfig } from "./config";
-import { paypalTokenManager } from "./token-manager";
+import { PayPalClient } from "./client";
 
 type Options = {
   apiKey: string;
@@ -51,16 +49,14 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
 
   protected logger_: Logger;
   protected options_: Options;
-  // assuming you're initializing a client
-  protected client;
+  protected client: PayPalClient;
 
   constructor(container: InjectedDependencies, options: Options) {
     super(container, options);
 
     this.logger_ = container.logger;
     this.options_ = options;
-
-    // TODO initialize your client
+    this.client = new PayPalClient();
   }
 
   async authorizePayment(
@@ -68,39 +64,59 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
   ): Promise<AuthorizePaymentOutput> {
     const externalId = input.data?.id;
 
-    // assuming you have a client that authorizes the payment
-    const paymentData = await this.client.authorizePayment(externalId);
+    try {
+      const paymentData = await this.client.authorizePayment(
+        externalId as string,
+      );
 
-    return {
-      data: paymentData,
-      status: "authorized",
-    };
+      return {
+        data: paymentData,
+        status: "authorized",
+      };
+    } catch (error) {
+      this.logger_.error("PayPal authorize payment failed:", error);
+      throw new HttpError(
+        "PAYMENT.PAYPAL_AUTHORIZATION_FAILED",
+        "Failed to authorize PayPal payment",
+      );
+    }
   }
 
   async cancelPayment(input: CancelPaymentInput): Promise<CancelPaymentOutput> {
     const externalId = input.data?.id;
 
-    // assuming you have a client that cancels the payment
-    const paymentData = await this.client.cancelPayment(externalId);
-    return { data: paymentData };
+    try {
+      const paymentData = await this.client.cancelPayment(externalId as string);
+      return { data: paymentData };
+    } catch (error) {
+      this.logger_.error("PayPal cancel payment failed:", error);
+      throw new HttpError(
+        "PAYMENT.PAYPAL_CANCEL_FAILED",
+        "Failed to cancel PayPal payment",
+      );
+    }
   }
 
   async capturePayment(
     input: CapturePaymentInput,
   ): Promise<CapturePaymentOutput> {
-    if (input.data) {
-    }
-
     const externalId = input.data?.id;
 
-    // assuming you have a client that captures the payment
-    const newData = await this.client.capturePayment(externalId);
-    return {
-      data: {
-        ...newData,
-        id: externalId,
-      },
-    };
+    try {
+      const newData = await this.client.captureOrder(externalId as string);
+      return {
+        data: {
+          ...newData,
+          id: externalId,
+        },
+      };
+    } catch (error) {
+      this.logger_.error("PayPal capture payment failed:", error);
+      throw new HttpError(
+        "PAYMENT.PAYPAL_ORDER_CANNOT_BE_CAPTURED",
+        "Failed to capture PayPal payment",
+      );
+    }
   }
 
   async createAccountHolder({ context, data }: CreateAccountHolderInput) {
@@ -118,15 +134,16 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
     }
 
     // assuming you have a client that creates the account holder
-    const providerAccountHolder = await this.client.createAccountHolder({
-      email: customer.email,
-      ...data,
-    });
+    // const providerAccountHolder = await this.client.createAccountHolder({
+    //   email: customer.email,
+    //   ...data,
+    // });
 
-    return {
-      id: providerAccountHolder.id,
-      data: providerAccountHolder as unknown as Record<string, unknown>,
-    };
+    // return {
+    //   id: providerAccountHolder.id,
+    //   data: providerAccountHolder as unknown as Record<string, unknown>,
+    // };
+    return {};
   }
 
   async deleteAccountHolder({ context }: DeleteAccountHolderInput) {
@@ -140,9 +157,9 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
     }
 
     // assuming you have a client that deletes the account holder
-    await this.client.deleteAccountHolder({
-      id: accountHolderId,
-    });
+    // await this.client.deleteAccountHolder({
+    //   id: accountHolderId,
+    // });
 
     return {};
   }
@@ -150,11 +167,18 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
   async deletePayment(input: DeletePaymentInput): Promise<DeletePaymentOutput> {
     const externalId = input.data?.id;
 
-    // assuming you have a client that cancels the payment
-    await this.client.cancelPayment(externalId);
-    return {
-      data: input.data,
-    };
+    try {
+      await this.client.cancelPayment(externalId as string);
+      return {
+        data: input.data,
+      };
+    } catch (error) {
+      this.logger_.error("PayPal delete payment failed:", error);
+      throw new HttpError(
+        "PAYMENT.PAYPAL_DELETE_FAILED",
+        "Failed to delete PayPal payment",
+      );
+    }
   }
 
   async getPaymentStatus(
@@ -162,18 +186,30 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
   ): Promise<GetPaymentStatusOutput> {
     const externalId = input.data?.id;
 
-    // assuming you have a client that retrieves the payment status
-    const status = await this.client.getStatus(externalId);
+    try {
+      const status = await this.client.getPaymentStatus(externalId as string);
 
-    switch (status) {
-      case "requires_capture":
-        return { status: "authorized" };
-      case "success":
-        return { status: "captured" };
-      case "canceled":
-        return { status: "canceled" };
-      default:
-        return { status: "pending" };
+      switch (status) {
+        case "requires_capture":
+        case "AUTHORIZED":
+          return { status: "authorized" };
+        case "success":
+        case "CAPTURED":
+        case "COMPLETED":
+          return { status: "captured" };
+        case "canceled":
+        case "CANCELLED":
+        case "VOIDED":
+          return { status: "canceled" };
+        default:
+          return { status: "pending" };
+      }
+    } catch (error) {
+      this.logger_.error("PayPal get payment status failed:", error);
+      throw new HttpError(
+        "PAYMENT.PAYPAL_STATUS_CHECK_FAILED",
+        "Failed to check PayPal payment status",
+      );
     }
   }
 
@@ -276,23 +312,11 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
     };
 
     try {
-      const accessToken = await paypalTokenManager.getAccessToken();
-      const paypalBaseURL = PayPalConfig.getBaseURL();
-
-      const response = await axios.post(
-        `${paypalBaseURL}/v2/checkout/orders`,
-        orderPayload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
+      const response = await this.client.createOrder(orderPayload);
 
       return {
-        id: response.data.id,
-        data: response.data,
+        id: response.id,
+        data: response,
       };
     } catch (error) {
       this.logger_.error("PayPal create order failed:", error);
@@ -303,56 +327,40 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
     }
   }
 
-  async listPaymentMethods({ context }: ListPaymentMethodsInput) {
-    if (!context) {
-      throw new HttpError(
-        "PAYMENT.PAYPAL_MISSING_CONTEXT",
-        "Payment context is required.",
-      );
-    }
-
-    const { account_holder } = context;
-    const accountHolderId = account_holder?.data?.id as string | undefined;
-
-    if (!accountHolderId) {
-      throw new HttpError(
-        "PAYMENT.PAYPAL_MISSING_ACCOUNT_HOLDER",
-        "Missing account holder ID.",
-      );
-    }
-
-    // assuming you have a client that lists the payment methods
-    const paymentMethods = await this.client.listPaymentMethods({
-      customer_id: accountHolderId,
-    });
-
-    return paymentMethods.map((pm) => ({
-      id: pm.id,
-      data: pm as unknown as Record<string, unknown>,
-    }));
-  }
-
   async refundPayment(input: RefundPaymentInput): Promise<RefundPaymentOutput> {
     const externalId = input.data?.id;
 
-    // assuming you have a client that refunds the payment
-    const newData = await this.client.refund(externalId, input.amount);
+    try {
+      const refundAmount = input.amount ? input.amount.toString() : undefined;
 
-    return {
-      data: input.data,
-    };
+      const newData = await this.client.refundPayment(
+        externalId as string,
+        refundAmount,
+      );
+
+      return {
+        data: input.data,
+      };
+    } catch (error) {
+      this.logger_.error("PayPal refund payment failed:", error);
+      throw new HttpError(
+        "PAYMENT.PAYPAL_REFUND_FAILED",
+        "Failed to refund PayPal payment",
+      );
+    }
   }
 
   async retrieveAccountHolder({ id }: RetrieveAccountHolderInput) {
     // assuming you have a client that retrieves the account holder
-    const providerAccountHolder = await this.client.retrieveAccountHolder({
-      id,
-    });
+    // const providerAccountHolder = await this.client.retrieveAccountHolder({
+    //   id,
+    // });
 
-    return {
-      id: providerAccountHolder.id,
-      data: providerAccountHolder as unknown as Record<string, unknown>,
-    };
+    // return {
+    //   id: providerAccountHolder.id,
+    //   data: providerAccountHolder as unknown as Record<string, unknown>,
+    // };
+    return {};
   }
 
   async retrievePayment(
@@ -360,8 +368,15 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
   ): Promise<RetrievePaymentOutput> {
     const externalId = input.data?.id;
 
-    // assuming you have a client that retrieves the payment
-    return await this.client.retrieve(externalId);
+    try {
+      return await this.client.getOrder(externalId as string);
+    } catch (error) {
+      this.logger_.error("PayPal retrieve payment failed:", error);
+      throw new HttpError(
+        "PAYMENT.PAYPAL_RETRIEVE_FAILED",
+        "Failed to retrieve PayPal payment",
+      );
+    }
   }
 
   async savePaymentMethod({ context, data }: SavePaymentMethodInput) {
@@ -377,15 +392,16 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
     }
 
     // assuming you have a client that saves the payment method
-    const paymentMethod = await this.client.savePaymentMethod({
-      customer_id: accountHolderId,
-      ...data,
-    });
+    // const paymentMethod = await this.client.savePaymentMethod({
+    //   customer_id: accountHolderId,
+    //   ...data,
+    // });
 
-    return {
-      id: paymentMethod.id,
-      data: paymentMethod as unknown as Record<string, unknown>,
-    };
+    // return {
+    //   id: paymentMethod.id,
+    //   data: paymentMethod as unknown as Record<string, unknown>,
+    // };
+    return {};
   }
 
   async updateAccountHolder({ context, data }: UpdateAccountHolderInput) {
@@ -399,15 +415,16 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
     }
 
     // assuming you have a client that updates the account holder
-    const providerAccountHolder = await this.client.updateAccountHolder({
-      id: account_holder.data.id,
-      ...data,
-    });
+    // const providerAccountHolder = await this.client.updateAccountHolder({
+    //   id: account_holder.data.id,
+    //   ...data,
+    // });
 
-    return {
-      id: providerAccountHolder.id,
-      data: providerAccountHolder as unknown as Record<string, unknown>,
-    };
+    // return {
+    //   id: providerAccountHolder.id,
+    //   data: providerAccountHolder as unknown as Record<string, unknown>,
+    // };
+    return {};
   }
 
   async updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
@@ -423,13 +440,16 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
     }
 
     // assuming you have a client that updates the payment
-    const response = await this.client.update(externalId, {
-      amount,
-      currency_code,
-      customer: context.customer,
-    });
+    // const response = await this.client.update(externalId, {
+    //   amount,
+    //   currency_code,
+    //   customer: context.customer,
+    // });
 
-    return response;
+    // return response;
+    return {
+      data: input.data,
+    };
   }
 
   static validateOptions(options: { clientId: string; clientSecret: string }) {
