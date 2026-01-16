@@ -22,13 +22,21 @@ import type {
   RetrievePaymentInput,
   RetrievePaymentOutput,
   SavePaymentMethodInput,
+  StoreCartAddress,
   UpdateAccountHolderInput,
   UpdatePaymentInput,
   UpdatePaymentOutput,
   WebhookActionResult,
 } from "@medusajs/framework/types";
 import { AbstractPaymentProvider } from "@medusajs/framework/utils";
-import { HttpError } from "@repo/types";
+import {
+  type CreateOrderRequest,
+  HttpError,
+  type IntentType,
+} from "@repo/types";
+import axios from "axios";
+import { PayPalConfig } from "./config";
+import { paypalTokenManager } from "./token-manager";
 
 type Options = {
   apiKey: string;
@@ -219,21 +227,80 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
   }
 
   async initiatePayment(
-    input: InitiatePaymentInput,
+    input: InitiatePaymentInput & {
+      data: {
+        intent: IntentType;
+        payment_collection_id: string;
+        shipping_address: StoreCartAddress;
+      };
+    },
   ): Promise<InitiatePaymentOutput> {
-    const { amount, currency_code, context: customerDetails } = input;
+    if (!process.env.PAYPAL_RETURN_URL || !process.env.PAYPAL_CANCEL_URL) {
+      throw new HttpError(
+        "SYSTEM.MISCONFIGURED",
+        "PayPal return and cancel URLs must be set in environment variables.",
+      );
+    }
 
-    // assuming you have a client that initializes the payment
-    const response = await this.client.init(
-      amount,
-      currency_code,
-      customerDetails,
-    );
+    const { amount, currency_code, data } = input;
 
-    return {
-      id: response.id,
-      data: response,
+    const orderPayload: CreateOrderRequest = {
+      intent: data.intent,
+      purchase_units: [
+        {
+          reference_id: data.payment_collection_id,
+          amount: {
+            currency_code: currency_code,
+            value: amount as string,
+          },
+        },
+      ],
+      payment_source: {
+        paypal: {
+          address: {
+            address_line_1: data.shipping_address.address_1 || "",
+            address_line_2: data.shipping_address.address_2 || "",
+            admin_area_1: data.shipping_address.city || "",
+            admin_area_2: data.shipping_address.province || "",
+            postal_code: data.shipping_address.postal_code || "",
+            country_code: data.shipping_address.country_code || "",
+          },
+          email_address: "",
+          payment_method_preference: "IMMEDIATE_PAYMENT_REQUIRED",
+          experience_context: {
+            return_url: process.env.PAYPAL_RETURN_URL,
+            cancel_url: process.env.PAYPAL_CANCEL_URL,
+          },
+        },
+      },
     };
+
+    try {
+      const accessToken = await paypalTokenManager.getAccessToken();
+      const paypalBaseURL = PayPalConfig.getBaseURL();
+
+      const response = await axios.post(
+        `${paypalBaseURL}/v2/checkout/orders`,
+        orderPayload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      return {
+        id: response.data.id,
+        data: response.data,
+      };
+    } catch (error) {
+      this.logger_.error("PayPal create order failed:", error);
+      throw new HttpError(
+        "PAYMENT.PAYPAL_FAILED_TO_CREATE_ORDER",
+        "Failed to create PayPal order",
+      );
+    }
   }
 
   async listPaymentMethods({ context }: ListPaymentMethodsInput) {
