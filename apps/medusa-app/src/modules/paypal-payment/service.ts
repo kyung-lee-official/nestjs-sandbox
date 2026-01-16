@@ -314,8 +314,25 @@ class PayPalPaymentProviderService extends AbstractPaymentProvider<Options> {
     try {
       const response = await this.client.createOrder(orderPayload);
 
+      // Extract the approval link from PayPal response
+      const approvalLink = response.links?.find(
+        (link) => link.rel === "payer-action" || link.rel === "approve",
+      )?.href;
+
+      if (!approvalLink) {
+        throw new HttpError(
+          "PAYMENT.PAYPAL_MISSING_APPROVAL_LINK",
+          "PayPal approval link not found in response",
+        );
+      }
+
       return {
         id: response.id,
+        data: {
+          ...response,
+          approval_url: approvalLink, // Make it easily accessible
+          session_id: response.id, // Medusa might expect this
+        },
       };
     } catch (error) {
       this.logger_.error("PayPal create order failed:", error);
