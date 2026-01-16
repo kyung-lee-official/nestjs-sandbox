@@ -4,15 +4,22 @@ import {
   createPaymentSessionsWorkflow,
 } from "@medusajs/medusa/core-flows";
 import type { StoreInitializePaymentSession } from "@medusajs/types";
+import type { IntentType } from "@repo/types";
+
+type Data = {
+  intent: IntentType;
+  payment_collection_id: string;
+};
 
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
   const paymentCollectionId = req.params.paymentCollectionId;
-  const input = (await req.body) as StoreInitializePaymentSession;
+  const { provider_id, data } =
+    (await req.body) as StoreInitializePaymentSession;
   const { result } = await createPaymentSessionsWorkflow(req.scope).run({
     input: {
-      provider_id: input.provider_id,
+      provider_id: provider_id,
       payment_collection_id: paymentCollectionId,
-      data: input.data,
+      data: data as Data,
     } as CreatePaymentSessionsWorkflowInput,
   });
 
